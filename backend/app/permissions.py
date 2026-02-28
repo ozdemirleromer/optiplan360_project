@@ -3,6 +3,7 @@ Permissions Configuration
 Single source of truth for role-based permissions
 Used by both backend (authentication/authorization) and frontend (UI rendering)
 """
+
 import logging
 from enum import Enum
 
@@ -11,56 +12,56 @@ logger = logging.getLogger(__name__)
 
 class Permission(str, Enum):
     """All available permissions in the system"""
-    
+
     # ── OPERATIONS ──
     ORDERS_VIEW = "orders:view"
     ORDERS_CREATE = "orders:create"
     ORDERS_EDIT = "orders:edit"
     ORDERS_DELETE = "orders:delete"
-    
+
     KANBAN_VIEW = "kanban:view"
     KANBAN_EDIT = "kanban:edit"
-    
+
     CRM_VIEW = "crm:view"
     CRM_CREATE = "crm:create"
     CRM_EDIT = "crm:edit"
-    
+
     PAYMENT_VIEW = "payment:view"
     PAYMENT_CREATE = "payment:create"
     PAYMENT_EDIT = "payment:edit"
     PAYMENT_EXPORT = "payment:export"
-    
+
     REPORTS_VIEW = "reports:view"
     REPORTS_EXPORT = "reports:export"
-    
+
     # ── INVENTORY ──
     STOCK_VIEW = "stock:view"
     STOCK_CREATE = "stock:create"
     STOCK_EDIT = "stock:edit"
     STOCK_IMPORT = "stock:import"
-    
+
     # ── SYSTEM ──
     SETTINGS_VIEW = "settings:view"
     SETTINGS_EDIT = "settings:edit"
-    
+
     INTEGRATIONS_VIEW = "integrations:view"
     INTEGRATIONS_MANAGE = "integrations:manage"
-    
+
     ORGANIZATION_VIEW = "organization:view"
     ORGANIZATION_EDIT = "organization:edit"
-    
+
     STATIONS_VIEW = "stations:view"
     STATIONS_MANAGE = "stations:manage"
-    
+
     # ── USERS & SECURITY ──
     USERS_VIEW = "users:view"
     USERS_MANAGE = "users:manage"
-    
+
     ROLES_VIEW = "roles:view"
     ROLES_MANAGE = "roles:manage"
-    
+
     ACTIVITY_VIEW = "activity:view"
-    
+
     # ── PRODUCT CATALOG ──
     PRODUCT_VIEW = "product:view"
     PRODUCT_CREATE = "product:create"
@@ -107,13 +108,11 @@ ROLE_PERMISSIONS = {
         Permission.PAYMENT_EXPORT,
         Permission.REPORTS_VIEW,
         Permission.REPORTS_EXPORT,
-        
         # Inventory
         Permission.STOCK_VIEW,
         Permission.STOCK_CREATE,
         Permission.STOCK_EDIT,
         Permission.STOCK_IMPORT,
-        
         # System
         Permission.SETTINGS_VIEW,
         Permission.SETTINGS_EDIT,
@@ -123,34 +122,28 @@ ROLE_PERMISSIONS = {
         Permission.ORGANIZATION_EDIT,
         Permission.STATIONS_VIEW,
         Permission.STATIONS_MANAGE,
-
         # Product Catalog
         Permission.PRODUCT_VIEW,
         Permission.PRODUCT_CREATE,
         Permission.PRODUCT_EDIT,
-
         # Orchestrator
         Permission.ORCHESTRATOR_VIEW,
         Permission.ORCHESTRATOR_MANAGE,
-
         # Users & Security
         Permission.USERS_VIEW,
         Permission.USERS_MANAGE,
         Permission.ROLES_VIEW,
         Permission.ROLES_MANAGE,
         Permission.ACTIVITY_VIEW,
-        
         # WhatsApp
         Permission.WHATSAPP_VIEW,
         Permission.WHATSAPP_SEND,
         Permission.WHATSAPP_CONFIG,
-
         # Price Tracking
         Permission.PRICE_TRACKING_VIEW,
         Permission.PRICE_TRACKING_UPLOAD,
         Permission.PRICE_TRACKING_EXPORT,
         Permission.PRICE_TRACKING_DELETE,
-
         # Monitoring
         Permission.LOGS_VIEW,
         Permission.AUDIT_VIEW,
@@ -170,29 +163,23 @@ ROLE_PERMISSIONS = {
         Permission.PAYMENT_CREATE,
         Permission.PAYMENT_EDIT,
         Permission.REPORTS_VIEW,
-
         # Inventory
         Permission.STOCK_VIEW,
         Permission.STOCK_CREATE,
         Permission.STOCK_EDIT,
-
         # Product Catalog
         Permission.PRODUCT_VIEW,
         Permission.PRODUCT_CREATE,
-
         # Orchestrator
         Permission.ORCHESTRATOR_VIEW,
         Permission.ORCHESTRATOR_MANAGE,
-
         # WhatsApp
         Permission.WHATSAPP_VIEW,
         Permission.WHATSAPP_SEND,
-
         # Price Tracking
         Permission.PRICE_TRACKING_VIEW,
         Permission.PRICE_TRACKING_UPLOAD,
         Permission.PRICE_TRACKING_EXPORT,
-
         # Monitoring
         Permission.ACTIVITY_VIEW,
         Permission.LOGS_VIEW,
@@ -202,25 +189,19 @@ ROLE_PERMISSIONS = {
         Permission.ORDERS_VIEW,
         Permission.KANBAN_VIEW,
         Permission.KANBAN_EDIT,  # Scan operations
-
         # Stations (barkod okutma için zorunlu)
         Permission.STATIONS_VIEW,
-
         # Monitoring
         Permission.ACTIVITY_VIEW,
     ],
-
     # Kiosk: sadece üretim akışını görür, barkod okutabilir
     "KIOSK": [
         Permission.KANBAN_VIEW,
         Permission.KANBAN_EDIT,
-
         # Stations (barkod okutma için zorunlu)
         Permission.STATIONS_VIEW,
-
         Permission.ACTIVITY_VIEW,
     ],
-
     # Sales: müşteri/ürün arama + sipariş oluşturma
     "SALES": [
         Permission.ORDERS_VIEW,
@@ -237,7 +218,6 @@ ROLE_PERMISSIONS = {
         Permission.WHATSAPP_SEND,
         Permission.ACTIVITY_VIEW,
     ],
-
     # Viewer: salt okuma; yönetim, düzenleme, silme yetkileri yok
     "VIEWER": [
         Permission.ORDERS_VIEW,
@@ -260,8 +240,7 @@ def get_permissions_for_role(role: str) -> list[str]:
     """Rol için izin string listesi döndürür. Bilinmeyen rol için uyarı verir."""
     if role not in KNOWN_ROLES:
         logger.warning(
-            "Bilinmeyen rol: %r — boş yetki listesi döndürülüyor. "
-            "KNOWN_ROLES: %s",
+            "Bilinmeyen rol: %r — boş yetki listesi döndürülüyor. " "KNOWN_ROLES: %s",
             role,
             sorted(KNOWN_ROLES),
         )

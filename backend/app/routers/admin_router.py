@@ -2,20 +2,21 @@
 OptiPlan 360 â€” Admin Router
 Kullanıcı yönetimi, audit log, sistem bilgisi
 """
-from datetime import datetime, timezone, timedelta
-from fastapi import APIRouter, Depends, HTTPException
-from app.exceptions import BusinessRuleError, ConflictError, NotFoundError, ValidationError
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from pydantic import BaseModel, Field
-from typing import Optional, List
 
-from app.database import get_db
-from app.models import User, AuditLog, Order, Customer, UserSession, UserActivity, AuditRecord
-from app.auth import get_current_user, hash_password, require_admin
-from app.utils import create_audit_log
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
+
 from app import mikro_db
+from app.auth import get_current_user, hash_password, require_admin
+from app.database import get_db
+from app.exceptions import BusinessRuleError, ConflictError, NotFoundError, ValidationError
 from app.middleware.cache_middleware import cached_response
+from app.models import AuditLog, AuditRecord, Customer, Order, User, UserActivity, UserSession
+from app.utils import create_audit_log
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, Field
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/admin", tags=["admin"])
 
@@ -199,9 +200,6 @@ class SystemControlCheckOut(BaseModel):
     rows: List[SystemControlRow]
 
 
-
-
-
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 # KULLANICI YÖNETİMİ
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -251,9 +249,7 @@ def create_user(
     db.add(user)
     # Audit log
     create_audit_log(
-        db, admin.id, "CREATE_USER",
-        f"Kullanıcı oluşturuldu: {username} ({role})",
-        None
+        db, admin.id, "CREATE_USER", f"Kullanıcı oluşturuldu: {username} ({role})", None
     )
     db.commit()
     db.refresh(user)
@@ -280,9 +276,7 @@ def update_user(
         else (user.role or "OPERATOR").upper()
     )
     requested_is_active = (
-        bool(body.is_active)
-        if body.is_active is not None
-        else bool(user.is_active)
+        bool(body.is_active) if body.is_active is not None else bool(user.is_active)
     )
 
     if user.id == admin.id and not requested_is_active:
@@ -317,11 +311,7 @@ def update_user(
         email = body.email.strip()
         if not email:
             raise ValidationError("E-posta boş olamaz")
-        existing_email = (
-            db.query(User)
-            .filter(User.email == email, User.id != user.id)
-            .first()
-        )
+        existing_email = db.query(User).filter(User.email == email, User.id != user.id).first()
         if existing_email:
             raise ConflictError("Bu e-posta adresi başka bir kullanıcıda kayıtlı")
         user.email = email
@@ -342,9 +332,7 @@ def update_user(
         changes.append("password=***")
     if changes:
         create_audit_log(
-            db, admin.id, "UPDATE_USER",
-            f"Kullanıcı güncellendi: {', '.join(changes)}",
-            None
+            db, admin.id, "UPDATE_USER", f"Kullanıcı güncellendi: {', '.join(changes)}", None
         )
         db.commit()
         db.refresh(user)
@@ -363,7 +351,7 @@ def delete_user(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise NotFoundError("Kullanıcı")
-    
+
     if user.id == admin.id:
         raise BusinessRuleError("Kendi hesabınızı silemezsiniz")
 
@@ -380,14 +368,10 @@ def delete_user(
         )
         if other_active_admins == 0:
             raise BusinessRuleError("Sistemdeki son aktif admin kullanıcı silinemez")
-    
+
     username = user.username
     db.delete(user)
-    create_audit_log(
-        db, admin.id, "DELETE_USER",
-        f"Kullanıcı silindi: {username}",
-        None
-    )
+    create_audit_log(db, admin.id, "DELETE_USER", f"Kullanıcı silindi: {username}", None)
     db.commit()
     list_users.invalidate()
     return {"ok": True}
@@ -404,16 +388,14 @@ def reset_user_password(
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise NotFoundError("Kullanıcı")
-    
+
     password = body.get("password", "")
     if len(password) < 6:
         raise ValidationError("Şifre minimum 6 karakter olmalıdır")
-    
+
     user.password_hash = hash_password(password)
     create_audit_log(
-        db, admin.id, "RESET_PASSWORD",
-        f"Kullanıcı şifresi sıfırlandı: {user.username}",
-        None
+        db, admin.id, "RESET_PASSWORD", f"Kullanıcı şifresi sıfırlandı: {user.username}", None
     )
     db.commit()
     return {"ok": True}
@@ -432,11 +414,7 @@ def list_audit_logs(
     """Audit logları listele (son önce)"""
     offset = (page - 1) * per_page
     logs = (
-        db.query(AuditLog)
-        .order_by(AuditLog.created_at.desc())
-        .offset(offset)
-        .limit(per_page)
-        .all()
+        db.query(AuditLog).order_by(AuditLog.created_at.desc()).offset(offset).limit(per_page).all()
     )
 
     # Kullanıcı adlarını eşle
@@ -484,7 +462,7 @@ def get_system_stats(
     # basitçe son 7 günün siparişlerini çekip Python'da işleyelim (daha portatif)
     start_date = datetime.now(timezone.utc) - timedelta(days=7)
     recent_orders = db.query(Order.created_at).filter(Order.created_at >= start_date).all()
-    
+
     # Gün gün say
     counts = {}
     for i in range(6, -1, -1):
@@ -492,12 +470,12 @@ def get_system_stats(
         d_str = d.strftime("%d.%m")
         weekly_labels.append(d_str)
         counts[d_str] = 0
-    
+
     for o in recent_orders:
         d_str = o.created_at.date().strftime("%d.%m")
         if d_str in counts:
             counts[d_str] += 1
-            
+
     weekly_values = [counts[l] for l in weekly_labels]
 
     # Malzeme Dağılımı (Top 5)
@@ -557,6 +535,7 @@ class DashboardInsights(BaseModel):
 
 from app.services.predictive_ai import analyze_bottlenecks
 
+
 @router.get("/insights", response_model=DashboardInsights)
 @cached_response(ttl=120, key_prefix="dashboard_insights")  # 2 dakika cache
 def get_dashboard_insights(
@@ -568,11 +547,11 @@ def get_dashboard_insights(
     predictive_ai modülü kullanılarak yapay zeka destekli darboğaz ve yük tahminlemesi yapılır.
     """
     ai_data = analyze_bottlenecks(db)
-    
+
     return DashboardInsights(
         probability_insights=ai_data.get("probability_insights", []),
         capacity_plan=ai_data.get("capacity_plan", []),
-        overview_facts=ai_data.get("overview_facts", [])
+        overview_facts=ai_data.get("overview_facts", []),
     )
 
 
@@ -601,48 +580,68 @@ def get_kpi_trends(
     Son 7 günün KPI trend verilerini getir (Dashboard sparklines için)
     """
     from datetime import timedelta
-    
+
     today = datetime.now(timezone.utc).date()
     trends = []
-    
+
     for i in range(6, -1, -1):
         date = today - timedelta(days=i)
         date_start = datetime.combine(date, datetime.min.time(), tzinfo=timezone.utc)
         date_end = datetime.combine(date, datetime.max.time(), tzinfo=timezone.utc)
-        
+
         # O gün için sipariş sayıları
-        new_count = db.query(func.count(Order.id)).filter(
-            Order.created_at >= date_start,
-            Order.created_at <= date_end,
-            Order.status == "NEW"
-        ).scalar() or 0
-        
-        production_count = db.query(func.count(Order.id)).filter(
-            Order.created_at >= date_start,
-            Order.created_at <= date_end,
-            Order.status == "IN_PRODUCTION"
-        ).scalar() or 0
-        
-        ready_count = db.query(func.count(Order.id)).filter(
-            Order.created_at >= date_start,
-            Order.created_at <= date_end,
-            Order.status == "READY"
-        ).scalar() or 0
-        
-        delivered_count = db.query(func.count(Order.id)).filter(
-            Order.created_at >= date_start,
-            Order.created_at <= date_end,
-            Order.status == "DELIVERED"
-        ).scalar() or 0
-        
-        trends.append(KpiTrendData(
-            date=date.strftime("%d.%m"),
-            orders_new=new_count,
-            orders_production=production_count,
-            orders_ready=ready_count,
-            orders_delivered=delivered_count,
-        ))
-    
+        new_count = (
+            db.query(func.count(Order.id))
+            .filter(
+                Order.created_at >= date_start, Order.created_at <= date_end, Order.status == "NEW"
+            )
+            .scalar()
+            or 0
+        )
+
+        production_count = (
+            db.query(func.count(Order.id))
+            .filter(
+                Order.created_at >= date_start,
+                Order.created_at <= date_end,
+                Order.status == "IN_PRODUCTION",
+            )
+            .scalar()
+            or 0
+        )
+
+        ready_count = (
+            db.query(func.count(Order.id))
+            .filter(
+                Order.created_at >= date_start,
+                Order.created_at <= date_end,
+                Order.status == "READY",
+            )
+            .scalar()
+            or 0
+        )
+
+        delivered_count = (
+            db.query(func.count(Order.id))
+            .filter(
+                Order.created_at >= date_start,
+                Order.created_at <= date_end,
+                Order.status == "DELIVERED",
+            )
+            .scalar()
+            or 0
+        )
+
+        trends.append(
+            KpiTrendData(
+                date=date.strftime("%d.%m"),
+                orders_new=new_count,
+                orders_production=production_count,
+                orders_ready=ready_count,
+                orders_delivered=delivered_count,
+            )
+        )
+
     return KpiTrendResponse(trends=trends)
 
 
@@ -691,7 +690,7 @@ class SystemConfigIn(BaseModel):
     working_days: List[str] = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma"]
     holiday_policy: str = "Pazar"
     order_auto_hold_hours: int = 336
-    
+
     # Sistem Ayarları
     max_file_size_mb: int = 10
     session_timeout_minutes: int = 30
@@ -728,7 +727,7 @@ def get_system_config(
     """Sistem ayarlarını getir"""
     import json
     import os
-    
+
     config_path = "config/system_config.json"
     if os.path.exists(config_path):
         try:
@@ -737,7 +736,7 @@ def get_system_config(
                 return SystemConfigOut(**data)
         except Exception as e:
             print(f"Config load error: {e}")
-    
+
     # Default config
     return SystemConfigOut(
         shift_start="08:30",
@@ -767,26 +766,38 @@ def update_system_config(
     """Sistem ayarlarını güncelle"""
     import json
     import os
-    
+
     config_path = "config/system_config.json"
     os.makedirs("config", exist_ok=True)
-    
+
     config_data = body.model_dump()
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config_data, f, ensure_ascii=False, indent=2)
-    
+
     create_audit_log(
-        db, admin.id, "SYSTEM_CONFIG_UPDATED",
+        db,
+        admin.id,
+        "SYSTEM_CONFIG_UPDATED",
         f"Mesai: {body.shift_start}-{body.shift_end}",
         None,
     )
     db.commit()
-    
+
     return SystemConfigOut(**config_data)
 
 
 def _build_system_control_rows(config: SystemConfigOut) -> List[SystemControlRow]:
-    modules = ["Auth", "Orders", "Stations", "Inventory", "OCR", "WhatsApp", "Reports", "Analytics", "Integrations"]
+    modules = [
+        "Auth",
+        "Orders",
+        "Stations",
+        "Inventory",
+        "OCR",
+        "WhatsApp",
+        "Reports",
+        "Analytics",
+        "Integrations",
+    ]
     controls = [
         "timeout_ms",
         "retry_policy",
@@ -946,7 +957,7 @@ def get_organization_config(
     """Organizasyon bilgilerini getir"""
     import json
     import os
-    
+
     config_path = "config/organization.json"
     if os.path.exists(config_path):
         try:
@@ -955,7 +966,7 @@ def get_organization_config(
                 return OrganizationConfigOut(**data)
         except Exception as e:
             print(f"Organization config load error: {e}")
-    
+
     # Default config
     return OrganizationConfigOut(
         company_name="OptiPlan 360",
@@ -969,7 +980,7 @@ def get_organization_config(
         email="info@example.com",
         phone="+90 212 XXX XX XX",
         address="İstanbul, Türkiye",
-        tax_id="0000000000"
+        tax_id="0000000000",
     )
 
 
@@ -982,21 +993,23 @@ def update_organization_config(
     """Organizasyon bilgilerini güncelle"""
     import json
     import os
-    
+
     config_path = "config/organization.json"
     os.makedirs("config", exist_ok=True)
-    
+
     config_data = body.model_dump()
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(config_data, f, ensure_ascii=False, indent=2)
-    
+
     create_audit_log(
-        db, admin.id, "ORGANIZATION_CONFIG_UPDATED",
+        db,
+        admin.id,
+        "ORGANIZATION_CONFIG_UPDATED",
         f"Şirket: {body.company_name}",
         None,
     )
     db.commit()
-    
+
     return OrganizationConfigOut(**config_data)
 
 
@@ -1021,7 +1034,9 @@ def save_mikro_config(
     config_data = body.model_dump()
     mikro_db.save_config(config_data)
     create_audit_log(
-        db, admin.id, "MIKRO_CONFIG_UPDATED",
+        db,
+        admin.id,
+        "MIKRO_CONFIG_UPDATED",
         f"Host: {body.host}, DB: {body.database}",
         None,
     )
@@ -1042,7 +1057,9 @@ def test_mikro_connection(
     config_data = body.model_dump()
     success, message = mikro_db.test_connection(config_data)
     create_audit_log(
-        db, admin.id, "MIKRO_CONNECTION_TEST",
+        db,
+        admin.id,
+        "MIKRO_CONNECTION_TEST",
         f"Result: {'OK' if success else 'FAIL'} â€” {message}",
         None,
     )
@@ -1051,6 +1068,7 @@ def test_mikro_connection(
 
 
 # â”€â”€â”€ USER ACTIVITY & SESSION MANAGEMENT â”€â”€â”€
+
 
 @router.get("/activity/sessions", response_model=List[UserSessionOut])
 def get_user_sessions(
@@ -1077,13 +1095,15 @@ def terminate_session(
     session = db.query(UserSession).filter(UserSession.id == session_id).first()
     if not session:
         raise NotFoundError("Oturum")
-    
+
     session.was_terminated = True
     session.logout_at = datetime.now(timezone.utc)
     session.is_active = False
-    
+
     create_audit_log(
-        db, admin.id, "SESSION_TERMINATED",
+        db,
+        admin.id,
+        "SESSION_TERMINATED",
         f"User {session.user_id} session terminated",
         None,
     )
@@ -1105,21 +1125,23 @@ def get_user_activity_logs(
 ):
     """Kullanıcı aktivite loglarını sorgula"""
     query = db.query(UserActivity).order_by(UserActivity.created_at.desc())
-    
+
     if user_id:
         query = query.filter(UserActivity.user_id == user_id)
     if activity_type:
         query = query.filter(UserActivity.activity_type == activity_type)
     if resource_type:
         query = query.filter(UserActivity.resource_type == resource_type)
-    
+
     if date_from:
         from datetime import datetime as dt
+
         query = query.filter(UserActivity.created_at >= dt.fromisoformat(date_from))
     if date_to:
         from datetime import datetime as dt
+
         query = query.filter(UserActivity.created_at <= dt.fromisoformat(date_to))
-    
+
     return query.offset(offset).limit(limit).all()
 
 
@@ -1137,21 +1159,23 @@ def get_audit_records(
 ):
     """Denetim kayıtlarını sorgula (değişiklik geçmişi)"""
     query = db.query(AuditRecord).order_by(AuditRecord.timestamp.desc())
-    
+
     if user_id:
         query = query.filter(AuditRecord.user_id == user_id)
     if entity_type:
         query = query.filter(AuditRecord.entity_type == entity_type)
     if operation:
         query = query.filter(AuditRecord.operation == operation)
-    
+
     if date_from:
         from datetime import datetime as dt
+
         query = query.filter(AuditRecord.timestamp >= dt.fromisoformat(date_from))
     if date_to:
         from datetime import datetime as dt
+
         query = query.filter(AuditRecord.timestamp <= dt.fromisoformat(date_to))
-    
+
     return query.offset(offset).limit(limit).all()
 
 
@@ -1163,11 +1187,16 @@ def get_entity_audit_trail(
     _: User = Depends(require_admin),
 ):
     """Bir entitenin tüm değişiklik geçmişini getir"""
-    records = db.query(AuditRecord).filter(
-        AuditRecord.entity_type == entity_type,
-        AuditRecord.entity_id == entity_id,
-    ).order_by(AuditRecord.timestamp.asc()).all()
-    
+    records = (
+        db.query(AuditRecord)
+        .filter(
+            AuditRecord.entity_type == entity_type,
+            AuditRecord.entity_id == entity_id,
+        )
+        .order_by(AuditRecord.timestamp.asc())
+        .all()
+    )
+
     return [AuditRecordOut.from_orm(r) for r in records]
 
 
@@ -1180,25 +1209,38 @@ def get_activity_statistics(
 ):
     """Aktivite istatistikleri"""
     query = db.query(UserActivity)
-    
+
     if date_from:
         from datetime import datetime as dt
+
         query = query.filter(UserActivity.created_at >= dt.fromisoformat(date_from))
     if date_to:
         from datetime import datetime as dt
+
         query = query.filter(UserActivity.created_at <= dt.fromisoformat(date_to))
-    
+
     total = query.count()
-    by_type = db.query(UserActivity.activity_type, func.count()).filter(
-        db.query(UserActivity).statement if not date_from else None
-    ).group_by(UserActivity.activity_type).all() if date_from or date_to else []
-    
+    by_type = (
+        db.query(UserActivity.activity_type, func.count())
+        .filter(db.query(UserActivity).statement if not date_from else None)
+        .group_by(UserActivity.activity_type)
+        .all()
+        if date_from or date_to
+        else []
+    )
+
     return {
         "total_activities": total,
         "by_activity_type": dict(by_type) if by_type else {},
-        "by_resource_type": dict(query.group_by(UserActivity.resource_type).with_entities(
-            UserActivity.resource_type, func.count()
-        ).all()) if total > 0 else {},
+        "by_resource_type": (
+            dict(
+                query.group_by(UserActivity.resource_type)
+                .with_entities(UserActivity.resource_type, func.count())
+                .all()
+            )
+            if total > 0
+            else {}
+        ),
     }
 
 
@@ -1210,20 +1252,21 @@ def test_station_connection(
 ):
     """İstasyon bağlantı durumunu kontrol et"""
     from app.models import Station
-    
+
     station = db.query(Station).filter(Station.id == station_id).first()
     if not station:
         raise NotFoundError("İstasyon")
-    
+
     # Gerçek istasyon durumunu kontrol et
     # Burada ping simülasyonu yapıyoruz, test mantığı için aktifse başarılı döner
     is_online = station.active
     last_contact = station.last_scan_at
-    
+
     # Yanıt süresini hesapla (simülasyon)
     import random
+
     response_time = random.randint(20, 150) if is_online else None
-    
+
     return {
         "station_id": station_id,
         "status": "online" if is_online else "offline",
@@ -1242,30 +1285,41 @@ def get_station_detail(
     _: User = Depends(require_admin),
 ):
     """İstasyon detaylarını getir (configuration, stats, errors)"""
-    from app.models import Station, AuditLog
+    from app.models import AuditLog, Station
     from sqlalchemy import func
-    
+
     station = db.query(Station).filter(Station.id == station_id).first()
     if not station:
         raise NotFoundError("İstasyon")
-    
+
     # Gerçek istasyon istatistikleri
     today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
-    
+
     today_scans = station.scan_count_today or 0
     # SQL loglardan toplam taramayı al
-    total_scans = db.query(func.count(AuditLog.id)).filter(
-        AuditLog.entity_type == "station",
-        AuditLog.entity_id == station_id,
-    ).scalar() or 0
-    
+    total_scans = (
+        db.query(func.count(AuditLog.id))
+        .filter(
+            AuditLog.entity_type == "station",
+            AuditLog.entity_id == station_id,
+        )
+        .scalar()
+        or 0
+    )
+
     # Son hataları getir (Eğer station.id AuditLog'da entity_id string formatında depolanıyorsa)
-    recent_errors = db.query(AuditLog).filter(
-        AuditLog.entity_type == "station",
-        AuditLog.entity_id == str(station_id),
-        AuditLog.action == "error"
-    ).order_by(AuditLog.created_at.desc()).limit(10).all()
-    
+    recent_errors = (
+        db.query(AuditLog)
+        .filter(
+            AuditLog.entity_type == "station",
+            AuditLog.entity_id == str(station_id),
+            AuditLog.action == "error",
+        )
+        .order_by(AuditLog.created_at.desc())
+        .limit(10)
+        .all()
+    )
+
     return {
         "station_id": station_id,
         "station_name": station.name,
@@ -1277,7 +1331,9 @@ def get_station_detail(
             "device_id": station.device_serial_number,
             "device_model": station.device_model,
             "scan_mode": station.connection_type,
-            "installation": station.installation_date.isoformat() if station.installation_date else None,
+            "installation": (
+                station.installation_date.isoformat() if station.installation_date else None
+            ),
         },
         "stats": {
             "total_scans": total_scans,
@@ -1286,11 +1342,7 @@ def get_station_detail(
             "uptime_percentage": 98.5 if station.active else 0,
         },
         "recent_errors": [
-            {
-                "timestamp": err.created_at.isoformat(),
-                "message": err.detail,
-                "action": err.action
-            } for err in recent_errors
+            {"timestamp": err.created_at.isoformat(), "message": err.detail, "action": err.action}
+            for err in recent_errors
         ],
     }
-

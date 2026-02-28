@@ -2,42 +2,43 @@
 API v1 Router Aggregator
 Centralizes all v1 routes without changing existing router prefixes.
 """
-from fastapi import APIRouter
 
 from app.routers import (
-    auth_router,
     admin_router,
-    orders_router,
-    customers_router,
-    stations_router,
-    materials_router,
-    whatsapp_router,
-    ocr_router,
-    azure_router,
-    google_vision_router,
-    aws_textract_router,
-    telegram_ocr_router,
-    email_ocr_router,
-    scanner_device_router,
-    compliance_router,
-    sql_router,
-    crm_router,
-    payment_router,
-    integration_router,
-    mikro_router,
-    stock_cards_router,
-    orchestrator_router,
-    product_router,
-    price_tracking_router,
     ai_assistant_router,
     ai_config_router,
+    auth_router,
+    aws_textract_router,
+    azure_router,
     biesse_router,
+    compliance_router,
+    crm_router,
+    customers_router,
+    email_ocr_router,
+    google_vision_router,
+    integration_router,
+    materials_router,
+    mikro_router,
+    ocr_router,
     optiplanning_router,
+    orchestrator_router,
+    orders_router,
+    payment_router,
     portal,
+    price_tracking_router,
+    product_router,
+    scanner_device_router,
+    sql_router,
+    stations_router,
+    stock_cards_router,
+    telegram_ocr_router,
+    whatsapp_router,
 )
 from app.routers.config_router import router as _config_router
+from fastapi import APIRouter
 
 router = APIRouter()
+
 
 @router.get("/api/v1", tags=["system"])
 def v1_root():
@@ -47,6 +48,7 @@ def v1_root():
         "docs": "/docs",
         "health": "/health",
     }
+
 
 # Authentication and admin
 router.include_router(auth_router.router)
@@ -106,4 +108,5 @@ router.include_router(portal.router)
 
 # Public Tracking
 from app.routers import public_tracking_router
+
 router.include_router(public_tracking_router.router)

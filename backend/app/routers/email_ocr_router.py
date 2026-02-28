@@ -12,14 +12,13 @@ from email.message import Message
 from typing import List, Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
-from app.exceptions import BusinessRuleError
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-
 from app.auth import get_current_user
 from app.database import get_db
+from app.exceptions import BusinessRuleError
 from app.models import AuditLog, EmailOCRConfig, OCRJob, User
+from fastapi import APIRouter, BackgroundTasks, Depends
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -234,7 +233,9 @@ def fetch_now(
         )
         db.commit()
 
-        return FetchResult(success=True, created_jobs=len(job_ids), job_ids=job_ids, message="Fetch tamamlandı")
+        return FetchResult(
+            success=True, created_jobs=len(job_ids), job_ids=job_ids, message="Fetch tamamlandı"
+        )
 
     except Exception as e:
         logger.error(f"Email fetch error: {e}")

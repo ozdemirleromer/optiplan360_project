@@ -1,8 +1,23 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Numeric, TIMESTAMP, Text, Boolean, LargeBinary, Float
+import enum
+
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    Numeric,
+    String,
+    Text,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
+
 from .database import Base
-import enum
+
 
 # Veritabanı enum tipleriyle eşleşen Python enumları
 class OrderStatusEnum(str, enum.Enum):
@@ -28,6 +43,7 @@ class OpportunityStageEnum(str, enum.Enum):
     CLOSED_WON = "CLOSED_WON"
     CLOSED_LOST = "CLOSED_LOST"
 
+
 class QuoteStatusEnum(str, enum.Enum):
     DRAFT = "DRAFT"
     SENT = "SENT"
@@ -36,17 +52,20 @@ class QuoteStatusEnum(str, enum.Enum):
     EXPIRED = "EXPIRED"
     REVISED = "REVISED"
 
+
 class TaskPriorityEnum(str, enum.Enum):
     LOW = "LOW"
     MEDIUM = "MEDIUM"
     HIGH = "HIGH"
     URGENT = "URGENT"
 
+
 class TaskStatusEnum(str, enum.Enum):
     TODO = "TODO"
     IN_PROGRESS = "IN_PROGRESS"
     DONE = "DONE"
     CANCELLED = "CANCELLED"
+
 
 class ActivityTypeEnum(str, enum.Enum):
     CALL = "CALL"
@@ -55,6 +74,7 @@ class ActivityTypeEnum(str, enum.Enum):
     NOTE = "NOTE"
     TASK = "TASK"
 
+
 class SyncStatusEnum(str, enum.Enum):
     QUEUED = "QUEUED"
     RUNNING = "RUNNING"
@@ -62,10 +82,12 @@ class SyncStatusEnum(str, enum.Enum):
     FAILED = "FAILED"
     PARTIAL = "PARTIAL"
 
+
 class SyncDirectionEnum(str, enum.Enum):
     PUSH = "PUSH"
     PULL = "PULL"
     BIDIRECTIONAL = "BIDIRECTIONAL"
+
 
 class IntegrationTypeEnum(str, enum.Enum):
     MIKRO = "MIKRO"
@@ -77,49 +99,57 @@ class IntegrationTypeEnum(str, enum.Enum):
     WHATSAPP = "WHATSAPP"
     ERP = "ERP"
 
+
 # ── Tahsilat Enum Tipleri ──
 class PaymentStatusEnum(str, enum.Enum):
-    PENDING = "PENDING"          # Ödeme Bekliyor
-    PARTIAL = "PARTIAL"          # Kısmi Ödendi
-    PAID = "PAID"                # Tamamen Ödendi
-    OVERDUE = "OVERDUE"          # Vadesi Geçti
-    CANCELLED = "CANCELLED"      # İptal Edildi
+    PENDING = "PENDING"  # Ödeme Bekliyor
+    PARTIAL = "PARTIAL"  # Kısmi Ödendi
+    PAID = "PAID"  # Tamamen Ödendi
+    OVERDUE = "OVERDUE"  # Vadesi Geçti
+    CANCELLED = "CANCELLED"  # İptal Edildi
+
 
 class PaymentMethodEnum(str, enum.Enum):
-    CASH = "CASH"                # Nakit
-    CARD = "CARD"                # Kredi Kartı
-    TRANSFER = "TRANSFER"        # Havale/EFT
-    CHECK = "CHECK"              # Çek
-    DEBIT = "DEBIT"              # Cari Hesaptan
+    CASH = "CASH"  # Nakit
+    CARD = "CARD"  # Kredi Kartı
+    TRANSFER = "TRANSFER"  # Havale/EFT
+    CHECK = "CHECK"  # Çek
+    DEBIT = "DEBIT"  # Cari Hesaptan
+
 
 class ReminderTypeEnum(str, enum.Enum):
-    EMAIL = "EMAIL"              # E-posta hatırlatması
-    SMS = "SMS"                  # SMS hatırlatması
-    IN_APP = "IN_APP"            # Uygulama içi hatırlatma
-    LETTER = "LETTER"            # Mektup/Faks
+    EMAIL = "EMAIL"  # E-posta hatırlatması
+    SMS = "SMS"  # SMS hatırlatması
+    IN_APP = "IN_APP"  # Uygulama içi hatırlatma
+    LETTER = "LETTER"  # Mektup/Faks
+
 
 class ReminderStatusEnum(str, enum.Enum):
-    PENDING = "PENDING"          # Gönderilmesi bekleniyor
-    SENT = "SENT"                # Gönderildi
-    READ = "READ"                # Okundu
-    IGNORED = "IGNORED"          # Göz ardı edildi
-    BOUNCED = "BOUNCED"          # Geri döndü (invalid e-posta vb.)
+    PENDING = "PENDING"  # Gönderilmesi bekleniyor
+    SENT = "SENT"  # Gönderildi
+    READ = "READ"  # Okundu
+    IGNORED = "IGNORED"  # Göz ardı edildi
+    BOUNCED = "BOUNCED"  # Geri döndü (invalid e-posta vb.)
+
 
 class DealerTypeEnum(str, enum.Enum):
-    DEALER = "DEALER"            # Bayi
-    B2B = "B2B"                  # Kurumsal Müşteri
-    B2C = "B2C"                  # Bireysel Müşteri
-    PROJECT = "PROJECT"          # Proje Müşterisi
-    MANUFACTURER = "MANUFACTURER" # Üretici
+    DEALER = "DEALER"  # Bayi
+    B2B = "B2B"  # Kurumsal Müşteri
+    B2C = "B2C"  # Bireysel Müşteri
+    PROJECT = "PROJECT"  # Proje Müşterisi
+    MANUFACTURER = "MANUFACTURER"  # Üretici
+
 
 class PartGroupEnum(str, enum.Enum):
     GOVDE = "GOVDE"
     ARKALIK = "ARKALIK"
 
+
 class GrainDirectionEnum(str, enum.Enum):
     ZERO = "0-Material"
     BOYUNA = "1-Boyuna"
     ENINE = "2-Enine"
+
 
 class Customer(Base):
     __tablename__ = "customers"
@@ -133,6 +163,7 @@ class Customer(Base):
     deleted_at = Column(TIMESTAMP(timezone=True), nullable=True)  # Soft-delete support
     orders = relationship("Order", back_populates="customer")
 
+
 class Station(Base):
     __tablename__ = "stations"
     id = Column(Integer, primary_key=True, index=True)
@@ -142,7 +173,7 @@ class Station(Base):
     last_scan_at = Column(TIMESTAMP(timezone=True))
     scan_count_today = Column(Integer, default=0)
     istasyon_durumu = Column(String, default="Hazır")
-    
+
     # Cihaz Tanımlama Alanları
     device_type = Column(String)  # Mobil Cihaz, El Terminali, Entegre Okuyucu, Masaüstü PC
     device_model = Column(String)  # Cihaz modeli (örn: Zebra DS2208)
@@ -151,6 +182,7 @@ class Station(Base):
     connection_type = Column(String)  # USB, Bluetooth, WiFi, Ethernet, Webcam
     installation_date = Column(TIMESTAMP(timezone=True))  # Kurulum tarihi
     last_maintenance_date = Column(TIMESTAMP(timezone=True))  # Son bakım tarihi
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -208,6 +240,7 @@ class DeviceOCRConfig(Base):
     value = Column(Text)
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
 
+
 class Part(Base):
     __tablename__ = "parts"
     id = Column(Integer, primary_key=True, index=True)
@@ -226,6 +259,7 @@ class Part(Base):
     description = Column(Text)
     order = relationship("Order", back_populates="parts_legacy")
 
+
 class StatusLog(Base):
     __tablename__ = "status_logs"
     id = Column(Integer, primary_key=True, index=True)
@@ -235,12 +269,14 @@ class StatusLog(Base):
     log_message = Column(Text)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
+
 class Log(Base):
     __tablename__ = "logs"
     id = Column(Integer, primary_key=True, index=True)
     level = Column(String, nullable=False)
     message = Column(Text, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
 
 class Message(Base):
     __tablename__ = "messages"
@@ -263,41 +299,44 @@ class Message(Base):
 # OCR MODELLERİ
 # ═══════════════════════════════════════════════════
 
+
 class OCRJob(Base):
     __tablename__ = "ocr_jobs"
-    
+
     id = Column(String, primary_key=True, index=True)
-    status = Column(String, nullable=False, default="PENDING")  # PENDING, PROCESSING, COMPLETED, FAILED, ORDER_CREATED
-    
+    status = Column(
+        String, nullable=False, default="PENDING"
+    )  # PENDING, PROCESSING, COMPLETED, FAILED, ORDER_CREATED
+
     # Dosya bilgileri
     original_filename = Column(String)
     content_type = Column(String)
     file_size = Column(Integer)
     image_data = Column(LargeBinary)  # raw bytes
-    
+
     # OCR sonuçları
     extracted_text = Column(Text)
     confidence = Column(Numeric(3, 2), default=0.0)
-    
+
     # Müşteri eşleştirme
     phone = Column(String)
     customer_id = Column(Integer, ForeignKey("customers.id"))
     customer_match_confidence = Column(Numeric(3, 2))
-    
+
     # Sipariş oluşturma
     order_id = Column(Integer, ForeignKey("orders.id"))
-    
+
     # Notlar
     notes = Column(Text)
     error_message = Column(Text)
-    
+
     # Kullanıcı
     uploaded_by_id = Column(Integer, ForeignKey("users.id"))
-    
+
     # Zamanlar
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     completed_at = Column(TIMESTAMP(timezone=True))
-    
+
     # İlişkiler
     lines = relationship("OCRLine", back_populates="job", cascade="all, delete-orphan")
     customer = relationship("Customer")
@@ -306,32 +345,32 @@ class OCRJob(Base):
 
 class OCRLine(Base):
     __tablename__ = "ocr_lines"
-    
+
     id = Column(String, primary_key=True, index=True)
     ocr_job_id = Column(String, ForeignKey("ocr_jobs.id"), nullable=False)
-    
+
     # Satır bilgileri
     line_number = Column(Integer, nullable=False)
     text = Column(Text, nullable=False)
     confidence = Column(Numeric(3, 2), default=0.0)
-    
+
     # Validasyon
     is_valid = Column(Boolean, default=False)
     validation_error = Column(String)
-    
+
     # Parse edilmiş veri (JSON)
     parsed_data = Column(Text)  # JSON: {"boy": 700, "en": 400, "adet": 2}
-    
+
     # İlişkiler
     job = relationship("OCRJob", back_populates="lines")
 
 
 class OrderPart(Base):
     __tablename__ = "order_parts"
-    
+
     id = Column(String, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    
+
     # New flow fields (used by orders router + export/import)
     part_group = Column(String)
     boy_mm = Column(Numeric(10, 2))
@@ -352,7 +391,7 @@ class OrderPart(Base):
     adet = Column(Integer, default=1)
     grain = Column(String, default="0-Material")
     info = Column(Text)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     order = relationship("Order", back_populates="parts")
 
@@ -361,28 +400,29 @@ class OrderPart(Base):
 # WHATSAPP MODELLERİ
 # ═══════════════════════════════════════════════════
 
+
 class WhatsAppMessage(Base):
     __tablename__ = "whatsapp_messages"
-    
+
     id = Column(String, primary_key=True, index=True)
     to_phone = Column(String, nullable=False)
     message = Column(Text, nullable=False)
     status = Column(String, nullable=False, default="PENDING")  # PENDING, SENT, FAILED
     waba_message_id = Column(String)
-    
+
     order_id = Column(Integer, ForeignKey("orders.id"))
     order_ts_code = Column(String)
-    
+
     sent_by_id = Column(Integer, ForeignKey("users.id"))
     sent_by_name = Column(String)
     sent_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    
+
     error = Column(Text)
 
 
 class WhatsAppSetting(Base):
     __tablename__ = "whatsapp_settings"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False)
     value = Column(Text)
@@ -394,7 +434,7 @@ class AuditMixin:
     """
     Mixin providing audit trail columns for data models.
     Add to models that need track record of who created/updated them.
-    
+
     Columns:
     - created_at: Timestamp when record was created
     - updated_at: Timestamp when record was last updated
@@ -402,16 +442,19 @@ class AuditMixin:
     - updated_by: User ID who last updated the record
     - deleted_at: Timestamp when record was soft-deleted (null = active)
     """
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
-    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
-    created_by = Column(Integer, ForeignKey('users.id'), nullable=True)
-    updated_by = Column(Integer, ForeignKey('users.id'), nullable=True)
+    updated_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False
+    )
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    updated_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     deleted_at = Column(TIMESTAMP(timezone=True), nullable=True)  # Soft-delete support
 
 
 class User(Base):
     __tablename__ = "users"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
     email = Column(String, unique=True, nullable=False)
@@ -426,19 +469,19 @@ class User(Base):
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"
-    
+
     id = Column(String, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
     order_id = Column(Integer, ForeignKey("orders.id"))
     action = Column(String, nullable=False)
     detail = Column(Text)
-    
+
     # Detaylı değişiklik kaydı
     table_name = Column(String)
     record_id = Column(String)
     old_values = Column(Text)  # JSON
     new_values = Column(Text)  # JSON
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     order = relationship("Order", back_populates="audit_logs")
 
@@ -447,9 +490,10 @@ class AuditLog(Base):
 # AZURE MODELLERİ
 # ═══════════════════════════════════════════════════
 
+
 class AzureConfig(Base):
     __tablename__ = "azure_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -459,7 +503,7 @@ class AzureConfig(Base):
 
 class GoogleVisionConfig(Base):
     __tablename__ = "google_vision_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -469,7 +513,7 @@ class GoogleVisionConfig(Base):
 
 class AWSTextractConfig(Base):
     __tablename__ = "aws_textract_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -481,8 +525,10 @@ class AWSTextractConfig(Base):
 # CRM MODÜLLERİ — Cari, Kontak, Fırsat, Teklif, Görev, Aktivite
 # ═══════════════════════════════════════════════════════════════
 
+
 class CRMAccount(Base):
     """Cari hesap (firma/bireysel müşteri)"""
+
     __tablename__ = "crm_accounts"
 
     id = Column(String, primary_key=True, index=True)
@@ -506,7 +552,7 @@ class CRMAccount(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_active = Column(Boolean, default=True)
     mikro_cari_kod = Column(String, nullable=True, index=True)  # Mikro cari kodu
-    
+
     # Mobilya Üretimi İçin Özel Alanlar
     dealer_type = Column(Enum(DealerTypeEnum), nullable=True)  # Bayi tipi
     installation_service_available = Column(Boolean, default=False)  # Montaj hizmeti
@@ -516,7 +562,7 @@ class CRMAccount(Base):
     preferred_colors = Column(Text, nullable=True)  # JSON: ["Beyaz", "Antrasit", "Meşe"]
     min_order_amount = Column(Float, nullable=True)  # Minimum sipariş tutarı
     discount_rate = Column(Float, default=0)  # Özel indirim oranı (%)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
@@ -528,6 +574,7 @@ class CRMAccount(Base):
 
 class CRMContact(Base):
     """İletişim kişisi"""
+
     __tablename__ = "crm_contacts"
 
     id = Column(String, primary_key=True, index=True)
@@ -550,6 +597,7 @@ class CRMContact(Base):
 
 class CRMOpportunity(Base):
     """Satış fırsatı (pipeline)"""
+
     __tablename__ = "crm_opportunities"
 
     id = Column(String, primary_key=True, index=True)
@@ -566,7 +614,7 @@ class CRMOpportunity(Base):
     lost_reason = Column(Text, nullable=True)
     source = Column(String, nullable=True)  # WEB, REFERRAL, COLD_CALL, vb.
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)   # Siparişe dönüşünce
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)  # Siparişe dönüşünce
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
@@ -580,6 +628,7 @@ class CRMOpportunity(Base):
 
 class CRMQuote(Base):
     """Teklif"""
+
     __tablename__ = "crm_quotes"
 
     id = Column(String, primary_key=True, index=True)
@@ -611,6 +660,7 @@ class CRMQuote(Base):
 
 class CRMQuoteLine(Base):
     """Teklif satırı"""
+
     __tablename__ = "crm_quote_lines"
 
     id = Column(String, primary_key=True, index=True)
@@ -625,7 +675,7 @@ class CRMQuoteLine(Base):
     tax_rate = Column(Float, default=20)
     line_total = Column(Float, default=0)
     mikro_stok_kod = Column(String, nullable=True)  # Mikro stok kodu eşlemesi
-    
+
     # Mobilya Üretimi İçin Ürün Detayları
     material_name = Column(String, nullable=True)  # Malzeme (MDF, Lam, Suntalam)
     color = Column(String, nullable=True)  # Renk
@@ -634,7 +684,7 @@ class CRMQuoteLine(Base):
     grain_direction = Column(String, nullable=True)  # Damar yönü (0-Material, 1-Boyuna, 2-Enine)
     band_included = Column(Boolean, default=False)  # Bantlama dahil mi?
     drilling_included = Column(Boolean, default=False)  # Delme dahil mi?
-    
+
     notes = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
@@ -643,6 +693,7 @@ class CRMQuoteLine(Base):
 
 class CRMTask(Base):
     """CRM Görevi"""
+
     __tablename__ = "crm_tasks"
 
     id = Column(String, primary_key=True, index=True)
@@ -664,6 +715,7 @@ class CRMTask(Base):
 
 class CRMActivity(Base):
     """CRM Aktivitesi (arama, toplantı, not, vb.)"""
+
     __tablename__ = "crm_activities"
 
     id = Column(String, primary_key=True, index=True)
@@ -683,6 +735,7 @@ class CRMActivity(Base):
 
 class CRMNote(Base):
     """Genel notlar (herhangi bir CRM kaydına bağlanabilir)"""
+
     __tablename__ = "crm_notes"
 
     id = Column(String, primary_key=True, index=True)
@@ -698,19 +751,21 @@ class CRMNote(Base):
 # TAHSİLAT MODÜLLERİ — Fatura, Ödeme, Ödeme Sözü Takibi
 # ═══════════════════════════════════════════════════════════════
 
+
 class Invoice(Base):
     """Fatura Tablosu"""
+
     __tablename__ = "invoices"
 
     id = Column(String, primary_key=True, index=True)
     invoice_number = Column(String, unique=True, nullable=False, index=True)
     invoice_type = Column(String, default="SALES", nullable=False)  # SALES, PROFORMA, RETURN
-    
+
     # İlişkiler
     account_id = Column(String, ForeignKey("crm_accounts.id"), nullable=False, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=True, index=True)
     quote_id = Column(String, ForeignKey("crm_quotes.id"), nullable=True)
-    
+
     # Finansal Bilgiler
     subtotal = Column(Float, default=0, nullable=False)
     tax_rate = Column(Float, default=20, nullable=False)
@@ -720,24 +775,28 @@ class Invoice(Base):
     paid_amount = Column(Float, default=0, nullable=False)
     remaining_amount = Column(Float, default=0, nullable=False)
     currency = Column(String, default="TRY")
-    
+
     # Durum ve Tarihler
     status = Column(Enum(PaymentStatusEnum), default=PaymentStatusEnum.PENDING, nullable=False)
     issue_date = Column(TIMESTAMP(timezone=True), server_default=func.now())
     due_date = Column(TIMESTAMP(timezone=True), nullable=True)
     payment_completed_at = Column(TIMESTAMP(timezone=True), nullable=True)
-    
+
     # Entegrasyon
     mikro_invoice_id = Column(String, nullable=True, index=True)
-    
+
     # Ödeme Hatırlatıcısı Bilgileri
     reminder_type = Column(Enum(ReminderTypeEnum), nullable=True)  # Hatırlatıcı türü
-    reminder_sent = Column(Boolean, default=False)  # Hatırlatıcı gönderildi mi?  
+    reminder_sent = Column(Boolean, default=False)  # Hatırlatıcı gönderildi mi?
     reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)  # Gönderilme tarihi
-    reminder_status = Column(Enum(ReminderStatusEnum), default=ReminderStatusEnum.PENDING, nullable=True)  # Hatırlatıcı durumu
-    next_reminder_date = Column(TIMESTAMP(timezone=True), nullable=True)  # Sonraki hatırlatma tarihi
+    reminder_status = Column(
+        Enum(ReminderStatusEnum), default=ReminderStatusEnum.PENDING, nullable=True
+    )  # Hatırlatıcı durumu
+    next_reminder_date = Column(
+        TIMESTAMP(timezone=True), nullable=True
+    )  # Sonraki hatırlatma tarihi
     reminder_count = Column(Integer, default=0)  # Kaç kez hatırlatılmış
-    
+
     notes = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
@@ -745,36 +804,39 @@ class Invoice(Base):
 
     # Relationships
     payments = relationship("Payment", back_populates="invoice", cascade="all, delete-orphan")
-    payment_promises = relationship("PaymentPromise", back_populates="invoice", cascade="all, delete-orphan")
+    payment_promises = relationship(
+        "PaymentPromise", back_populates="invoice", cascade="all, delete-orphan"
+    )
 
 
 class Payment(Base):
     """Ödeme Tablosu"""
+
     __tablename__ = "payments"
 
     id = Column(String, primary_key=True, index=True)
     payment_number = Column(String, unique=True, nullable=False, index=True)
-    
+
     # İlişkiler
     invoice_id = Column(String, ForeignKey("invoices.id"), nullable=False, index=True)
     account_id = Column(String, ForeignKey("crm_accounts.id"), nullable=False, index=True)
-    
+
     # Ödeme Detayları
     payment_method = Column(Enum(PaymentMethodEnum), nullable=False)
     amount = Column(Float, nullable=False)
     currency = Column(String, default="TRY")
     payment_date = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    
+
     # Ödeme Yöntemi Detayları
-    check_number = Column(String, nullable=True)        # Çek numarası
+    check_number = Column(String, nullable=True)  # Çek numarası
     check_date = Column(TIMESTAMP(timezone=True), nullable=True)  # Çek vadesi
-    check_bank = Column(String, nullable=True)          # Çek bankası
-    card_last_4 = Column(String, nullable=True)         # Kart son 4 hane
-    transaction_ref = Column(String, nullable=True)     # Havale/EFT referansı
-    
+    check_bank = Column(String, nullable=True)  # Çek bankası
+    card_last_4 = Column(String, nullable=True)  # Kart son 4 hane
+    transaction_ref = Column(String, nullable=True)  # Havale/EFT referansı
+
     # Entegrasyon
     mikro_payment_id = Column(String, nullable=True)
-    
+
     notes = Column(Text, nullable=True)
     is_cancelled = Column(Boolean, default=False)
     cancelled_at = Column(TIMESTAMP(timezone=True), nullable=True)
@@ -788,33 +850,38 @@ class Payment(Base):
 
 class PaymentPromise(Base):
     """Ödeme Sözü Takibi"""
+
     __tablename__ = "payment_promises"
 
     id = Column(String, primary_key=True, index=True)
-    
+
     # İlişkiler
     invoice_id = Column(String, ForeignKey("invoices.id"), nullable=False, index=True)
     account_id = Column(String, ForeignKey("crm_accounts.id"), nullable=False, index=True)
-    
+
     # Söz Detayları
     promised_amount = Column(Float, nullable=False)
-    promise_date = Column(TIMESTAMP(timezone=True), nullable=False, index=True)  # Ödeme sözü verilen tarih
+    promise_date = Column(
+        TIMESTAMP(timezone=True), nullable=False, index=True
+    )  # Ödeme sözü verilen tarih
     payment_method = Column(Enum(PaymentMethodEnum), nullable=True)  # Ödenecek yöntem
-    
+
     # Durum
     status = Column(String, default="PENDING", nullable=False)  # PENDING, KEPT, BROKEN, POSTPONED
     is_fulfilled = Column(Boolean, default=False)
     fulfilled_at = Column(TIMESTAMP(timezone=True), nullable=True)
-    fulfilled_payment_id = Column(String, ForeignKey("payments.id"), nullable=True)  # Gerçekleşen ödeme
-    
+    fulfilled_payment_id = Column(
+        String, ForeignKey("payments.id"), nullable=True
+    )  # Gerçekleşen ödeme
+
     # Hatırlatma
     reminder_sent = Column(Boolean, default=False)
     reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)
-    
+
     # İletişim Notları
-    contact_person = Column(String, nullable=True)      # Görüşülen kişi
-    contact_note = Column(Text, nullable=True)          # Görüşme notu
-    
+    contact_person = Column(String, nullable=True)  # Görüşülen kişi
+    contact_note = Column(Text, nullable=True)  # Görüşme notu
+
     notes = Column(Text, nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
@@ -828,8 +895,10 @@ class PaymentPromise(Base):
 # ENTEGRASYON MODÜLLERİ — Mikro Senkron / Outbox-Inbox Pattern
 # ═══════════════════════════════════════════════════════════════
 
+
 class IntegrationEntityMap(Base):
     """OptiPlan ↔ Mikro entity eşleme tablosu"""
+
     __tablename__ = "integration_entity_map"
 
     id = Column(String, primary_key=True, index=True)
@@ -846,6 +915,7 @@ class IntegrationEntityMap(Base):
 
 class IntegrationSyncJob(Base):
     """Senkronizasyon iş kaydı"""
+
     __tablename__ = "integration_sync_jobs"
 
     id = Column(String, primary_key=True, index=True)
@@ -866,6 +936,7 @@ class IntegrationSyncJob(Base):
 
 class IntegrationOutbox(Base):
     """Giden senkron kuyruğu (OptiPlan → Mikro)"""
+
     __tablename__ = "integration_outbox"
 
     id = Column(String, primary_key=True, index=True)
@@ -884,6 +955,7 @@ class IntegrationOutbox(Base):
 
 class IntegrationInbox(Base):
     """Gelen senkron kuyruğu (Mikro → OptiPlan)"""
+
     __tablename__ = "integration_inbox"
 
     id = Column(String, primary_key=True, index=True)
@@ -902,6 +974,7 @@ class IntegrationInbox(Base):
 
 class IntegrationError(Base):
     """Entegrasyon hata kaydı"""
+
     __tablename__ = "integration_errors"
 
     id = Column(String, primary_key=True, index=True)
@@ -919,6 +992,7 @@ class IntegrationError(Base):
 
 class IntegrationAudit(Base):
     """Entegrasyon denetim izi"""
+
     __tablename__ = "integration_audit"
 
     id = Column(String, primary_key=True, index=True)
@@ -933,6 +1007,7 @@ class IntegrationAudit(Base):
 
 class IntegrationSettings(Base):
     """Entegrasyon ayarları"""
+
     __tablename__ = "integration_settings"
 
     id = Column(String, primary_key=True, index=True)
@@ -948,32 +1023,33 @@ class IntegrationSettings(Base):
 
 class StockCard(Base):
     """Mikro stok kartı"""
+
     __tablename__ = "stock_cards"
 
     id = Column(String, primary_key=True, index=True)
     stock_code = Column(String, unique=True, index=True, nullable=False)  # Mikro stok kodu
     stock_name = Column(String, nullable=False)  # Malzeme adı
     unit = Column(String, nullable=True)  # Birim (m², m³, kg, vb.)
-    
+
     # Fiyat bilgileri
     purchase_price = Column(Numeric(12, 2), nullable=True)  # Alış fiyatı
     sale_price = Column(Numeric(12, 2), nullable=True)  # Satış fiyatı
-    
+
     # Stok miktarları
     total_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Toplam miktar
     available_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Uygun miktar
     reserved_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Rezerve miktar
-    
+
     # Depo bilgisi
     warehouse_location = Column(String, nullable=True)  # Depo konumu
-    
+
     # Özellikleri
     thickness = Column(String, nullable=True)  # Kalınlık (18mm vb.)
     color = Column(String, nullable=True)  # Renk
-    
+
     # Durumu
     is_active = Column(Boolean, default=True, nullable=False)
-    
+
     # Meta
     last_sync_date = Column(TIMESTAMP(timezone=True), nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
@@ -985,21 +1061,22 @@ class StockCard(Base):
 
 class StockMovement(Base):
     """Stok hareket kaydı (Mikro'dan senkronize)"""
+
     __tablename__ = "stock_movements"
 
     id = Column(String, primary_key=True, index=True)
     stock_code = Column(String, ForeignKey("stock_cards.stock_code"), nullable=False)
-    
+
     movement_type = Column(String, nullable=False)  # ENTRY, EXIT, ADJUSTMENT, TRANSFER
     quantity = Column(Numeric(12, 2), nullable=False)
     unit_price = Column(Numeric(12, 2), nullable=True)
     total_amount = Column(Numeric(12, 2), nullable=True)
-    
+
     reference_document = Column(String, nullable=True)  # Referans belge (Sip/Fatura vb.)
     reference_id = Column(String, nullable=True)  # Referans ID
-    
+
     description = Column(Text, nullable=True)
-    
+
     movement_date = Column(TIMESTAMP(timezone=True), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -1010,111 +1087,126 @@ class StockMovement(Base):
 # KULLANICI AKTİVİTE & OTURUM YÖNETİMİ MODELLERİ
 # ═══════════════════════════════════════════════════════════════
 
+
 class UserSession(Base):
     """Kullanıcı oturum kaydı (login/logout tracking)"""
+
     __tablename__ = "user_sessions"
-    
+
     id = Column(String, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
-    
+
     # Oturum detayları
     ip_address = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)  # Browser/device info
     device_type = Column(String, nullable=True)  # WEB, MOBILE, API, etc.
     location = Column(String, nullable=True)  # Geo-location (if available)
-    
+
     # Saatler
     login_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False)
     logout_at = Column(TIMESTAMP(timezone=True), nullable=True)
     last_activity_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    
+
     # Durum
     is_active = Column(Boolean, default=True)
     was_terminated = Column(Boolean, default=False)  # Force logout
-    
+
     # Meta
     session_token = Column(String, unique=True, nullable=True, index=True)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
 
 class UserActivity(Base):
     """Kullanıcı aktivite kaydı (CREATE, UPDATE, DELETE, LOGIN, LOGOUT, etc.)"""
+
     __tablename__ = "user_activities"
-    
+
     id = Column(String, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     session_id = Column(String, ForeignKey("user_sessions.id"), nullable=True)
-    
+
     # Aktivite bilgileri
-    activity_type = Column(String, nullable=False, index=True)  # LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW, EXPORT, IMPORT, etc.
-    resource_type = Column(String, nullable=False, index=True)  # order, user, station, config, invoice, etc.
+    activity_type = Column(
+        String, nullable=False, index=True
+    )  # LOGIN, LOGOUT, CREATE, UPDATE, DELETE, VIEW, EXPORT, IMPORT, etc.
+    resource_type = Column(
+        String, nullable=False, index=True
+    )  # order, user, station, config, invoice, etc.
     resource_id = Column(String, nullable=True, index=True)  # Which order/user/etc was affected
     resource_name = Column(String, nullable=True)  # e.g., "Order #123", "User John"
-    
+
     # Detaylar
     description = Column(Text, nullable=True)  # Activity description
     changes_from = Column(Text, nullable=True)  # JSON: old values
     changes_to = Column(Text, nullable=True)  # JSON: new values
-    
+
     # Request bilgileri
     ip_address = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)
     method = Column(String, nullable=True)  # GET, POST, PUT, DELETE
     endpoint = Column(String, nullable=True)  # API endpoint used
-    
+
     # Sonuç
     status = Column(String, nullable=False, default="SUCCESS")  # SUCCESS, FAILED, PARTIAL
     error_message = Column(Text, nullable=True)
-    
+
     # Zaman
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True)
+    created_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True
+    )
     duration_ms = Column(Integer, nullable=True)  # Operation duration
 
 
 class AuditRecord(Base):
     """Detaylı denetim kaydı (audit trail with change tracking)"""
+
     __tablename__ = "audit_records"
-    
+
     id = Column(String, primary_key=True, index=True)
-    
+
     # Who
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
     user_name = Column(String, nullable=True)
-    
+
     # When
-    timestamp = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True)
-    
+    timestamp = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True
+    )
+
     # What
     entity_type = Column(String, nullable=False, index=True)  # order, customer, invoice, user, etc.
     entity_id = Column(String, nullable=False, index=True)
     entity_name = Column(String, nullable=True)  # Human-readable entity name
-    
+
     # Operation
     operation = Column(String, nullable=False)  # CREATE, READ, UPDATE, DELETE
-    
+
     # Changes (field-level tracking)
     field_name = Column(String, nullable=True)  # Which field changed
     old_value = Column(Text, nullable=True)  # JSON-serialized old value
     new_value = Column(Text, nullable=True)  # JSON-serialized new value
-    
+
     # Context
     reason = Column(Text, nullable=True)  # Why was it changed?
     ip_address = Column(String, nullable=True)
     user_agent = Column(String, nullable=True)
-    
+
     # Result
     success = Column(Boolean, default=True)
     error_message = Column(Text, nullable=True)
-    
+
     # Indexing for common queries
-    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True)
+    created_at = Column(
+        TIMESTAMP(timezone=True), server_default=func.now(), nullable=False, index=True
+    )
 
 
 # ═══════════════════════════════════════════════════════════════
 # ÜRÜN MODELİ — Master Data + Spec + Supplier + SKU
 # ═══════════════════════════════════════════════════════════════
+
 
 class IncomingSpecStatusEnum(str, enum.Enum):
     PENDING = "PENDING"
@@ -1125,6 +1217,7 @@ class IncomingSpecStatusEnum(str, enum.Enum):
 
 class Brand(Base):
     """Marka / tedarikçi firma"""
+
     __tablename__ = "brands"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1139,6 +1232,7 @@ class Brand(Base):
 
 class Color(Base):
     """Renk tanımı"""
+
     __tablename__ = "colors"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1152,6 +1246,7 @@ class Color(Base):
 
 class ProductType(Base):
     """Ürün tipi (MDF, Lam, Suntalam, vb.)"""
+
     __tablename__ = "product_types"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1166,6 +1261,7 @@ class ProductType(Base):
 
 class MaterialSpec(Base):
     """Firma bağımsız malzeme özellik seti"""
+
     __tablename__ = "material_specs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1191,6 +1287,7 @@ class MaterialSpec(Base):
 
 class SupplierItem(Base):
     """Firma varyantı (aynı spec'in marka bazlı versiyonu)"""
+
     __tablename__ = "supplier_items"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1210,6 +1307,7 @@ class SupplierItem(Base):
 
 class Item(Base):
     """SKU — satışa hazır ürün kartı"""
+
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1230,6 +1328,7 @@ class Item(Base):
 
 class IncomingSpec(Base):
     """OptiPlanning'den gelen firma bilgisi olmayan satırlar"""
+
     __tablename__ = "incoming_specs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1242,7 +1341,9 @@ class IncomingSpec(Base):
     width_cm = Column(Numeric(10, 2), nullable=True)
     height_cm = Column(Numeric(10, 2), nullable=True)
     spec_hash = Column(String, nullable=True, index=True)
-    status = Column(Enum(IncomingSpecStatusEnum), default=IncomingSpecStatusEnum.PENDING, nullable=False)
+    status = Column(
+        Enum(IncomingSpecStatusEnum), default=IncomingSpecStatusEnum.PENDING, nullable=False
+    )
     chosen_brand_id = Column(Integer, ForeignKey("brands.id"), nullable=True)
     chosen_item_id = Column(Integer, ForeignKey("items.id"), nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -1252,6 +1353,7 @@ class IncomingSpec(Base):
 
 class ProductRequest(Base):
     """NO_MATCH durumunda ürün talebi"""
+
     __tablename__ = "product_requests"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -1274,6 +1376,7 @@ class ProductRequest(Base):
 # ORCHESTRATOR JOB YÖNETİMİ
 # ═══════════════════════════════════════════════════════════════
 
+
 class OptiJobStateEnum(str, enum.Enum):
     NEW = "NEW"
     PREPARED = "PREPARED"
@@ -1286,13 +1389,16 @@ class OptiJobStateEnum(str, enum.Enum):
     HOLD = "HOLD"
     FAILED = "FAILED"
 
+
 class OptiModeEnum(str, enum.Enum):
     A = "A"
     B = "B"
     C = "C"
 
+
 class OptiJob(Base):
     """Orchestrator job kaydı — backend görünürlüğü için"""
+
     __tablename__ = "opti_jobs"
 
     id = Column(String, primary_key=True, index=True)
@@ -1314,6 +1420,7 @@ class OptiJob(Base):
 
 class OptiAuditEvent(Base):
     """Orchestrator job denetim olayı"""
+
     __tablename__ = "opti_audit_events"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -1328,6 +1435,7 @@ class OptiAuditEvent(Base):
 
 # ── Price Tracking Modelleri ──
 
+
 class PriceJobStatusEnum(str, enum.Enum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"
@@ -1337,6 +1445,7 @@ class PriceJobStatusEnum(str, enum.Enum):
 
 class PriceUploadJob(Base):
     """Fiyat listesi yükleme işi"""
+
     __tablename__ = "price_upload_jobs"
 
     id = Column(String, primary_key=True, index=True)
@@ -1357,6 +1466,7 @@ class PriceUploadJob(Base):
 
 class PriceItem(Base):
     """Fiyat listesinden çıkarılan ürün satırı"""
+
     __tablename__ = "price_items"
 
     id = Column(String, primary_key=True, index=True)

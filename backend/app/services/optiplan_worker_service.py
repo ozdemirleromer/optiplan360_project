@@ -14,6 +14,8 @@ Circuit Breaker:
   MAX_CONSECUTIVE_FAILURES ardisik hata -> worker durur.
   Admin /jobs/worker/reset endpoint'i ile sifirlanir.
 """
+
+import importlib.util
 import json
 import logging
 import os
@@ -21,7 +23,6 @@ import platform
 import subprocess
 import sys
 import threading
-import importlib.util
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -29,7 +30,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
-from ..models import OptiJob, OptiAuditEvent, OptiJobStateEnum
+from ..models import OptiAuditEvent, OptiJob, OptiJobStateEnum
 from . import tracking_folder_service as tracking
 
 logger = logging.getLogger(__name__)
@@ -39,6 +40,7 @@ OPTIPLAN_IMPORT_DIR = os.environ.get(
     "OPTIPLAN_IMPORT_DIR",
     r"C:\Biesse\OptiPlanning\ImpFile",
 )
+
 
 def _resolve_professional_run_script() -> str:
     env_path = os.environ.get("OPTIPLAN_PROFESSIONAL_SCRIPT", "").strip()
@@ -79,7 +81,9 @@ _last_run_at: Optional[datetime] = None
 _last_error: Optional[str] = None
 
 
-def _add_audit(db: Session, job_id: str, event_type: str, message: str, details: dict | None = None):
+def _add_audit(
+    db: Session, job_id: str, event_type: str, message: str, details: dict | None = None
+):
     event = OptiAuditEvent(
         job_id=job_id,
         event_type=event_type,
@@ -154,7 +158,10 @@ def _run_professional(xlsx_path: str, timeout_s: int = SUBPROCESS_TIMEOUT_S) -> 
     """
     forced = os.environ.get("OPTIPLAN_FORCE_WORKER", "").strip() == "1"
     if not forced and platform.system().lower() != "windows":
-        return False, "Worker sadece Windows ortaminda calisabilir (pywinauto gerekli). Job HOLD'a alinacak."
+        return (
+            False,
+            "Worker sadece Windows ortaminda calisabilir (pywinauto gerekli). Job HOLD'a alinacak.",
+        )
 
     if not os.path.exists(PROFESSIONAL_RUN_SCRIPT):
         return False, f"Script bulunamadi: {PROFESSIONAL_RUN_SCRIPT}"
@@ -165,8 +172,10 @@ def _run_professional(xlsx_path: str, timeout_s: int = SUBPROCESS_TIMEOUT_S) -> 
     cmd = [
         sys.executable,
         PROFESSIONAL_RUN_SCRIPT,
-        "--xlsx", xlsx_path,
-        "--timeout", "60",
+        "--xlsx",
+        xlsx_path,
+        "--timeout",
+        "60",
         "--skip-preflight",
         "--skip-optimize",
         "--skip-ui-map",
@@ -333,7 +342,12 @@ def poll_and_run_once() -> dict:
                 }
         else:
             # Docker/Linux: XLSX hazir, pywinauto yok → OPTI_DONE (kullanici elle aktaracak)
-            _finalize_job(db, job, True, f"XLSX hazir: {xlsx_path}. pywinauto ortami yok, kullanici elle aktaracak.")
+            _finalize_job(
+                db,
+                job,
+                True,
+                f"XLSX hazir: {xlsx_path}. pywinauto ortami yok, kullanici elle aktaracak.",
+            )
             _record_success()
             return {
                 "status": "processed",
@@ -375,14 +389,10 @@ def get_worker_status() -> dict:
     db: Session = SessionLocal()
     try:
         queue_count = (
-            db.query(OptiJob)
-            .filter(OptiJob.state == OptiJobStateEnum.OPTI_IMPORTED)
-            .count()
+            db.query(OptiJob).filter(OptiJob.state == OptiJobStateEnum.OPTI_IMPORTED).count()
         )
         running_count = (
-            db.query(OptiJob)
-            .filter(OptiJob.state == OptiJobStateEnum.OPTI_RUNNING)
-            .count()
+            db.query(OptiJob).filter(OptiJob.state == OptiJobStateEnum.OPTI_RUNNING).count()
         )
     finally:
         db.close()

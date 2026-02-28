@@ -4,9 +4,12 @@ OptiPlan 360 — Sipariş İhracat Servisi (Excel)
 Bu servis, veritabanından alınan sipariş verilerini OptiPlanning için
 gerekli olan Excel (.xlsx) formatına dönüştürür.
 """
-import os
+
 import datetime
+import os
+
 import pandas as pd
+from openpyxl import Workbook
 from sqlalchemy.orm import Session, joinedload
 
 from .. import models
@@ -25,7 +28,7 @@ os.makedirs(EXPORT_DIR, exist_ok=True)
 
 def export_order_to_excel(db: Session, order_id: str) -> list[str]:
     """
-    Belirtilen siparişi veritabanından alır ve "GÖVDE" ve "ARKALIK" 
+    Belirtilen siparişi veritabanından alır ve "GÖVDE" ve "ARKALIK"
     parça grupları için ayrı Excel dosyaları oluşturur. (KURAL 2)
 
     Args:
@@ -35,8 +38,13 @@ def export_order_to_excel(db: Session, order_id: str) -> list[str]:
     Returns:
         Oluşturulan Excel dosyalarının tam yollarını içeren bir liste.
     """
-    
-    order = db.query(models.Order).options(joinedload(models.Order.parts)).filter(models.Order.id == order_id).first()
+
+    order = (
+        db.query(models.Order)
+        .options(joinedload(models.Order.parts))
+        .filter(models.Order.id == order_id)
+        .first()
+    )
     if not order:
         raise ValueError(f"Sipariş ID'si {order_id} bulunamadı.")
 
@@ -51,7 +59,10 @@ def export_order_to_excel(db: Session, order_id: str) -> list[str]:
             "en_mm": p.en_mm,
             "adet": p.adet,
             "grain_code": p.grain_code,
-            "u1": p.u1, "u2": p.u2, "k1": p.k1, "k2": p.k2,
+            "u1": p.u1,
+            "u2": p.u2,
+            "k1": p.k1,
+            "k2": p.k2,
             "part_desc": p.part_desc,
             "drill_code_1": p.drill_code_1,
             "drill_code_2": p.drill_code_2,
@@ -84,7 +95,7 @@ def export_order_to_excel(db: Session, order_id: str) -> list[str]:
             output_df["Delik2"] = group_df["drill_code_2"]
 
             material_name_safe = order.material_name.replace(" ", "_").replace("/", "-")
-            
+
             # KURAL 3: Dosya isimlendirme
             file_name = f"{customer_name}_{timestamp}_{material_name_safe}_{part_group_name}.xlsx"
             file_path = os.path.join(EXPORT_DIR, file_name)
@@ -94,9 +105,11 @@ def export_order_to_excel(db: Session, order_id: str) -> list[str]:
 
     return exported_files
 
+
 # Ensure export correctness per manifesto
 
-def export_order_to_excel(order):
+
+def export_order_to_excel_openpyxl(order):
     # Group parts by part_group, color, and thickness
     grouped_parts = {}
     for part in order.parts:
@@ -115,15 +128,33 @@ def export_order_to_excel(order):
         sheet.title = f"{part_group} Parts"
 
         # Write header row
-        sheet.append(["Part ID", "Material", "Thickness", "Length", "Width", "Quantity", "Grain", "Edge Banding"])
+        sheet.append(
+            [
+                "Part ID",
+                "Material",
+                "Thickness",
+                "Length",
+                "Width",
+                "Quantity",
+                "Grain",
+                "Edge Banding",
+            ]
+        )
 
         # Write part data
         for part in parts:
-            sheet.append([
-                part.id, part.material_name, part.thickness_mm, part.length_mm,
-                part.width_mm, part.quantity, part.grain,
-                f"{part.edge_banding_u1}/{part.edge_banding_u2}/{part.edge_banding_k1}/{part.edge_banding_k2}"
-            ])
+            sheet.append(
+                [
+                    part.id,
+                    part.material_name,
+                    part.thickness_mm,
+                    part.length_mm,
+                    part.width_mm,
+                    part.quantity,
+                    part.grain,
+                    f"{part.edge_banding_u1}/{part.edge_banding_u2}/{part.edge_banding_k1}/{part.edge_banding_k2}",
+                ]
+            )
 
         # Save the file
         workbook.save(filepath)

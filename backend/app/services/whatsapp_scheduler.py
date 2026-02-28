@@ -4,13 +4,14 @@ PENDING durumdaki WhatsApp mesajlarını periyodik olarak gönderir.
 NOT: Henüz production'da etkinleştirilmemiştir.
       main.py'den start_scheduler() çağrılırsa etkin olur.
 """
+
 import logging
 from datetime import datetime, timezone
 from uuid import uuid4
 
 from app.database import SessionLocal
-from app.models import WhatsAppMessage, AuditLog
-from app.services.whatsapp_service import _is_configured, _get_setting
+from app.models import AuditLog, WhatsAppMessage
+from app.services.whatsapp_service import _get_setting, _is_configured
 
 logger = logging.getLogger(__name__)
 
@@ -41,10 +42,7 @@ def check_and_send_pending() -> None:
             return
 
         pending = (
-            db.query(WhatsAppMessage)
-            .filter(WhatsAppMessage.status == "PENDING")
-            .limit(20)
-            .all()
+            db.query(WhatsAppMessage).filter(WhatsAppMessage.status == "PENDING").limit(20).all()
         )
         if not pending:
             return
@@ -83,14 +81,16 @@ def check_and_send_pending() -> None:
                     msg.error = str(e)[:200]
                     logger.error("Scheduler WhatsApp gönderim hatası: %s", e)
 
-                db.add(AuditLog(
-                    id=str(uuid4()),
-                    user_id=msg.sent_by_id,
-                    order_id=msg.order_id,
-                    action="WHATSAPP_SCHEDULER",
-                    detail=f"Scheduler: {msg.to_phone} → {msg.status}",
-                    created_at=datetime.now(timezone.utc),
-                ))
+                db.add(
+                    AuditLog(
+                        id=str(uuid4()),
+                        user_id=msg.sent_by_id,
+                        order_id=msg.order_id,
+                        action="WHATSAPP_SCHEDULER",
+                        detail=f"Scheduler: {msg.to_phone} → {msg.status}",
+                        created_at=datetime.now(timezone.utc),
+                    )
+                )
             db.commit()
             logger.info("Scheduler: %d PENDING mesaj işlendi", len(pending))
     except Exception as e:

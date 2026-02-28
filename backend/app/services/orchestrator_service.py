@@ -12,19 +12,27 @@ Env vars:
   ORCH_BASE_URL          : Orchestrator Node.js URL (varsayilan: http://localhost:3001)
   OPTIPLAN_IMPORT_DIR    : Worker'in urettigi XLSX dosyalari icin hedef klasor
 """
-import os
-import uuid
+
 import hashlib
 import json
 import logging
+import os
 import subprocess
-from pathlib import Path
+import uuid
 
 import httpx
 from sqlalchemy.orm import Session
 
-from ..models import OptiJob, OptiAuditEvent, OptiJobStateEnum, OptiModeEnum, Order, OrderPart, Customer
-from ..exceptions import NotFoundError, ValidationError, ConflictError
+from ..exceptions import ConflictError, NotFoundError, ValidationError
+from ..models import (
+    Customer,
+    OptiAuditEvent,
+    OptiJob,
+    OptiJobStateEnum,
+    OptiModeEnum,
+    Order,
+    OrderPart,
+)
 
 # AGENT_ONEFILE Â§THICKNESS POLICY: arkalik kalinliklari ve trim mapping
 BACKING_THICKNESSES = frozenset([3, 4, 5, 8])
@@ -34,7 +42,9 @@ OPTIPLAN_IMPORT_DIR = os.environ.get(
     "OPTIPLAN_IMPORT_DIR",
     r"C:\Biesse\OptiPlanning\ImpFile",
 )
-OPTIPLAN_EXE_PATH = os.environ.get("OPTIPLAN_EXE_PATH", r"C:\Biesse\OptiPlanning\System\OptiPlanning.exe")
+OPTIPLAN_EXE_PATH = os.environ.get(
+    "OPTIPLAN_EXE_PATH", r"C:\Biesse\OptiPlanning\System\OptiPlanning.exe"
+)
 os.makedirs(OPTIPLAN_IMPORT_DIR, exist_ok=True)
 
 logger = logging.getLogger(__name__)
@@ -51,7 +61,9 @@ def _call_orchestrator(method: str, path: str, json_body: dict | None = None) ->
             resp = client.request(method, url, json=json_body)
             if resp.status_code in (200, 201):
                 return resp.json()
-            logger.warning("Orchestrator %s %s -> %d: %s", method, path, resp.status_code, resp.text[:200])
+            logger.warning(
+                "Orchestrator %s %s -> %d: %s", method, path, resp.status_code, resp.text[:200]
+            )
             return None
     except httpx.ConnectError:
         logger.warning("Orchestrator erisilemedi: %s", url)
@@ -66,7 +78,9 @@ def _payload_hash(payload: dict) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
 
 
-def _add_audit(db: Session, job_id: str, event_type: str, message: str, details: dict | None = None):
+def _add_audit(
+    db: Session, job_id: str, event_type: str, message: str, details: dict | None = None
+):
     event = OptiAuditEvent(
         job_id=job_id,
         event_type=event_type,
@@ -206,17 +220,15 @@ class OrchestratorService:
             if not has_plate:
                 job.state = OptiJobStateEnum.HOLD
                 job.error_code = "E_PLATE_SIZE_MISSING"
-                job.error_message = "Plaka ebati belirtilmemis ve varsayilan yapilandirma bulunamadi."
+                job.error_message = (
+                    "Plaka ebati belirtilmemis ve varsayilan yapilandirma bulunamadi."
+                )
                 _add_audit(self.db, job.id, "STATE_HOLD", "Plaka ebati eksik - HOLD")
                 self.db.commit()
                 return
 
             # Parcalari yukle
-            parts = (
-                self.db.query(OrderPart)
-                .filter(OrderPart.order_id == order.id)
-                .all()
-            )
+            parts = self.db.query(OrderPart).filter(OrderPart.order_id == order.id).all()
             if not parts:
                 job.state = OptiJobStateEnum.HOLD
                 job.error_code = "E_NO_PARTS"
@@ -235,7 +247,12 @@ class OrchestratorService:
                     job.state = OptiJobStateEnum.HOLD
                     job.error_code = "E_BACKING_THICKNESS_UNKNOWN"
                     job.error_message = f"Bilinmeyen arkalik kalinligi: {thickness}mm (gecerli: {sorted(BACKING_THICKNESSES)})"
-                    _add_audit(self.db, job.id, "STATE_HOLD", f"Arkalik kalinlik hatasi: {thickness}mm - HOLD")
+                    _add_audit(
+                        self.db,
+                        job.id,
+                        "STATE_HOLD",
+                        f"Arkalik kalinlik hatasi: {thickness}mm - HOLD",
+                    )
                     self.db.commit()
                     return
 
@@ -243,7 +260,12 @@ class OrchestratorService:
                     job.state = OptiJobStateEnum.HOLD
                     job.error_code = "E_TRIM_RULE_MISSING"
                     job.error_message = f"Trim kurali bulunamadi: {thickness_key}mm"
-                    _add_audit(self.db, job.id, "STATE_HOLD", f"Trim kurali eksik: {thickness_key}mm - HOLD")
+                    _add_audit(
+                        self.db,
+                        job.id,
+                        "STATE_HOLD",
+                        f"Trim kurali eksik: {thickness_key}mm - HOLD",
+                    )
                     self.db.commit()
                     return
             # Worker service OPTI_IMPORTED -> OPTI_RUNNING gecisini yapar
@@ -273,15 +295,21 @@ class OrchestratorService:
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             job.state = OptiJobStateEnum.OPTI_RUNNING
             _add_audit(
-                self.db, job.id, "STATE_OPTI_RUNNING",
+                self.db,
+                job.id,
+                "STATE_OPTI_RUNNING",
                 f"OptiPlanning.exe baslatildi (PID={proc.pid})",
                 {"exe": OPTIPLAN_EXE_PATH, "files": [os.path.basename(p) for p in xlsx_files]},
             )
             self.db.commit()
             logger.info("Job %s: OPTI_IMPORTED -> OPTI_RUNNING (PID=%d)", job.id, proc.pid)
         except FileNotFoundError:
-            logger.warning("OptiPlanning.exe bulunamadi: %s (Mode C'ye geciliyor)", OPTIPLAN_EXE_PATH)
-            _add_audit(self.db, job.id, "INFO", "OptiPlanning.exe bulunamadi - operator el ile baslatmali")
+            logger.warning(
+                "OptiPlanning.exe bulunamadi: %s (Mode C'ye geciliyor)", OPTIPLAN_EXE_PATH
+            )
+            _add_audit(
+                self.db, job.id, "INFO", "OptiPlanning.exe bulunamadi - operator el ile baslatmali"
+            )
             self.db.commit()
         except Exception as exc:
             logger.error("OptiPlanning.exe tetikleme hatasi: %s", exc)
@@ -315,26 +343,28 @@ class OrchestratorService:
     # -- Retry --
     # STATE_MACHINE.md: max 3 retry, kalici hata kodlarinda retry yasak
     RETRY_COUNT_MAX = 3
-    PERMANENT_ERROR_CODES = frozenset([
-        "E_TEMPLATE_INVALID",
-        "E_CRM_NO_MATCH",
-        "E_PLATE_SIZE_MISSING",
-        "E_XML_INVALID",
-    ])
+    PERMANENT_ERROR_CODES = frozenset(
+        [
+            "E_TEMPLATE_INVALID",
+            "E_CRM_NO_MATCH",
+            "E_PLATE_SIZE_MISSING",
+            "E_XML_INVALID",
+        ]
+    )
 
     def retry_job(self, job_id: str, user_id: int | None = None) -> OptiJob:
         job = self.get_job(job_id)
         if job.state not in (OptiJobStateEnum.FAILED, OptiJobStateEnum.HOLD):
-            raise ValidationError(f"Sadece FAILED/HOLD durumundaki job'lar retry edilebilir (mevcut: {job.state.value})")
+            raise ValidationError(
+                f"Sadece FAILED/HOLD durumundaki job'lar retry edilebilir (mevcut: {job.state.value})"
+            )
 
         if job.retry_count >= self.RETRY_COUNT_MAX:
             raise ValidationError(
                 f"Maksimum retry sayisina ulasildi ({self.RETRY_COUNT_MAX}). Job manuel incelenmeli."
             )
         if job.error_code in self.PERMANENT_ERROR_CODES:
-            raise ValidationError(
-                f"Kalici hata nedeniyle retry engellendi: {job.error_code}"
-            )
+            raise ValidationError(f"Kalici hata nedeniyle retry engellendi: {job.error_code}")
 
         # Orchestrator'a retry gonder
         _call_orchestrator("POST", f"/jobs/{job_id}/retry")
@@ -352,7 +382,9 @@ class OrchestratorService:
     def approve_job(self, job_id: str, user_id: int | None = None) -> OptiJob:
         job = self.get_job(job_id)
         if job.state != OptiJobStateEnum.HOLD:
-            raise ValidationError(f"Sadece HOLD durumundaki job approve edilebilir (mevcut: {job.state.value})")
+            raise ValidationError(
+                f"Sadece HOLD durumundaki job approve edilebilir (mevcut: {job.state.value})"
+            )
 
         # Orchestrator'a approve gonder
         _call_orchestrator("POST", f"/jobs/{job_id}/approve")
@@ -361,7 +393,13 @@ class OrchestratorService:
         job.state = OptiJobStateEnum.NEW
         job.error_code = None
         job.error_message = None
-        _add_audit(self.db, job_id, "APPROVE", "HOLD'dan cikarildi - NEW'e alindi", {"approved_by": user_id})
+        _add_audit(
+            self.db,
+            job_id,
+            "APPROVE",
+            "HOLD'dan cikarildi - NEW'e alindi",
+            {"approved_by": user_id},
+        )
         self.db.commit()
         self.db.refresh(job)
         return job
@@ -371,7 +409,9 @@ class OrchestratorService:
         job = self.get_job(job_id)
         terminal_states = (OptiJobStateEnum.DONE, OptiJobStateEnum.FAILED)
         if job.state in terminal_states:
-            raise ValidationError(f"Zaten tamamlanmis/basarisiz job iptal edilemez (mevcut: {job.state.value})")
+            raise ValidationError(
+                f"Zaten tamamlanmis/basarisiz job iptal edilemez (mevcut: {job.state.value})"
+            )
 
         # Orchestrator'a iptal bildir
         _call_orchestrator("POST", f"/jobs/{job_id}/cancel")
@@ -400,4 +440,3 @@ class OrchestratorService:
                 self.db.commit()
                 self.db.refresh(job)
         return job
-

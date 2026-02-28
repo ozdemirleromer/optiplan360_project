@@ -2,7 +2,7 @@
 OptiPlan 360 - JWT authentication helpers.
 Compatible with bcrypt when installed; falls back to PBKDF2-SHA256.
 """
-from datetime import datetime, timedelta, timezone
+
 import base64
 import hashlib
 import hmac
@@ -10,10 +10,11 @@ import logging
 import os
 import secrets
 import sys
+from datetime import datetime, timedelta, timezone
 
-from jose import JWTError, jwt
 from fastapi import Depends, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
 try:
@@ -155,7 +156,11 @@ def get_current_user_or_internal(
 
     # 2) Internal API key kontrolü
     internal_header = request.headers.get("X-Internal-Key", "").strip()
-    if ORCH_INTERNAL_KEY and internal_header and hmac.compare_digest(internal_header, ORCH_INTERNAL_KEY):
+    if (
+        ORCH_INTERNAL_KEY
+        and internal_header
+        and hmac.compare_digest(internal_header, ORCH_INTERNAL_KEY)
+    ):
         logger.info("Internal API key ile erişim: %s %s", request.method, request.url.path)
         return None  # Authenticated but no user object (service-to-service)
 

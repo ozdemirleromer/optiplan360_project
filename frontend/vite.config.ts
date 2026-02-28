@@ -12,6 +12,11 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    css: {
+      postcss: {
+        plugins: []
+      }
+    },
     build: {
       rollupOptions: {
         output: {

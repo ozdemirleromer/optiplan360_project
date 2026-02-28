@@ -6,18 +6,17 @@ OptiPlan 360 — Telegram → OCR Ingest Router
 
 import logging
 from datetime import datetime, timezone
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 from uuid import uuid4
 
 import httpx
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
-from app.exceptions import AuthenticationError, AuthorizationError, BusinessRuleError
-from pydantic import BaseModel, Field
-from sqlalchemy.orm import Session
-
 from app.auth import get_current_user
 from app.database import get_db
+from app.exceptions import AuthenticationError, AuthorizationError, BusinessRuleError
 from app.models import AuditLog, OCRJob, TelegramOCRConfig, User
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +117,10 @@ async def test_telegram(
         data = resp.json()
 
     ok = bool(data.get("ok"))
-    return TelegramTestOut(success=ok, message="Telegram bağlantısı başarılı" if ok else "Telegram bağlantısı başarısız")
+    return TelegramTestOut(
+        success=ok,
+        message="Telegram bağlantısı başarılı" if ok else "Telegram bağlantısı başarısız",
+    )
 
 
 async def _download_telegram_file(token: str, file_id: str) -> bytes:

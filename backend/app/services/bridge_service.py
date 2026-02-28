@@ -10,31 +10,32 @@ Kurallar:
   - Band: u1=üst, u2=alt, k1=sol, k2=sağ kenar
   - Atomik yazma: .tmp → os.replace
 """
+
 import io
-import os
 import logging
+import os
 from datetime import datetime
 from typing import Optional
 
 import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment
+from openpyxl.styles import Alignment, Font, PatternFill
 
 logger = logging.getLogger(__name__)
 
 # ── OptiPlanning 12 sütun tag'leri ──────────────────────────────────
 OPTI_COLUMNS = [
     "[P_CODE_MAT]",  # Malzeme kodu (renk+kalınlık)
-    "[P_LENGTH]",    # Uzunluk (mm)
-    "[P_WIDTH]",     # Genişlik (mm)
-    "[P_MINQ]",      # Adet
-    "[P_GRAIN]",     # Desen yönü (0/1/2/3)
-    "[P_IDESC]",     # Açıklama / trim bilgisi
-    "[P_EDGE_UP]",   # Üst kenar bant (mm veya "")
-    "[P_EDGE_LO]",   # Alt kenar bant (mm veya "")
-    "[P_EDGE_SX]",   # Sol kenar bant (mm veya "")
-    "[P_EDGE_DX]",   # Sağ kenar bant (mm veya "")
-    "[P_CC_MAT]",    # Renk referansı
-    "[P_DESC1]",     # Ek açıklama (part_desc)
+    "[P_LENGTH]",  # Uzunluk (mm)
+    "[P_WIDTH]",  # Genişlik (mm)
+    "[P_MINQ]",  # Adet
+    "[P_GRAIN]",  # Desen yönü (0/1/2/3)
+    "[P_IDESC]",  # Açıklama / trim bilgisi
+    "[P_EDGE_UP]",  # Üst kenar bant (mm veya "")
+    "[P_EDGE_LO]",  # Alt kenar bant (mm veya "")
+    "[P_EDGE_SX]",  # Sol kenar bant (mm veya "")
+    "[P_EDGE_DX]",  # Sağ kenar bant (mm veya "")
+    "[P_CC_MAT]",  # Renk referansı
+    "[P_DESC1]",  # Ek açıklama (part_desc)
 ]
 
 GRAIN_MAP = {
@@ -103,20 +104,22 @@ def generate_optiplan_xlsx(order, parts: list) -> dict[str, bytes]:
             band_mm = order.band_mm
             adet = int(part.adet) if part.adet else 1
 
-            ws.append([
-                mat_code,
-                float(part.boy_mm or 0),
-                float(part.en_mm or 0),
-                adet,
-                grain,
-                trim_info,
-                _band_str(bool(part.u1), band_mm, is_arkalik),
-                _band_str(bool(part.u2), band_mm, is_arkalik),
-                _band_str(bool(part.k1), band_mm, is_arkalik),
-                _band_str(bool(part.k2), band_mm, is_arkalik),
-                cc_mat,
-                part.part_desc or "",
-            ])
+            ws.append(
+                [
+                    mat_code,
+                    float(part.boy_mm or 0),
+                    float(part.en_mm or 0),
+                    adet,
+                    grain,
+                    trim_info,
+                    _band_str(bool(part.u1), band_mm, is_arkalik),
+                    _band_str(bool(part.u2), band_mm, is_arkalik),
+                    _band_str(bool(part.k1), band_mm, is_arkalik),
+                    _band_str(bool(part.k2), band_mm, is_arkalik),
+                    cc_mat,
+                    part.part_desc or "",
+                ]
+            )
 
         # Sütun genişliklerini otomatik ayarla
         for col in ws.columns:
@@ -182,6 +185,7 @@ def convert_excel_to_optiplanning(file_path: str) -> dict:
     """
     try:
         import pandas as pd
+
         df = pd.read_excel(file_path)
         required = ["Boy", "En", "Adet", "Malzeme Adı", "Grup"]
         for col in required:

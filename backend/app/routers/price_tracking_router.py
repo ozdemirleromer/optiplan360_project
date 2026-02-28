@@ -2,12 +2,9 @@
 Fiyat Takip Router — Dosya yükleme, job yönetimi, Excel export.
 İş mantığı PriceTrackingService'de; burada sadece HTTP in/out.
 """
+
 import logging
 from datetime import datetime
-
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
-from fastapi.responses import Response
-from sqlalchemy.orm import Session
 
 from app.auth import require_permissions
 from app.database import get_db
@@ -15,6 +12,9 @@ from app.models import User
 from app.permissions import Permission
 from app.schemas import PriceExportRequest, PriceJobDetailOut, PriceUploadJobOut
 from app.services.price_tracking_service import PriceTrackingService
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
+from fastapi.responses import Response
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,7 @@ async def upload_price_file(
     file: UploadFile = File(...),
     supplier: str = Form(...),
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_permissions(Permission.PRICE_TRACKING_UPLOAD)
-    ),
+    current_user: User = Depends(require_permissions(Permission.PRICE_TRACKING_UPLOAD)),
 ):
     """Fiyat listesi dosyası yükle ve işle."""
     contents = await file.read()
@@ -51,9 +49,7 @@ async def upload_price_file(
 @router.get("/jobs", response_model=list[PriceUploadJobOut])
 async def list_price_jobs(
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_permissions(Permission.PRICE_TRACKING_VIEW)
-    ),
+    current_user: User = Depends(require_permissions(Permission.PRICE_TRACKING_VIEW)),
 ):
     """Fiyat yükleme işlerini listele."""
     return PriceTrackingService.list_jobs(db, current_user)
@@ -63,9 +59,7 @@ async def list_price_jobs(
 async def get_price_job_detail(
     job_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_permissions(Permission.PRICE_TRACKING_VIEW)
-    ),
+    current_user: User = Depends(require_permissions(Permission.PRICE_TRACKING_VIEW)),
 ):
     """Fiyat yükleme işi detayı (ürünlerle birlikte)."""
     return PriceTrackingService.get_job_detail(db, job_id, current_user)
@@ -75,14 +69,10 @@ async def get_price_job_detail(
 async def export_price_jobs(
     request: PriceExportRequest,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_permissions(Permission.PRICE_TRACKING_EXPORT)
-    ),
+    current_user: User = Depends(require_permissions(Permission.PRICE_TRACKING_EXPORT)),
 ):
     """Seçili işleri birleştirilmiş Excel dosyası olarak dışa aktar."""
-    excel_bytes = PriceTrackingService.export_to_excel(
-        db, request.job_ids, current_user
-    )
+    excel_bytes = PriceTrackingService.export_to_excel(db, request.job_ids, current_user)
     filename = f"Fiyat_Listesi_{datetime.now().strftime('%Y-%m-%d')}.xlsx"
     return Response(
         content=excel_bytes,
@@ -95,9 +85,7 @@ async def export_price_jobs(
 async def delete_price_job(
     job_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(
-        require_permissions(Permission.PRICE_TRACKING_DELETE)
-    ),
+    current_user: User = Depends(require_permissions(Permission.PRICE_TRACKING_DELETE)),
 ):
     """Fiyat yükleme işini sil."""
     PriceTrackingService.delete_job(db, job_id, current_user)

@@ -2,19 +2,19 @@
 CRM Router — Cari, Kontak, Fırsat, Teklif, Görev, Aktivite API
 /api/v1/crm/...
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.exceptions import BusinessRuleError, NotFoundError
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
-from datetime import datetime
 
-from app.database import get_db
-from app.models import User
+from datetime import datetime
+from typing import List, Optional
+
 from app.auth import require_operator, require_permissions
+from app.database import get_db
+from app.exceptions import BusinessRuleError, NotFoundError
+from app.models import User
 from app.permissions import Permission
-from app.models.crm import CRMTicket, CRMTicketMessage
 from app.services import crm_service
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/crm", tags=["crm"])
 
@@ -22,6 +22,7 @@ router = APIRouter(prefix="/api/v1/crm", tags=["crm"])
 # ═══════════════════════════════════════
 # PYDANTIC SCHEMAS (inline — admin_router pattern)
 # ═══════════════════════════════════════
+
 
 class AdminTicketMessageOut(BaseModel):
     id: str
@@ -32,6 +33,7 @@ class AdminTicketMessageOut(BaseModel):
     is_internal: bool = False
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
 
 class AdminTicketOut(BaseModel):
     id: str
@@ -48,13 +50,16 @@ class AdminTicketOut(BaseModel):
     messages: List[AdminTicketMessageOut] = []
     model_config = ConfigDict(from_attributes=True)
 
+
 class TicketReply(BaseModel):
     message: str
     is_internal: bool = False
 
+
 class TicketStatusUpdate(BaseModel):
-    status: str 
+    status: str
     assigned_to_id: Optional[int] = None
+
 
 class AccountCreate(BaseModel):
     company_name: str
@@ -75,6 +80,7 @@ class AccountCreate(BaseModel):
     customer_id: Optional[int] = None
     mikro_cari_kod: Optional[str] = None
 
+
 class AccountUpdate(BaseModel):
     company_name: Optional[str] = None
     tax_id: Optional[str] = None
@@ -92,6 +98,7 @@ class AccountUpdate(BaseModel):
     tags: Optional[str] = None
     notes: Optional[str] = None
     mikro_cari_kod: Optional[str] = None
+
 
 class AccountOut(BaseModel):
     id: str
@@ -118,6 +125,7 @@ class AccountOut(BaseModel):
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ContactCreate(BaseModel):
     account_id: str
     first_name: str
@@ -130,6 +138,7 @@ class ContactCreate(BaseModel):
     is_primary: bool = False
     notes: Optional[str] = None
 
+
 class ContactUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -140,6 +149,7 @@ class ContactUpdate(BaseModel):
     email: Optional[str] = None
     is_primary: Optional[bool] = None
     notes: Optional[str] = None
+
 
 class ContactOut(BaseModel):
     id: str
@@ -156,6 +166,7 @@ class ContactOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class OpportunityCreate(BaseModel):
     account_id: str
     contact_id: Optional[str] = None
@@ -168,6 +179,7 @@ class OpportunityCreate(BaseModel):
     expected_close_date: Optional[datetime] = None
     source: Optional[str] = None
 
+
 class OpportunityUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -176,6 +188,7 @@ class OpportunityUpdate(BaseModel):
     probability: Optional[int] = None
     expected_close_date: Optional[datetime] = None
     source: Optional[str] = None
+
 
 class OpportunityOut(BaseModel):
     id: str
@@ -197,9 +210,11 @@ class OpportunityOut(BaseModel):
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class StageTransition(BaseModel):
     new_stage: str
     lost_reason: Optional[str] = None
+
 
 class QuoteLineInput(BaseModel):
     product_code: Optional[str] = None
@@ -211,6 +226,7 @@ class QuoteLineInput(BaseModel):
     tax_rate: float = 20
     mikro_stok_kod: Optional[str] = None
     notes: Optional[str] = None
+
 
 class QuoteCreate(BaseModel):
     account_id: str
@@ -224,6 +240,7 @@ class QuoteCreate(BaseModel):
     notes: Optional[str] = None
     terms: Optional[str] = None
     lines: List[QuoteLineInput] = []
+
 
 class QuoteLineOut(BaseModel):
     id: str
@@ -240,6 +257,7 @@ class QuoteLineOut(BaseModel):
     mikro_stok_kod: Optional[str] = None
     notes: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
+
 
 class QuoteOut(BaseModel):
     id: str
@@ -264,6 +282,7 @@ class QuoteOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class TaskCreate(BaseModel):
     title: str
     description: Optional[str] = None
@@ -273,6 +292,7 @@ class TaskCreate(BaseModel):
     assigned_to_id: Optional[int] = None
     due_date: Optional[datetime] = None
 
+
 class TaskUpdate(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
@@ -280,6 +300,7 @@ class TaskUpdate(BaseModel):
     status: Optional[str] = None
     assigned_to_id: Optional[int] = None
     due_date: Optional[datetime] = None
+
 
 class TaskOut(BaseModel):
     id: str
@@ -295,6 +316,7 @@ class TaskOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ActivityCreate(BaseModel):
     activity_type: str
     subject: str
@@ -303,6 +325,7 @@ class ActivityCreate(BaseModel):
     opportunity_id: Optional[str] = None
     account_id: Optional[str] = None
     contact_id: Optional[str] = None
+
 
 class ActivityOut(BaseModel):
     id: str
@@ -317,10 +340,12 @@ class ActivityOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class NoteCreate(BaseModel):
     entity_type: str
     entity_id: str
     content: str
+
 
 class NoteOut(BaseModel):
     id: str
@@ -336,6 +361,7 @@ class NoteOut(BaseModel):
 # CARİ HESAP ENDPOİNTLERİ
 # ═══════════════════════════════════════
 
+
 @router.get("/accounts")
 def api_list_accounts(
     skip: int = Query(0, ge=0),
@@ -350,7 +376,11 @@ def api_list_accounts(
 
 
 @router.get("/accounts/{account_id}")
-def api_get_account(account_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))):
+def api_get_account(
+    account_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.CRM_VIEW)),
+):
     acc = crm_service.get_account(db, account_id)
     if not acc:
         raise NotFoundError("Cari hesap")
@@ -358,13 +388,20 @@ def api_get_account(account_id: str, db: Session = Depends(get_db), user: User =
 
 
 @router.post("/accounts", status_code=201)
-def api_create_account(body: AccountCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_account(
+    body: AccountCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     acc = crm_service.create_account(db, body.model_dump(exclude_none=True), user.id)
     return AccountOut.model_validate(acc)
 
 
 @router.put("/accounts/{account_id}")
-def api_update_account(account_id: str, body: AccountUpdate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_update_account(
+    account_id: str,
+    body: AccountUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
     acc = crm_service.update_account(db, account_id, body.model_dump(exclude_none=True), user.id)
     if not acc:
         raise NotFoundError("Cari hesap")
@@ -372,7 +409,9 @@ def api_update_account(account_id: str, body: AccountUpdate, db: Session = Depen
 
 
 @router.delete("/accounts/{account_id}")
-def api_delete_account(account_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_delete_account(
+    account_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     ok = crm_service.delete_account(db, account_id, user.id)
     if not ok:
         raise NotFoundError("Cari hesap")
@@ -382,6 +421,7 @@ def api_delete_account(account_id: str, db: Session = Depends(get_db), user: Use
 # ═══════════════════════════════════════
 # KONTAK ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/contacts")
 def api_list_contacts(
@@ -396,14 +436,23 @@ def api_list_contacts(
 
 
 @router.post("/contacts", status_code=201)
-def api_create_contact(body: ContactCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_contact(
+    body: ContactCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     contact = crm_service.create_contact(db, body.model_dump(exclude_none=True), user.id)
     return ContactOut.model_validate(contact)
 
 
 @router.put("/contacts/{contact_id}")
-def api_update_contact(contact_id: str, body: ContactUpdate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
-    contact = crm_service.update_contact(db, contact_id, body.model_dump(exclude_none=True), user.id)
+def api_update_contact(
+    contact_id: str,
+    body: ContactUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    contact = crm_service.update_contact(
+        db, contact_id, body.model_dump(exclude_none=True), user.id
+    )
     if not contact:
         raise NotFoundError("Kişi")
     return ContactOut.model_validate(contact)
@@ -412,6 +461,7 @@ def api_update_contact(contact_id: str, body: ContactUpdate, db: Session = Depen
 # ═══════════════════════════════════════
 # FIRSAT ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/opportunities")
 def api_list_opportunities(
@@ -427,7 +477,11 @@ def api_list_opportunities(
 
 
 @router.get("/opportunities/{opp_id}")
-def api_get_opportunity(opp_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))):
+def api_get_opportunity(
+    opp_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.CRM_VIEW)),
+):
     opp = crm_service.get_opportunity(db, opp_id)
     if not opp:
         raise NotFoundError("Fırsat")
@@ -435,13 +489,20 @@ def api_get_opportunity(opp_id: str, db: Session = Depends(get_db), user: User =
 
 
 @router.post("/opportunities", status_code=201)
-def api_create_opportunity(body: OpportunityCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_opportunity(
+    body: OpportunityCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     opp = crm_service.create_opportunity(db, body.model_dump(exclude_none=True), user.id)
     return OpportunityOut.model_validate(opp)
 
 
 @router.put("/opportunities/{opp_id}")
-def api_update_opportunity(opp_id: str, body: OpportunityUpdate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_update_opportunity(
+    opp_id: str,
+    body: OpportunityUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
     opp = crm_service.update_opportunity(db, opp_id, body.model_dump(exclude_none=True), user.id)
     if not opp:
         raise NotFoundError("Fırsat")
@@ -449,15 +510,24 @@ def api_update_opportunity(opp_id: str, body: OpportunityUpdate, db: Session = D
 
 
 @router.post("/opportunities/{opp_id}/transition")
-def api_transition_stage(opp_id: str, body: StageTransition, db: Session = Depends(get_db), user: User = Depends(require_operator)):
-    result, error = crm_service.transition_stage(db, opp_id, body.new_stage, user.id, body.lost_reason)
+def api_transition_stage(
+    opp_id: str,
+    body: StageTransition,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    result, error = crm_service.transition_stage(
+        db, opp_id, body.new_stage, user.id, body.lost_reason
+    )
     if error:
         raise BusinessRuleError(error)
     return OpportunityOut.model_validate(result)
 
 
 @router.post("/opportunities/{opp_id}/convert")
-def api_convert_to_order(opp_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_convert_to_order(
+    opp_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     result, error = crm_service.convert_to_order(db, opp_id, user.id)
     if error:
         raise BusinessRuleError(error)
@@ -473,6 +543,7 @@ def api_convert_to_order(opp_id: str, db: Session = Depends(get_db), user: User 
 # TEKLİF ENDPOİNTLERİ
 # ═══════════════════════════════════════
 
+
 @router.get("/quotes")
 def api_list_quotes(
     skip: int = Query(0, ge=0),
@@ -487,7 +558,11 @@ def api_list_quotes(
 
 
 @router.get("/quotes/{quote_id}")
-def api_get_quote(quote_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))):
+def api_get_quote(
+    quote_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.CRM_VIEW)),
+):
     q = crm_service.get_quote(db, quote_id)
     if not q:
         raise NotFoundError("Teklif")
@@ -495,7 +570,9 @@ def api_get_quote(quote_id: str, db: Session = Depends(get_db), user: User = Dep
 
 
 @router.post("/quotes", status_code=201)
-def api_create_quote(body: QuoteCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_quote(
+    body: QuoteCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     data = body.model_dump(exclude={"lines"}, exclude_none=True)
     lines = [ln.model_dump() for ln in body.lines]
     q = crm_service.create_quote(db, data, lines, user.id)
@@ -503,7 +580,9 @@ def api_create_quote(body: QuoteCreate, db: Session = Depends(get_db), user: Use
 
 
 @router.post("/quotes/{quote_id}/revise")
-def api_revise_quote(quote_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_revise_quote(
+    quote_id: str, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     q = crm_service.revise_quote(db, quote_id, user.id)
     if not q:
         raise NotFoundError("Teklif")
@@ -513,6 +592,7 @@ def api_revise_quote(quote_id: str, db: Session = Depends(get_db), user: User = 
 # ═══════════════════════════════════════
 # GÖREV ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/tasks")
 def api_list_tasks(
@@ -528,13 +608,20 @@ def api_list_tasks(
 
 
 @router.post("/tasks", status_code=201)
-def api_create_task(body: TaskCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_task(
+    body: TaskCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     task = crm_service.create_task(db, body.model_dump(exclude_none=True), user.id)
     return TaskOut.model_validate(task)
 
 
 @router.put("/tasks/{task_id}")
-def api_update_task(task_id: str, body: TaskUpdate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_update_task(
+    task_id: str,
+    body: TaskUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
     task = crm_service.update_task(db, task_id, body.model_dump(exclude_none=True), user.id)
     if not task:
         raise NotFoundError("Görev")
@@ -544,6 +631,7 @@ def api_update_task(task_id: str, body: TaskUpdate, db: Session = Depends(get_db
 # ═══════════════════════════════════════
 # AKTİVİTE ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/activities")
 def api_list_activities(
@@ -559,7 +647,9 @@ def api_list_activities(
 
 
 @router.post("/activities", status_code=201)
-def api_create_activity(body: ActivityCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_activity(
+    body: ActivityCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     act = crm_service.create_activity(db, body.model_dump(exclude_none=True), user.id)
     return ActivityOut.model_validate(act)
 
@@ -567,6 +657,7 @@ def api_create_activity(body: ActivityCreate, db: Session = Depends(get_db), use
 # ═══════════════════════════════════════
 # NOT ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/notes")
 def api_list_notes(
@@ -580,7 +671,9 @@ def api_list_notes(
 
 
 @router.post("/notes", status_code=201)
-def api_create_note(body: NoteCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_create_note(
+    body: NoteCreate, db: Session = Depends(get_db), user: User = Depends(require_operator)
+):
     note = crm_service.create_note(db, body.model_dump(), user.id)
     return NoteOut.model_validate(note)
 
@@ -589,13 +682,18 @@ def api_create_note(body: NoteCreate, db: Session = Depends(get_db), user: User 
 # DASHBOARD / İSTATİSTİKLER
 # ═══════════════════════════════════════
 
+
 @router.get("/stats")
-def api_crm_stats(db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))):
+def api_crm_stats(
+    db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))
+):
     return crm_service.get_crm_stats(db)
+
 
 # ═══════════════════════════════════════
 # YÖNETİCİ / OPERATÖR BİLET (TICKET) YÖNETİMİ
 # ═══════════════════════════════════════
+
 
 @router.get("/tickets")
 def api_list_tickets(
@@ -604,27 +702,44 @@ def api_list_tickets(
     status: Optional[str] = None,
     account_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    user: User = Depends(require_permissions(Permission.CRM_VIEW))
+    user: User = Depends(require_permissions(Permission.CRM_VIEW)),
 ):
     items, total = crm_service.list_tickets(db, skip, limit, status, account_id)
     return {"data": [AdminTicketOut.model_validate(i) for i in items], "total": total}
 
+
 @router.get("/tickets/{ticket_id}")
-def api_get_ticket(ticket_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.CRM_VIEW))):
+def api_get_ticket(
+    ticket_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.CRM_VIEW)),
+):
     t = crm_service.get_ticket(db, ticket_id)
     if not t:
         raise NotFoundError("Destek talebi (Ticket)")
     return AdminTicketOut.model_validate(t)
 
+
 @router.post("/tickets/{ticket_id}/reply")
-def api_reply_ticket(ticket_id: str, body: TicketReply, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_reply_ticket(
+    ticket_id: str,
+    body: TicketReply,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
     msg = crm_service.reply_ticket(db, ticket_id, body.message, user, body.is_internal)
     if not msg:
         raise NotFoundError("Destek talebi (Ticket)")
     return AdminTicketMessageOut.model_validate(msg)
 
+
 @router.put("/tickets/{ticket_id}/status")
-def api_update_ticket_status(ticket_id: str, body: TicketStatusUpdate, db: Session = Depends(get_db), user: User = Depends(require_operator)):
+def api_update_ticket_status(
+    ticket_id: str,
+    body: TicketStatusUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
     t = crm_service.update_ticket_status(db, ticket_id, body.status, body.assigned_to_id, user.id)
     if not t:
         raise NotFoundError("Destek talebi (Ticket)")

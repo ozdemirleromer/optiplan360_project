@@ -1,14 +1,14 @@
-﻿import os
-import logging
+﻿import logging
+import os
 import shutil
 import subprocess
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Tuple
+from typing import Any, Dict, List, Tuple
 
-from sqlalchemy.orm import Session
+from app.exceptions import ValidationError as AppValidationError
 from app.models import Order, OrderPart
 from app.services.order_service import OrderService
-from app.exceptions import ValidationError as AppValidationError
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ REQUIRED_TAGS = [
     "[P_GRAIN]",
     "[P_IDESC]",
     "[P_EDGE_MAT_UP]",
-    "[P_EGDE_MAT_LO]",   # Yazim template'de boyle, duzeltilmez
+    "[P_EGDE_MAT_LO]",  # Yazim template'de boyle, duzeltilmez
     "[P_EDGE_MAT_SX]",
     "[P_EDGE_MAT_DX]",
     "[P_IIDESC]",
@@ -48,16 +48,23 @@ def _validate_template(template_path: str) -> Tuple[bool, str]:
         return False, f"Sablon dosyasi bulunamadi: {template_path}"
     try:
         import openpyxl
+
         wb = openpyxl.load_workbook(template_path, read_only=True)
         if REQUIRED_SHEET_NAME not in wb.sheetnames:
-            return False, f"Gerekli sheet bulunamadi: '{REQUIRED_SHEET_NAME}' (mevcut: {wb.sheetnames})"
+            return (
+                False,
+                f"Gerekli sheet bulunamadi: '{REQUIRED_SHEET_NAME}' (mevcut: {wb.sheetnames})",
+            )
         ws = wb[REQUIRED_SHEET_NAME]
         first_row = [cell.value for cell in next(ws.iter_rows(min_row=1, max_row=1))]
         first_row_trimmed = [str(v).strip() if v else "" for v in first_row[:12]]
         for i, expected_tag in enumerate(REQUIRED_TAGS):
             if i >= len(first_row_trimmed) or first_row_trimmed[i] != expected_tag:
                 actual = first_row_trimmed[i] if i < len(first_row_trimmed) else "(eksik)"
-                return False, f"Tag uyumsuzlugu kolon {i+1}: beklenen='{expected_tag}', bulunan='{actual}'"
+                return (
+                    False,
+                    f"Tag uyumsuzlugu kolon {i+1}: beklenen='{expected_tag}', bulunan='{actual}'",
+                )
         wb.close()
         return True, ""
     except Exception as e:
@@ -103,7 +110,9 @@ class OptiPlanningService:
     def __init__(
         self,
         export_dir: str = os.environ.get("OPTIPLAN_EXPORT_DIR", r"C:\Biesse\OptiPlanning\Tmp\Sol"),
-        optiplan_exe: str = os.environ.get("OPTIPLAN_EXE_PATH", r"C:\Biesse\OptiPlanning\System\OptiPlanning.exe"),
+        optiplan_exe: str = os.environ.get(
+            "OPTIPLAN_EXE_PATH", r"C:\Biesse\OptiPlanning\System\OptiPlanning.exe"
+        ),
     ):
         self.export_dir = self._resolve_writable_export_dir(export_dir)
         self.optiplan_exe = optiplan_exe
@@ -167,7 +176,9 @@ class OptiPlanningService:
         # Hata mesaji net olsun diye once env path'i, yoksa ilk fallback'i dondur.
         return env_path or candidates[0]
 
-    def export_order(self, db: Session, order_id: str, trigger_exe: bool = False, format_type: str = "EXCEL") -> List[str]:
+    def export_order(
+        self, db: Session, order_id: str, trigger_exe: bool = False, format_type: str = "EXCEL"
+    ) -> List[str]:
         """
         Ana disa aktarma (export) fonksiyonu. Siparisi alip GOVDE/ARKALIK ve
         renk/kalinlik bazinda ayirip dosyalar olusturur.
@@ -192,15 +203,19 @@ class OptiPlanningService:
         crm_name = order.crm_name_snapshot or f"CUST_{order.customer_id}"
 
         # CRMISIM_TIMESTAMP_18mmBeyaz_GOVDE.xlsx
-        safe_crm_name = "".join(c for c in crm_name if c.isalnum() or c in (' ', '_', '-')).replace(" ", "")
+        safe_crm_name = "".join(c for c in crm_name if c.isalnum() or c in (" ", "_", "-")).replace(
+            " ", ""
+        )
 
         for group_key, parts in grouped_parts.items():
             meta = dict(group_key)
-            thickness = meta['thickness']
-            color = meta['color']
-            part_group = meta['part_group']
+            thickness = meta["thickness"]
+            color = meta["color"]
+            part_group = meta["part_group"]
 
-            safe_color = "".join(c for c in color if c.isalnum() or c in (' ', '_', '-')).replace(" ", "")
+            safe_color = "".join(c for c in color if c.isalnum() or c in (" ", "_", "-")).replace(
+                " ", ""
+            )
 
             # Kalinlik degerini integer yap (18.0 -> 18) — dosya adinda nokta OptiPlanning'de sorun yaratir
             thick_int = int(float(thickness)) if thickness else 18
@@ -238,11 +253,9 @@ class OptiPlanningService:
 
             color = order.color or "Standart"
 
-            key = frozenset({
-                'thickness': thickness,
-                'color': color,
-                'part_group': part_group
-            }.items())
+            key = frozenset(
+                {"thickness": thickness, "color": color, "part_group": part_group}.items()
+            )
 
             if key not in groups:
                 groups[key] = []
@@ -250,7 +263,9 @@ class OptiPlanningService:
 
         return groups
 
-    def _generate_excel(self, parts: List[OrderPart], filename_prefix: str, part_group: str, thickness: int = 18) -> str:
+    def _generate_excel(
+        self, parts: List[OrderPart], filename_prefix: str, part_group: str, thickness: int = 18
+    ) -> str:
         """
         AGENT_ONEFILE §3: XLSX uretimi SADECE Excel_sablon.xlsx template'i
         kopyalanarak yapilir. Tag satiri (row 1) ve baslik satiri (row 2)
@@ -282,7 +297,11 @@ class OptiPlanningService:
             # Veriler 3. satirdan itibaren (row 1=tags, row 2=basliklar)
             for row_idx, part in enumerate(parts, start=3):
                 # [P_CODE_MAT] - Malzeme kodu
-                ws.cell(row=row_idx, column=1, value=getattr(part, "id", "")[-6:] if getattr(part, "id", "") else "")
+                ws.cell(
+                    row=row_idx,
+                    column=1,
+                    value=getattr(part, "id", "")[-6:] if getattr(part, "id", "") else "",
+                )
 
                 # [P_LENGTH] - Boy (mm)
                 ws.cell(row=row_idx, column=2, value=float(part.boy_mm) if part.boy_mm else 0)
@@ -346,11 +365,13 @@ class OptiPlanningService:
     def get_machine_config(self, db: Session, config_name: str = "DEFAULT"):
         """Belirtilen ada sahip makine konfigurasyonunu getirir."""
         from app.models.optiplanning import MachineConfig
+
         return db.query(MachineConfig).filter(MachineConfig.name == config_name).first()
 
     def update_machine_config(self, db: Session, config_data: dict, config_name: str = "DEFAULT"):
         """Makine konfigurasyonunu gunceller veya yoksa olusturur."""
         from app.models.optiplanning import MachineConfig
+
         config = self.get_machine_config(db, config_name)
 
         if not config:
@@ -379,7 +400,9 @@ class OptiPlanningService:
 
             generated_files = []
             for order_id in request_data.order_ids:
-                files = self.export_order(db=db, order_id=str(order_id), trigger_exe=False, format_type="EXCEL")
+                files = self.export_order(
+                    db=db, order_id=str(order_id), trigger_exe=False, format_type="EXCEL"
+                )
                 generated_files.extend(files)
 
             if generated_files and request_data.params:

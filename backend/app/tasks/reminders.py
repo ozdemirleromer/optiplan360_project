@@ -1,21 +1,22 @@
-
 import json
 import os
 from datetime import datetime, time, timedelta
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.triggers.interval import IntervalTrigger
-from sqlalchemy.orm import Session
 
 from app.database import SessionLocal
 from app.models import Order
 from app.services.whatsapp_service import send_template_message
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.interval import IntervalTrigger
+from sqlalchemy.orm import Session
 
 # Mesai saatlerini yükle
 # In Docker, working directory is /app, so we need to adjust path
 config_path = os.getenv("CONFIG_DIR", "/app/../config") + "/shift_hours.json"
 # Fallback: try relative path first, then absolute
 if not os.path.exists(config_path):
-    config_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "config", "shift_hours.json")
+    config_path = os.path.join(
+        os.path.dirname(__file__), "..", "..", "..", "config", "shift_hours.json"
+    )
 
 # If still not found, use a default or create empty config
 if not os.path.exists(config_path):
@@ -24,6 +25,7 @@ if not os.path.exists(config_path):
 else:
     with open(config_path, "r", encoding="utf-8") as f:
         SHIFT_HOURS = json.load(f)
+
 
 def is_work_hour():
     """
@@ -36,12 +38,13 @@ def is_work_hour():
     start_hour = SHIFT_HOURS["work_start_hour"]
     end_hour = SHIFT_HOURS["work_end_hour"]
 
-    if weekday == 5: # Cumartesi
+    if weekday == 5:  # Cumartesi
         end_hour = SHIFT_HOURS["saturday_work_end_hour"]
-    elif weekday == 6 and not SHIFT_HOURS["sunday_work"]: # Pazar
+    elif weekday == 6 and not SHIFT_HOURS["sunday_work"]:  # Pazar
         return False
 
     return time(start_hour) <= current_time <= time(end_hour)
+
 
 async def check_ready_orders():
     """
@@ -53,20 +56,24 @@ async def check_ready_orders():
 
     db: Session = SessionLocal()
     try:
-        orders = db.query(Order).filter(
-            Order.status == "READY",
-            Order.reminder_count < 5,
-            (Order.last_reminder_at == None) | 
-            (Order.last_reminder_at <= datetime.now() - timedelta(days=2))
-        ).all()
+        orders = (
+            db.query(Order)
+            .filter(
+                Order.status == "READY",
+                Order.reminder_count < 5,
+                (Order.last_reminder_at == None)
+                | (Order.last_reminder_at <= datetime.now() - timedelta(days=2)),
+            )
+            .all()
+        )
 
         for order in orders:
             await send_template_message(
-                order.customer.phone, 
-                "order_ready_reminder", 
-                order, 
-                db, 
-                params=["{{company_name}}", "{{order_id}}"]
+                order.customer.phone,
+                "order_ready_reminder",
+                order,
+                db,
+                params=["{{company_name}}", "{{order_id}}"],
             )
             order.reminder_count += 1
             order.last_reminder_at = datetime.now()
@@ -74,15 +81,19 @@ async def check_ready_orders():
     finally:
         db.close()
 
+
 scheduler = AsyncIOScheduler()
+
 
 def _run_xml_collector():
     """XML Collector senkron wrapper (APScheduler async değil)."""
     try:
         from app.services.xml_collector_service import collect_xml_once
+
         collect_xml_once()
     except Exception as exc:
         import logging
+
         logging.getLogger(__name__).error("XML Collector hatası: %s", exc)
 
 
@@ -90,9 +101,11 @@ def _run_optiplan_worker():
     """OptiPlanning Worker senkron wrapper (APScheduler async değil)."""
     try:
         from app.services.optiplan_worker_service import poll_and_run_once
+
         poll_and_run_once()
     except Exception as exc:
         import logging
+
         logging.getLogger(__name__).error("OptiPlan Worker hatası: %s", exc)
 
 

@@ -2,17 +2,24 @@
 Product Service — Spec-first arama, matching, CRUD
 Doküman bölüm 4-6-7'ye göre uygulama
 """
+
 import logging
-from typing import Optional
 
-from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import or_
+from sqlalchemy.orm import Session
 
+from ..exceptions import ConflictError, NotFoundError
 from ..models import (
-    Brand, Color, ProductType, MaterialSpec, SupplierItem, Item,
-    IncomingSpec, ProductRequest, IncomingSpecStatusEnum,
+    Brand,
+    Color,
+    IncomingSpec,
+    IncomingSpecStatusEnum,
+    Item,
+    MaterialSpec,
+    ProductRequest,
+    ProductType,
+    SupplierItem,
 )
-from ..exceptions import NotFoundError, ValidationError, ConflictError
 from .code_generator import generate_item_code, generate_spec_code, generate_spec_hash
 
 logger = logging.getLogger(__name__)
@@ -59,9 +66,11 @@ class ProductService:
         return q.order_by(Color.name).all()
 
     def create_product_type(self, code: str, short_code: str, name: str) -> ProductType:
-        existing = self.db.query(ProductType).filter(
-            or_(ProductType.code == code, ProductType.short_code == short_code)
-        ).first()
+        existing = (
+            self.db.query(ProductType)
+            .filter(or_(ProductType.code == code, ProductType.short_code == short_code))
+            .first()
+        )
         if existing:
             raise ConflictError(f"Ürün tipi kodu zaten mevcut: {code}/{short_code}")
         pt = ProductType(code=code, short_code=short_code, name=name)
@@ -137,8 +146,12 @@ class ProductService:
     # ═══════════════════════════════════════════
 
     def create_supplier_item(
-        self, spec_id: int, brand_id: int, display_name: str | None = None,
-        is_default: bool = False, priority: int = 0,
+        self,
+        spec_id: int,
+        brand_id: int,
+        display_name: str | None = None,
+        is_default: bool = False,
+        priority: int = 0,
     ) -> SupplierItem:
         existing = (
             self.db.query(SupplierItem)
@@ -149,8 +162,11 @@ class ProductService:
             raise ConflictError(f"Bu spec+brand kombinasyonu zaten mevcut: ID={existing.id}")
 
         si = SupplierItem(
-            spec_id=spec_id, brand_id=brand_id,
-            display_name=display_name, is_default=is_default, priority=priority,
+            spec_id=spec_id,
+            brand_id=brand_id,
+            display_name=display_name,
+            is_default=is_default,
+            priority=priority,
         )
         self.db.add(si)
         self.db.commit()
@@ -158,8 +174,12 @@ class ProductService:
         return si
 
     def create_item(
-        self, supplier_item_id: int, unit: str = "ADET", vat_rate: float = 20.0,
-        default_price: float | None = None, barcode: str | None = None,
+        self,
+        supplier_item_id: int,
+        unit: str = "ADET",
+        vat_rate: float = 20.0,
+        default_price: float | None = None,
+        barcode: str | None = None,
         mikro_stok_kodu: str | None = None,
     ) -> Item:
         si = self.db.query(SupplierItem).filter(SupplierItem.id == supplier_item_id).first()
@@ -169,9 +189,13 @@ class ProductService:
         code = generate_item_code(self.db)
 
         item = Item(
-            code=code, supplier_item_id=supplier_item_id,
-            unit=unit, vat_rate=vat_rate, default_price=default_price,
-            barcode=barcode, mikro_stok_kodu=mikro_stok_kodu,
+            code=code,
+            supplier_item_id=supplier_item_id,
+            unit=unit,
+            vat_rate=vat_rate,
+            default_price=default_price,
+            barcode=barcode,
+            mikro_stok_kodu=mikro_stok_kodu,
         )
         self.db.add(item)
         self.db.commit()
@@ -247,13 +271,15 @@ class ProductService:
             else:
                 status = "AMBIGUOUS"
 
-            results.append({
-                "spec": spec,
-                "product_type": spec.product_type,
-                "color": spec.color,
-                "supplier_items": supplier_items,
-                "match_status": status,
-            })
+            results.append(
+                {
+                    "spec": spec,
+                    "product_type": spec.product_type,
+                    "color": spec.color,
+                    "supplier_items": supplier_items,
+                    "match_status": status,
+                }
+            )
 
         return results
 
@@ -272,24 +298,30 @@ class ProductService:
         user_id: int | None = None,
     ) -> IncomingSpec:
         """OptiPlanning'den gelen firma bilgisi olmayan satırı işler."""
-        spec_hash = generate_spec_hash(product_type_short, color_text, thickness_mm, width_cm, height_cm)
+        spec_hash = generate_spec_hash(
+            product_type_short, color_text, thickness_mm, width_cm, height_cm
+        )
 
         # Ürün tipini normalize et
         pt = (
             self.db.query(ProductType)
-            .filter(or_(
-                ProductType.short_code.ilike(product_type_short),
-                ProductType.code.ilike(product_type_short),
-            ))
+            .filter(
+                or_(
+                    ProductType.short_code.ilike(product_type_short),
+                    ProductType.code.ilike(product_type_short),
+                )
+            )
             .first()
         )
         # Rengi normalize et
         color = (
             self.db.query(Color)
-            .filter(or_(
-                Color.code.ilike(color_text),
-                Color.name.ilike(color_text),
-            ))
+            .filter(
+                or_(
+                    Color.code.ilike(color_text),
+                    Color.name.ilike(color_text),
+                )
+            )
             .first()
         )
 

@@ -1,5 +1,7 @@
+from typing import Any, Dict
+
 from .base_agent import BaseAgent, Finding
-from typing import Dict, Any
+
 
 class GrainMappingAgent(BaseAgent):
     """

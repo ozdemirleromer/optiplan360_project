@@ -3,22 +3,26 @@ OptiPlan360 — WhatsApp Service
 İş mantığı katmanı: mesaj gönderim, config yönetimi, şablon yönetimi.
 Router'dan çağrılır, doğrudan HTTP işlemi yapmaz.
 """
-import httpx
+
 import logging
 import re
 from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
 
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-
+import httpx
+from app.exceptions import AuthorizationError, BusinessRuleError
 from app.models import (
-    Order, Customer, AuditLog, User,
-    WhatsAppMessage, WhatsAppSetting,
+    AuditLog,
+    Customer,
+    Order,
+    User,
+    WhatsAppMessage,
+    WhatsAppSetting,
 )
-from app.exceptions import BusinessRuleError, AuthorizationError
 from app.permissions import Permission, has_permission
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +57,7 @@ TEMPLATES = {
 
 
 # ── DB Config Yardımcıları ────────────────────────────────
+
 
 def _get_setting(db: Session, key: str, default: str = "") -> str:
     row = db.query(WhatsAppSetting).filter(WhatsAppSetting.key == key).first()
@@ -95,6 +100,7 @@ def _create_audit_log(
 
 # ── Telefon Normalizasyonu ────────────────────────────────
 
+
 def normalize_phone_number(phone: str) -> Optional[str]:
     """
     Türk telefon numarasını normalize eder.
@@ -103,19 +109,20 @@ def normalize_phone_number(phone: str) -> Optional[str]:
     if not phone:
         return None
 
-    digits = re.sub(r'\D', '', phone)
+    digits = re.sub(r"\D", "", phone)
 
-    if len(digits) == 10 and digits.startswith('5'):
+    if len(digits) == 10 and digits.startswith("5"):
         return f"90{digits}"
-    elif len(digits) == 11 and digits.startswith('0'):
+    elif len(digits) == 11 and digits.startswith("0"):
         return f"90{digits[1:]}"
-    elif len(digits) == 12 and digits.startswith('90'):
+    elif len(digits) == 12 and digits.startswith("90"):
         return digits
 
     return None
 
 
 # ── Mesai Saati Kontrolü ──────────────────────────────────
+
 
 def is_within_working_hours() -> bool:
     """Mesai saatleri içinde mi kontrol eder (09:00-18:00 Türkiye)"""
@@ -124,6 +131,7 @@ def is_within_working_hours() -> bool:
 
 
 # ── RBAC Kontrolleri ──────────────────────────────────────
+
 
 def _assert_whatsapp_permission(user: User, permission: Permission) -> None:
     """WhatsApp izin kontrolü"""
@@ -137,6 +145,7 @@ def _assert_whatsapp_permission(user: User, permission: Permission) -> None:
 # ═══════════════════════════════════════════════════
 # SERVİS FONKSİYONLARI
 # ═══════════════════════════════════════════════════
+
 
 def get_config(db: Session, user: User) -> dict:
     """WhatsApp yapılandırmasını getir (token gizli)"""
@@ -204,7 +213,7 @@ async def send_message(
         order = db.query(Order).filter(Order.id == order_id).first()
         if order:
             ts_code = order.ts_code
-            tracking_token = getattr(order, 'tracking_token', None)
+            tracking_token = getattr(order, "tracking_token", None)
             cust = db.query(Customer).filter(Customer.id == order.customer_id).first()
             if cust:
                 customer_name = cust.name
@@ -287,7 +296,9 @@ async def send_message(
 
     db.add(wa_msg)
     _create_audit_log(
-        db, user.id, "WHATSAPP_SEND",
+        db,
+        user.id,
+        "WHATSAPP_SEND",
         f"→ {to_phone}: {wa_msg.status} | {msg[:50]}...",
         order_id,
     )
@@ -310,7 +321,9 @@ async def send_template_message(
     normalized_phone = normalize_phone_number(customer_phone)
     if not normalized_phone:
         _create_audit_log(
-            db, None, "WHATSAPP_ERROR",
+            db,
+            None,
+            "WHATSAPP_ERROR",
             f"Geçersiz telefon numarası: {customer_phone}",
             order.id,
         )
@@ -318,9 +331,13 @@ async def send_template_message(
         return
 
     if not _is_configured(db):
-        logger.info("WhatsApp yapılandırılmamış, simüle ediliyor: %s → %s", template_name, normalized_phone)
+        logger.info(
+            "WhatsApp yapılandırılmamış, simüle ediliyor: %s → %s", template_name, normalized_phone
+        )
         _create_audit_log(
-            db, None, "WHATSAPP_SIMULATED",
+            db,
+            None,
+            "WHATSAPP_SIMULATED",
             f"Simüle: {template_name} → {normalized_phone}",
             order.id,
         )
@@ -333,7 +350,7 @@ async def send_template_message(
     url = f"https://graph.facebook.com/{api_ver}/{pid}/messages"
 
     final_params = []
-    for p in (params or []):
+    for p in params or []:
         if p == "{{company_name}}":
             final_params.append({"type": "text", "text": "OPTIPLAN360"})
         elif p == "{{order_id}}":
@@ -358,12 +375,15 @@ async def send_template_message(
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                url, json=payload,
+                url,
+                json=payload,
                 headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
                 timeout=10,
             )
             response.raise_for_status()
-            _create_audit_log(db, None, "WHATSAPP_SENT", f"Mesaj gönderildi: {template_name}", order.id)
+            _create_audit_log(
+                db, None, "WHATSAPP_SENT", f"Mesaj gönderildi: {template_name}", order.id
+            )
         except httpx.HTTPStatusError as e:
             error_data = e.response.json() if e.response else {}
             error_message = error_data.get("error", {}).get("message", "Bilinmeyen API hatası")
@@ -400,19 +420,14 @@ def get_summary(db: Session, user: User) -> dict:
     today_count = (
         db.query(func.count(WhatsAppMessage.id))
         .filter(WhatsAppMessage.sent_at >= today_start)
-        .scalar() or 0
+        .scalar()
+        or 0
     )
     failed = (
-        db.query(func.count(WhatsAppMessage.id))
-        .filter(WhatsAppMessage.status == "FAILED")
-        .scalar() or 0
+        db.query(func.count(WhatsAppMessage.id)).filter(WhatsAppMessage.status == "FAILED").scalar()
+        or 0
     )
-    recent_msgs = (
-        db.query(WhatsAppMessage)
-        .order_by(WhatsAppMessage.sent_at.desc())
-        .limit(10)
-        .all()
-    )
+    recent_msgs = db.query(WhatsAppMessage).order_by(WhatsAppMessage.sent_at.desc()).limit(10).all()
 
     return {
         "configured": _is_configured(db),
@@ -447,7 +462,9 @@ def handle_read_webhook(db: Session, webhook_data: dict) -> dict:
                             else datetime.now(timezone.utc)
                         )
                         _create_audit_log(
-                            db, None, "MESSAGE_READ",
+                            db,
+                            None,
+                            "MESSAGE_READ",
                             f"Mesaj okundu: {message_id}",
                         )
                         processed += 1
@@ -458,6 +475,7 @@ def handle_read_webhook(db: Session, webhook_data: dict) -> dict:
 
 
 # ── Yardımcı ──────────────────────────────────────────────
+
 
 def _msg_to_dict(m: WhatsAppMessage) -> dict:
     """WhatsAppMessage → dict dönüşümü"""
@@ -473,4 +491,3 @@ def _msg_to_dict(m: WhatsAppMessage) -> dict:
         "sent_at": m.sent_at.isoformat() if m.sent_at else "",
         "error": m.error,
     }
-

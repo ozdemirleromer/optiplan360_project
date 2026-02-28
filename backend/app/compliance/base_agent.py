@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from typing import List, Dict, Any
+from typing import Any, Dict
+
 
 class BaseAgent(ABC):
     """
@@ -17,18 +18,16 @@ class BaseAgent(ABC):
         Returns:
             A dictionary containing the transformed data and findings.
         """
-        pass
+
 
 class Finding:
     """
     Represents a compliance finding.
     """
+
     def __init__(self, severity: str, message: str):
         self.severity = severity  # ERROR, WARN, INFO
         self.message = message
 
     def to_dict(self):
-        return {
-            "severity": self.severity,
-            "message": self.message
-        }
+        return {"severity": self.severity, "message": self.message}

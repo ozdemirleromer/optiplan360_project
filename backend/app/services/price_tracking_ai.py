@@ -1,6 +1,7 @@
 """
 Fiyat takip sistemi — GPT-4o ile yapılandırılmış veri çıkarma.
 """
+
 import json
 import logging
 import os
@@ -47,6 +48,7 @@ def _get_client():
             config_path = "config/ai_config.json"
             try:
                 import json as _json
+
                 if os.path.exists(config_path):
                     with open(config_path, "r", encoding="utf-8") as f:
                         cfg = _json.load(f)
@@ -158,10 +160,7 @@ def extract_price_data_from_text(
             return []
 
         # Ürün adı olmayanları filtrele
-        valid = [
-            item for item in items
-            if isinstance(item, dict) and item.get("urun_adi")
-        ]
+        valid = [item for item in items if isinstance(item, dict) and item.get("urun_adi")]
 
         logger.info("AI çıkarma: %d ürün (toplam %d)", len(valid), len(items))
         return valid

@@ -1,11 +1,11 @@
 """
 Fiyat takip sistemi yardımcı fonksiyonları — sütun eşleme, normalizasyon.
 """
+
 import json
+import logging
 from pathlib import Path
 from typing import Any
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ def normalize_columns(columns: list[str]) -> dict[str, str]:
     """
     alias_map = build_alias_map()
     result: dict[str, str] = {}
-    used_targets: set[str] = set()   # Zaten eşlenmiş standart isimler
+    used_targets: set[str] = set()  # Zaten eşlenmiş standart isimler
 
     for col in columns:
         normalized = col.lower().strip()
@@ -60,7 +60,8 @@ def normalize_columns(columns: list[str]) -> dict[str, str]:
             else:
                 logger.warning(
                     "Duplicate sütun atlandı: '%s' -> '%s' (zaten eşlenmiş)",
-                    col, target,
+                    col,
+                    target,
                 )
     return result
 
@@ -78,8 +79,14 @@ def get_file_type(extension: str) -> str:
 
 
 SUPPORTED_EXTENSIONS = {
-    ".xlsx", ".xls", ".pdf",
-    ".jpg", ".jpeg", ".png", ".tiff", ".bmp",
+    ".xlsx",
+    ".xls",
+    ".pdf",
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".tiff",
+    ".bmp",
 }
 
 MAX_FILE_SIZE_MB = 50

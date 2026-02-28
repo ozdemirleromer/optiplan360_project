@@ -6,13 +6,13 @@ Formatlar:
   Item Service: SRV-{YY}{MM}-{SEQ6}-{CD}
   MaterialSpec: {SHORT_CODE}-{COLOR}-{THICK}-{WxH}
 """
+
 import hashlib
 from datetime import datetime
 
 from sqlalchemy.orm import Session
-from sqlalchemy import func
 
-from ..models import Item, MaterialSpec
+from ..models import Item
 
 
 def _check_digit(base: str) -> str:
@@ -35,10 +35,7 @@ def generate_item_code(db: Session) -> str:
 
     # Mevcut en yüksek sequence'ı bul
     last = (
-        db.query(Item.code)
-        .filter(Item.code.like(f"{prefix}%"))
-        .order_by(Item.code.desc())
-        .first()
+        db.query(Item.code).filter(Item.code.like(f"{prefix}%")).order_by(Item.code.desc()).first()
     )
 
     if last and last[0]:
