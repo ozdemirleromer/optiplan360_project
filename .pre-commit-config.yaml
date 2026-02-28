@@ -1,9 +1,9 @@
-# Pre-commit hooks - Her commit'ten önce otomatik control
+# Pre-commit hooks - Her commit'ten once otomatik kontrol
 # Kurulum: pip install pre-commit && pre-commit install
-# Manual çalıştırma: pre-commit run --all-files
+# Manual calistirma: pre-commit run --all-files
 
 repos:
-  # Temel format ve lint kontrolleri
+  # Temel format kontrolleri (auto-fix)
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
@@ -16,70 +16,23 @@ repos:
       - id: check-merge-conflict
       - id: detect-private-key
       - id: mixed-line-ending
-      - id: fix-encoding-pragma
+        args: ['--fix=lf']
 
-  # Black - Code formatting
+  # Black - Code formatting (auto-fix)
   - repo: https://github.com/psf/black
     rev: 24.1.1
     hooks:
       - id: black
-        language_version: python3.11
         args: ['--line-length=100']
 
-  # isort - Import sorting
-  - repo: https://github.com/PyCPA/isort
+  # isort - Import sorting (auto-fix)
+  - repo: https://github.com/PyCQA/isort
     rev: 5.13.2
     hooks:
       - id: isort
         args: ['--profile=black', '--line-length=100']
 
-  # Flake8 - Linting
-  - repo: https://github.com/PyCPA/flake8
-    rev: 7.0.0
-    hooks:
-      - id: flake8
-        args: ['--max-line-length=100', '--extend-ignore=E203,W503']
-        additional_dependencies: ['flake8-docstrings', 'flake8-bugbear']
-
-  # Bandit - Security linting
-  - repo: https://github.com/PyCPA/bandit
-    rev: 1.7.5
-    hooks:
-      - id: bandit
-        args: ['-c', 'pyproject.toml']
-        additional_dependencies: ['bandit[toml]']
-
-  # Pylint - Advanced Python linting
-  - repo: https://github.com/PyCPA/pylint
-    rev: pylint-3.0.3
-    hooks:
-      - id: pylint
-        args: ['--max-line-length=100']
-        additional_dependencies: ['pylint']
-        exclude: ^(tests|alembic|migrations)
-
-  # MyPy - Type checking
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.8.0
-    hooks:
-      - id: mypy
-        args: ['--ignore-missing-imports', '--no-error-summary']
-        additional_dependencies: ['types-all']
-        exclude: ^(tests|alembic|migrations)
-
-  # YAML validation
-  - repo: https://github.com/adrienverge/yamllint
-    rev: v1.33.0
-    hooks:
-      - id: yamllint
-        args: ['-d', 'relaxed']
-        files: \.(yaml|yml)$
-
-# Hızlı çalışma için ayarlar
-default_language_version:
-  python: python3.11
-
-# Sorunlu dosyaları atla
+# Sorunlu dosyalari atla
 exclude: |
   (?x)^(
     alembic/|

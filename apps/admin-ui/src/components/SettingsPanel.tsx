@@ -1,4 +1,4 @@
-﻿import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { Icon } from "./Icon";
 import { PathsEditor } from "./PathsEditor";
 import { RulesEditor } from "./RulesEditor";
