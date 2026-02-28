@@ -3,33 +3,31 @@ OptiPlan 360 — WhatsApp Router
 İnce HTTP katmanı: sadece parametreleri al, servisi çağır, yanıt dön.
 Tüm iş mantığı whatsapp_service.py içinde.
 """
+
 import logging
 from typing import Optional
 
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
-
+from app.auth import get_current_user
 from app.database import get_db
 from app.models import User
-from app.auth import get_current_user
 from app.schemas import (
-    WhatsAppConfigUpdate,
     WhatsAppConfigResponse,
-    WhatsAppMessageSend,
+    WhatsAppConfigUpdate,
     WhatsAppMessageResponse,
-    WhatsAppTemplateResponse,
+    WhatsAppMessageSend,
     WhatsAppSummaryResponse,
+    WhatsAppTemplateResponse,
     WhatsAppUnreadResponse,
 )
-from app.services.whatsapp_service import (
-    get_config as svc_get_config,
-    update_config as svc_update_config,
-    get_templates as svc_get_templates,
-    send_message as svc_send_message,
-    list_messages as svc_list_messages,
-    get_summary as svc_get_summary,
-    handle_read_webhook as svc_handle_read_webhook,
-)
+from app.services.whatsapp_service import get_config as svc_get_config
+from app.services.whatsapp_service import get_summary as svc_get_summary
+from app.services.whatsapp_service import get_templates as svc_get_templates
+from app.services.whatsapp_service import handle_read_webhook as svc_handle_read_webhook
+from app.services.whatsapp_service import list_messages as svc_list_messages
+from app.services.whatsapp_service import send_message as svc_send_message
+from app.services.whatsapp_service import update_config as svc_update_config
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -39,6 +37,7 @@ router = APIRouter(prefix="/api/v1/whatsapp", tags=["whatsapp"])
 # ═══════════════════════════════════════════════════
 # YAPILANDIRMA
 # ═══════════════════════════════════════════════════
+
 
 @router.get("/config", response_model=WhatsAppConfigResponse)
 def get_config(
@@ -57,7 +56,8 @@ def update_config(
 ):
     """WhatsApp yapılandırmasını güncelle — sadece ADMIN"""
     return svc_update_config(
-        db, current_user,
+        db,
+        current_user,
         phone_number_id=body.phone_number_id,
         business_account_id=body.business_account_id,
         access_token=body.access_token,
@@ -68,6 +68,7 @@ def update_config(
 # ═══════════════════════════════════════════════════
 # ŞABLONLAR
 # ═══════════════════════════════════════════════════
+
 
 @router.get("/templates", response_model=list[WhatsAppTemplateResponse])
 def list_templates(
@@ -81,6 +82,7 @@ def list_templates(
 # MESAJ GÖNDER
 # ═══════════════════════════════════════════════════
 
+
 @router.post("/send", response_model=WhatsAppMessageResponse, status_code=201)
 async def send_message(
     body: WhatsAppMessageSend,
@@ -89,7 +91,8 @@ async def send_message(
 ):
     """WhatsApp mesajı gönder"""
     return await svc_send_message(
-        db, current_user,
+        db,
+        current_user,
         to_phone=body.to_phone,
         template_name=body.template_name,
         message_text=body.message_text,
@@ -100,6 +103,7 @@ async def send_message(
 # ═══════════════════════════════════════════════════
 # MESAJ GEÇMİŞİ
 # ═══════════════════════════════════════════════════
+
 
 @router.get("/messages", response_model=list[WhatsAppMessageResponse])
 def list_messages(
@@ -115,6 +119,7 @@ def list_messages(
 # ÖZET
 # ═══════════════════════════════════════════════════
 
+
 @router.get("/summary", response_model=WhatsAppSummaryResponse)
 def get_summary(
     db: Session = Depends(get_db),
@@ -128,6 +133,7 @@ def get_summary(
 # OKUNMA TAKİBİ WEBHOOK
 # ═══════════════════════════════════════════════════
 
+
 @router.post("/webhook/read")
 def handle_read_webhook(
     webhook_data: dict,
@@ -140,6 +146,7 @@ def handle_read_webhook(
 # ═══════════════════════════════════════════════════
 # OKUNMAMIŞ MESAJLAR
 # ═══════════════════════════════════════════════════
+
 
 @router.get("/unread-messages", response_model=WhatsAppUnreadResponse)
 def get_unread_messages(

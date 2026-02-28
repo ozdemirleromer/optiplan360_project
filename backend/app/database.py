@@ -3,12 +3,13 @@ OptiPlan 360 — Veritabanı Bağlantısı (SQLAlchemy)
 Handoff §10: PostgreSQL sistem ekibi tarafından kurulur.
 Backend ilk çalışmada Alembic veya create_all ile tabloları oluşturabilir.
 """
+
+import logging
 import os
 import time
-import logging
-from sqlalchemy import create_engine, text, pool
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
-from sqlalchemy.exc import OperationalError
+
+from sqlalchemy import create_engine, pool, text
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -39,7 +40,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase):
     """Tüm SQLAlchemy modelleri bu sınıftan türetilir."""
-    pass
 
 
 def get_db():
@@ -63,12 +63,12 @@ def check_db_connected() -> bool:
 
 def get_db_stats() -> dict:
     """Connection pool istatistiklerini döndür."""
-    if hasattr(engine, 'pool'):
+    if hasattr(engine, "pool"):
         return {
-            'size': engine.pool.size(),
-            'checked_in': engine.pool.checkedin(),
-            'checked_out': engine.pool.checkedout(),
-            'overflow': engine.pool.overflow(),
+            "size": engine.pool.size(),
+            "checked_in": engine.pool.checkedin(),
+            "checked_out": engine.pool.checkedout(),
+            "overflow": engine.pool.overflow(),
         }
     return {}
 

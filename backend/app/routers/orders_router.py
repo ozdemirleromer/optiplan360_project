@@ -2,39 +2,51 @@
 OptiPlan 360 — Order Router
 Sipariş CRUD + Validasyon + Onay + Export
 """
-import os
+
 import io
 import json
-import shutil
+import logging
+import os
 import re
 import unicodedata
+from datetime import datetime, timezone
 from typing import List
 from uuid import uuid4
-from datetime import datetime, timezone
-from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, Form, BackgroundTasks
-from fastapi.responses import FileResponse
-from sqlalchemy.orm import Session, joinedload, subqueryload
-from openpyxl import Workbook, load_workbook
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-
-from app.database import get_db
-from app.models import Order, OrderPart, Customer, AuditLog, User
-from app.schemas import (
-    OrderCreate, OrderOut, OrderListResponse, OrderPartCreate,
-    ValidationResult, ValidationError as VError, MergeSuggestion,
-    ExportResult, ExportFile, OrderUpdate, OrderPartOut,
-)
 
 from app.auth import get_current_user, require_operator, require_permissions
+from app.database import get_db
+from app.exceptions import BusinessRuleError, NotFoundError, ValidationError
+from app.models import Customer, Order, OrderPart, User
 from app.permissions import Permission
-from app.utils import create_audit_log
-from app.services.optimization import get_export_rows, MergeService
-from app.services.export import export_order_to_excel
-from app.services.whatsapp_service import send_template_message
+from app.schemas import (
+    ExportFile,
+    ExportResult,
+    OrderCreate,
+    OrderListResponse,
+    OrderOut,
+    OrderPartCreate,
+    OrderPartOut,
+    OrderUpdate,
+)
+from app.schemas import (
+    ValidationResult,
+)
+from app.services.optimization import get_export_rows
 from app.services.order_service import OrderService
-from app.exceptions import AppError, BusinessRuleError, NotFoundError, ValidationError
+from app.utils import create_audit_log
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    Form,
+    Query,
+    UploadFile,
+)
+from fastapi.responses import FileResponse
+from openpyxl import Workbook, load_workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from sqlalchemy.orm import Session, joinedload, subqueryload
 
-import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/orders", tags=["orders"])
@@ -119,11 +131,13 @@ def get_order(
             raise NotFoundError("Sipariş")
     except ValueError:
         raise NotFoundError("Kaynak")
-    
-    order = db.query(Order).options(
-        joinedload(Order.parts),
-        joinedload(Order.audit_logs)
-    ).filter(Order.id == order_id_int).first()
+
+    order = (
+        db.query(Order)
+        .options(joinedload(Order.parts), joinedload(Order.audit_logs))
+        .filter(Order.id == order_id_int)
+        .first()
+    )
     if not order:
         raise NotFoundError("Sipariş")
     return _order_to_out(order)
@@ -175,13 +189,13 @@ def approve_order(
 
 # ─── Durum Geçiş Kuralları ───
 VALID_TRANSITIONS = {
-    "NEW":           ["HOLD", "CANCELLED", "IN_PRODUCTION"],
-    "HOLD":          ["NEW", "CANCELLED", "IN_PRODUCTION"],
+    "NEW": ["HOLD", "CANCELLED", "IN_PRODUCTION"],
+    "HOLD": ["NEW", "CANCELLED", "IN_PRODUCTION"],
     "IN_PRODUCTION": ["HOLD", "CANCELLED", "READY"],
-    "READY":         ["IN_PRODUCTION", "DELIVERED"],
-    "DELIVERED":     ["DONE"],
-    "DONE":          [],   # Son durum — geçiş yok
-    "CANCELLED":     ["NEW"],  # İptal → tekrar yeni yapılabilir
+    "READY": ["IN_PRODUCTION", "DELIVERED"],
+    "DELIVERED": ["DONE"],
+    "DONE": [],  # Son durum — geçiş yok
+    "CANCELLED": ["NEW"],  # İptal → tekrar yeni yapılabilir
 }
 
 
@@ -209,7 +223,9 @@ async def update_status(
 # ─── OptiPlanning Export ───
 def _load_share_path() -> str | None:
     """system_config.json'dan makine paylaşım yolunu oku"""
-    config_path = os.path.join(os.path.dirname(__file__), "..", "..", "..", "config", "system_config.json")
+    config_path = os.path.join(
+        os.path.dirname(__file__), "..", "..", "..", "config", "system_config.json"
+    )
     try:
         with open(config_path, "r", encoding="utf-8") as f:
             cfg = json.load(f)
@@ -264,7 +280,9 @@ def export_opti(
         rows = get_export_rows(parts, part_group=part_group)
         _create_opti_xlsx(path, rows, order, group_name)
         download_url = f"/api/v1/orders/export/download/{fn}"
-        files.append(ExportFile(filename=fn, part_group=group_name, path=path, download_url=download_url))
+        files.append(
+            ExportFile(filename=fn, part_group=group_name, path=path, download_url=download_url)
+        )
 
     return ExportResult(files=files)
 
@@ -294,13 +312,18 @@ def _create_opti_xlsx(path: str, rows: list, order: Order, part_group: str = "GO
     header_font = Font(bold=True, size=10, color="FFFFFF")
     header_fill = PatternFill(start_color="2E75B6", end_color="2E75B6", fill_type="solid")
     thin_border = Border(
-        left=Side(style="thin"), right=Side(style="thin"),
-        top=Side(style="thin"), bottom=Side(style="thin"),
+        left=Side(style="thin"),
+        right=Side(style="thin"),
+        top=Side(style="thin"),
+        bottom=Side(style="thin"),
     )
 
     # ─── Satır 1: Sipariş bilgileri ───
-    meta_labels_1 = [("Sipariş", order.ts_code), ("Müşteri", order.crm_name_snapshot),
-                     ("Tarih", datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M"))]
+    meta_labels_1 = [
+        ("Sipariş", order.ts_code),
+        ("Müşteri", order.crm_name_snapshot),
+        ("Tarih", datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M")),
+    ]
     col = 1
     for label, value in meta_labels_1:
         c = ws.cell(row=1, column=col, value=label)
@@ -483,7 +506,12 @@ def _header_key(text: str) -> str | None:
 
 def _extract_meta_and_rows(ws) -> tuple[list[dict], list[str], dict]:
     warnings: list[str] = []
-    meta = {"thickness_mm": 18, "plate_w_mm": 2100, "plate_h_mm": 2800, "material_name": "Belirtilmedi"}
+    meta = {
+        "thickness_mm": 18,
+        "plate_w_mm": 2100,
+        "plate_h_mm": 2800,
+        "material_name": "Belirtilmedi",
+    }
 
     rows = [list(r) for r in ws.iter_rows(values_only=True)]
     if not rows:
@@ -529,8 +557,17 @@ def _extract_meta_and_rows(ws) -> tuple[list[dict], list[str], dict]:
                 header_map = local_map
 
         if first_data_idx == -1:
-            has_standard = _to_float(cells[0]) is not None and _to_float(cells[1]) is not None and _to_int(cells[2]) is not None
-            has_offset = len(cells) > 3 and _to_float(cells[1]) is not None and _to_float(cells[2]) is not None and _to_int(cells[3]) is not None
+            has_standard = (
+                _to_float(cells[0]) is not None
+                and _to_float(cells[1]) is not None
+                and _to_int(cells[2]) is not None
+            )
+            has_offset = (
+                len(cells) > 3
+                and _to_float(cells[1]) is not None
+                and _to_float(cells[2]) is not None
+                and _to_int(cells[3]) is not None
+            )
             if has_standard or has_offset:
                 first_data_idx = i
                 inferred_offset = 1 if has_offset and not has_standard else 0
@@ -554,18 +591,32 @@ def _extract_meta_and_rows(ws) -> tuple[list[dict], list[str], dict]:
         }
         start_idx = header_idx + 1
         if idx["boy"] is None or idx["en"] is None or idx["adet"] is None:
-            inferred_offset = 1 if first_data_idx != -1 and len(rows[first_data_idx]) > 3 and _to_float(rows[first_data_idx][1]) is not None else 0
+            inferred_offset = (
+                1
+                if first_data_idx != -1
+                and len(rows[first_data_idx]) > 3
+                and _to_float(rows[first_data_idx][1]) is not None
+                else 0
+            )
             idx["boy"] = 1 if inferred_offset else 0
             idx["en"] = 2 if inferred_offset else 1
             idx["adet"] = 3 if inferred_offset else 2
-            idx["grain"] = idx["grain"] if idx["grain"] is not None else (4 if inferred_offset else 3)
+            idx["grain"] = (
+                idx["grain"] if idx["grain"] is not None else (4 if inferred_offset else 3)
+            )
             idx["u1"] = idx["u1"] if idx["u1"] is not None else (5 if inferred_offset else 4)
             idx["u2"] = idx["u2"] if idx["u2"] is not None else (6 if inferred_offset else 5)
             idx["k1"] = idx["k1"] if idx["k1"] is not None else (7 if inferred_offset else 6)
             idx["k2"] = idx["k2"] if idx["k2"] is not None else (8 if inferred_offset else 7)
-            idx["desc"] = idx["desc"] if idx["desc"] is not None else (11 if inferred_offset else 10)
-            idx["drill1"] = idx["drill1"] if idx["drill1"] is not None else (9 if inferred_offset else 8)
-            idx["drill2"] = idx["drill2"] if idx["drill2"] is not None else (10 if inferred_offset else 9)
+            idx["desc"] = (
+                idx["desc"] if idx["desc"] is not None else (11 if inferred_offset else 10)
+            )
+            idx["drill1"] = (
+                idx["drill1"] if idx["drill1"] is not None else (9 if inferred_offset else 8)
+            )
+            idx["drill2"] = (
+                idx["drill2"] if idx["drill2"] is not None else (10 if inferred_offset else 9)
+            )
     else:
         start_idx = first_data_idx
         idx = {
@@ -620,8 +671,12 @@ def _extract_meta_and_rows(ws) -> tuple[list[dict], list[str], dict]:
                 "k1": _parse_excel_bool(val("k1")),
                 "k2": _parse_excel_bool(val("k2")),
                 "part_desc": str(val("desc")).strip() if val("desc") not in (None, "") else None,
-                "drill_code_1": str(val("drill1")).strip() if val("drill1") not in (None, "") else None,
-                "drill_code_2": str(val("drill2")).strip() if val("drill2") not in (None, "") else None,
+                "drill_code_1": (
+                    str(val("drill1")).strip() if val("drill1") not in (None, "") else None
+                ),
+                "drill_code_2": (
+                    str(val("drill2")).strip() if val("drill2") not in (None, "") else None
+                ),
             }
         )
 
@@ -671,13 +726,19 @@ async def auto_create_from_xlsx(
 
     customer = db.query(Customer).filter(Customer.phone == phone_digits).first()
     if not customer:
-        customer = Customer(name=raw_name, phone=phone_digits, created_by=current_user.id, updated_by=current_user.id)
+        customer = Customer(
+            name=raw_name,
+            phone=phone_digits,
+            created_by=current_user.id,
+            updated_by=current_user.id,
+        )
         db.add(customer)
         db.flush()
 
     ts_code = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
 
     from sqlalchemy import func as sa_func
+
     max_no = db.query(sa_func.max(Order.order_no)).scalar() or 0
 
     order = Order(
@@ -727,7 +788,13 @@ async def auto_create_from_xlsx(
         imported_rows += 1
 
     create_audit_log(db, current_user.id, "ORDER_CREATED_AUTO", f"Liste: {raw_name}", order.id)
-    create_audit_log(db, current_user.id, "IMPORT_XLSX_AUTO", f"{imported_rows} satir import edildi ({part_group})", order.id)
+    create_audit_log(
+        db,
+        current_user.id,
+        "IMPORT_XLSX_AUTO",
+        f"{imported_rows} satir import edildi ({part_group})",
+        order.id,
+    )
     db.commit()
 
     return {
@@ -749,7 +816,8 @@ async def import_xlsx(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_operator),
 ):
-    """Excel dosyasından ölçü satırlarını siparişe ekle"""    order = db.query(Order).filter(Order.id == order_id).first()
+    """Excel dosyasından ölçü satırlarını siparişe ekle"""
+    order = db.query(Order).filter(Order.id == order_id).first()
     if not order:
         raise NotFoundError("Sipariş")
     if order.status != "NEW":
@@ -819,7 +887,10 @@ async def import_xlsx(
                 en_mm=en_val,
                 adet=adet_val,
                 grain_code=grain,
-                u1=u1, u2=u2, k1=k1, k2=k2,
+                u1=u1,
+                u2=u2,
+                k1=k1,
+                k2=k2,
                 part_desc=desc,
                 drill_code_1=drill1,
                 drill_code_2=drill2,
@@ -831,7 +902,13 @@ async def import_xlsx(
         order.updated_at = datetime.now(timezone.utc)
         db.commit()
 
-        create_audit_log(db, current_user.id, "IMPORT_XLSX", f"{imported_rows} satır import edildi ({part_group})", order_id)
+        create_audit_log(
+            db,
+            current_user.id,
+            "IMPORT_XLSX",
+            f"{imported_rows} satır import edildi ({part_group})",
+            order_id,
+        )
         db.commit()
 
         return {
@@ -879,5 +956,3 @@ def update_order_header(
 ):
     order = OrderService.update_order_header(db, order_id, body, current_user)
     return OrderService.order_to_out(order)
-
-

@@ -3,18 +3,19 @@ Integration Router — Mikro Senkronizasyon API
 /api/v1/integration/...
 Outbox/Inbox, Sync Jobs, Entity Mapping, Health, Retry
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.exceptions import BusinessRuleError, NotFoundError
-from sqlalchemy.orm import Session
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
-from datetime import datetime
 
-from app.database import get_db
-from app.models import User
+from datetime import datetime
+from typing import Optional
+
 from app.auth import require_permissions
+from app.database import get_db
+from app.exceptions import BusinessRuleError, NotFoundError
+from app.models import User
 from app.permissions import Permission
 from app.services import integration_service
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/integration", tags=["integration"])
 
@@ -23,11 +24,13 @@ router = APIRouter(prefix="/api/v1/integration", tags=["integration"])
 # PYDANTIC SCHEMAS
 # ═══════════════════════════════════════
 
+
 class EntityMapCreate(BaseModel):
     entity_type: str
     internal_id: str
     external_id: str
     mapping_data: Optional[str] = None
+
 
 class EntityMapOut(BaseModel):
     id: str
@@ -41,10 +44,12 @@ class EntityMapOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class SyncJobCreate(BaseModel):
     job_type: str = "INCREMENTAL"  # FULL_SYNC, INCREMENTAL, SINGLE_ENTITY
-    direction: str = "PUSH"        # PUSH, PULL, BIDIRECTIONAL
+    direction: str = "PUSH"  # PUSH, PULL, BIDIRECTIONAL
     entity_type: Optional[str] = None
+
 
 class SyncJobOut(BaseModel):
     id: str
@@ -62,6 +67,7 @@ class SyncJobOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class OutboxOut(BaseModel):
     id: str
     entity_type: str
@@ -77,6 +83,7 @@ class OutboxOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class InboxOut(BaseModel):
     id: str
     entity_type: str
@@ -91,6 +98,7 @@ class InboxOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ErrorOut(BaseModel):
     id: str
     job_id: Optional[str] = None
@@ -103,6 +111,7 @@ class ErrorOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class AuditOut(BaseModel):
     id: str
     action: str
@@ -114,6 +123,7 @@ class AuditOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ConflictResolve(BaseModel):
     resolution: str  # ACCEPT, REJECT, MERGE
 
@@ -121,6 +131,7 @@ class ConflictResolve(BaseModel):
 # ═══════════════════════════════════════
 # ENTITY MAP ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/maps")
 def api_list_maps(
@@ -135,7 +146,11 @@ def api_list_maps(
 
 
 @router.post("/maps", status_code=201)
-def api_create_map(body: EntityMapCreate, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_create_map(
+    body: EntityMapCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     m = integration_service.create_entity_map(
         db, body.entity_type, body.internal_id, body.external_id, user.id, body.mapping_data
     )
@@ -143,7 +158,11 @@ def api_create_map(body: EntityMapCreate, db: Session = Depends(get_db), user: U
 
 
 @router.delete("/maps/{map_id}")
-def api_delete_map(map_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_delete_map(
+    map_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     ok = integration_service.delete_entity_map(db, map_id, user.id)
     if not ok:
         raise NotFoundError("Eşleme")
@@ -153,6 +172,7 @@ def api_delete_map(map_id: str, db: Session = Depends(get_db), user: User = Depe
 # ═══════════════════════════════════════
 # SYNC JOB ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/jobs")
 def api_list_jobs(
@@ -167,7 +187,11 @@ def api_list_jobs(
 
 
 @router.get("/jobs/{job_id}")
-def api_get_job(job_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW))):
+def api_get_job(
+    job_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW)),
+):
     job = integration_service.get_sync_job(db, job_id)
     if not job:
         raise NotFoundError("Senkron işi")
@@ -175,14 +199,21 @@ def api_get_job(job_id: str, db: Session = Depends(get_db), user: User = Depends
 
 
 @router.post("/jobs", status_code=201)
-def api_create_job(body: SyncJobCreate, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
-    job = integration_service.create_sync_job(db, body.job_type, body.direction, body.entity_type, user.id)
+def api_create_job(
+    body: SyncJobCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
+    job = integration_service.create_sync_job(
+        db, body.job_type, body.direction, body.entity_type, user.id
+    )
     return SyncJobOut.model_validate(job)
 
 
 # ═══════════════════════════════════════
 # OUTBOX ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/outbox")
 def api_list_outbox(
@@ -197,7 +228,11 @@ def api_list_outbox(
 
 
 @router.post("/outbox/{item_id}/process")
-def api_process_outbox(item_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_process_outbox(
+    item_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     result = integration_service.process_outbox_item(db, item_id)
     if not result["ok"]:
         raise BusinessRuleError(result.get("error", "İşlem başarısız"))
@@ -207,6 +242,7 @@ def api_process_outbox(item_id: str, db: Session = Depends(get_db), user: User =
 # ═══════════════════════════════════════
 # INBOX ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/inbox")
 def api_list_inbox(
@@ -221,7 +257,12 @@ def api_list_inbox(
 
 
 @router.post("/inbox/{inbox_id}/resolve")
-def api_resolve_conflict(inbox_id: str, body: ConflictResolve, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_resolve_conflict(
+    inbox_id: str,
+    body: ConflictResolve,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     item = integration_service.resolve_conflict(db, inbox_id, body.resolution, user.id)
     if not item:
         raise NotFoundError("Inbox öğesi")
@@ -231,6 +272,7 @@ def api_resolve_conflict(inbox_id: str, body: ConflictResolve, db: Session = Dep
 # ═══════════════════════════════════════
 # HATA ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/errors")
 def api_list_errors(
@@ -245,7 +287,11 @@ def api_list_errors(
 
 
 @router.post("/errors/{error_id}/resolve")
-def api_resolve_error(error_id: str, db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_resolve_error(
+    error_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     ok = integration_service.resolve_error(db, error_id, user.id)
     if not ok:
         raise NotFoundError("Hata kaydı")
@@ -255,6 +301,7 @@ def api_resolve_error(error_id: str, db: Session = Depends(get_db), user: User =
 # ═══════════════════════════════════════
 # AUDIT ENDPOİNTLERİ
 # ═══════════════════════════════════════
+
 
 @router.get("/audit")
 def api_list_audit(
@@ -271,16 +318,26 @@ def api_list_audit(
 # SAĞLIK + RETRY ENDPOİNTLERİ
 # ═══════════════════════════════════════
 
+
 @router.get("/health")
-def api_health(db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW))):
+def api_health(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW)),
+):
     return integration_service.get_health(db)
 
 
 @router.get("/diagnostics")
-def api_diagnostics(db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW))):
+def api_diagnostics(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_VIEW)),
+):
     return integration_service.run_diagnostics(db)
 
 
 @router.post("/retry")
-def api_retry_failed(db: Session = Depends(get_db), user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE))):
+def api_retry_failed(
+    db: Session = Depends(get_db),
+    user: User = Depends(require_permissions(Permission.INTEGRATIONS_MANAGE)),
+):
     return integration_service.retry_failed(db, user.id)

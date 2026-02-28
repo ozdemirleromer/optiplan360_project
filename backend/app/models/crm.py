@@ -1,15 +1,36 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Float, TIMESTAMP, Text, Boolean, Numeric
+from app.database import Base
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Integer,
+    Numeric,
+    String,
+    Text,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
-from .enums import OpportunityStageEnum, QuoteStatusEnum, TaskPriorityEnum, TaskStatusEnum, ActivityTypeEnum, DealerTypeEnum
+
+from .enums import (
+    ActivityTypeEnum,
+    DealerTypeEnum,
+    OpportunityStageEnum,
+    QuoteStatusEnum,
+    TaskPriorityEnum,
+    TaskStatusEnum,
+)
 
 # ═══════════════════════════════════════════════════════════════
 # CRM MODÜLLERİ — Cari, Kontak, Fırsat, Teklif, Görev, Aktivite
 # ═══════════════════════════════════════════════════════════════
 
+
 class CRMAccount(Base):
     """Cari hesap (firma/bireysel müşteri)"""
+
     __tablename__ = "crm_accounts"
 
     id = Column(String, primary_key=True, index=True)
@@ -33,7 +54,7 @@ class CRMAccount(Base):
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_active = Column(Boolean, default=True)
     mikro_cari_kod = Column(String, nullable=True, index=True)  # Mikro cari kodu
-    
+
     # Mobilya Üretimi İçin Özel Alanlar
     dealer_type = Column(Enum(DealerTypeEnum), nullable=True)  # Bayi tipi
     installation_service_available = Column(Boolean, default=False)  # Montaj hizmeti
@@ -45,7 +66,7 @@ class CRMAccount(Base):
     discount_rate = Column(Float, default=0)  # Özel indirim oranı (%)
     plaka_birim_fiyat = Column(Float, nullable=True)  # Müşteriye özel plaka fiyatı (TL/adet)
     bant_metre_fiyat = Column(Float, nullable=True)  # Müşteriye özel bant fiyatı (TL/metre)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
@@ -57,6 +78,7 @@ class CRMAccount(Base):
 
 class CRMContact(Base):
     """İletişim kişisi"""
+
     __tablename__ = "crm_contacts"
 
     id = Column(String, primary_key=True, index=True)
@@ -79,6 +101,7 @@ class CRMContact(Base):
 
 class CRMOpportunity(Base):
     """Satış fırsatı (pipeline)"""
+
     __tablename__ = "crm_opportunities"
 
     id = Column(String, primary_key=True, index=True)
@@ -95,7 +118,7 @@ class CRMOpportunity(Base):
     lost_reason = Column(Text, nullable=True)
     source = Column(String, nullable=True)  # WEB, REFERRAL, COLD_CALL, vb.
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)   # Siparişe dönüşünce
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)  # Siparişe dönüşünce
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
@@ -109,6 +132,7 @@ class CRMOpportunity(Base):
 
 class CRMQuote(Base):
     """Teklif"""
+
     __tablename__ = "crm_quotes"
 
     id = Column(String, primary_key=True, index=True)
@@ -140,6 +164,7 @@ class CRMQuote(Base):
 
 class CRMQuoteLine(Base):
     """Teklif satırı"""
+
     __tablename__ = "crm_quote_lines"
 
     id = Column(String, primary_key=True, index=True)
@@ -154,7 +179,7 @@ class CRMQuoteLine(Base):
     tax_rate = Column(Float, default=20)
     line_total = Column(Float, default=0)
     mikro_stok_kod = Column(String, nullable=True)  # Mikro stok kodu eşlemesi
-    
+
     # Mobilya Üretimi İçin Ürün Detayları
     material_name = Column(String, nullable=True)  # Malzeme (MDF, Lam, Suntalam)
     color = Column(String, nullable=True)  # Renk
@@ -163,7 +188,7 @@ class CRMQuoteLine(Base):
     grain_direction = Column(String, nullable=True)  # Damar yönü (0-Material, 1-Boyuna, 2-Enine)
     band_included = Column(Boolean, default=False)  # Bantlama dahil mi?
     drilling_included = Column(Boolean, default=False)  # Delme dahil mi?
-    
+
     notes = Column(Text, nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
@@ -172,6 +197,7 @@ class CRMQuoteLine(Base):
 
 class CRMTask(Base):
     """CRM Görevi"""
+
     __tablename__ = "crm_tasks"
 
     id = Column(String, primary_key=True, index=True)
@@ -193,6 +219,7 @@ class CRMTask(Base):
 
 class CRMActivity(Base):
     """CRM Aktivitesi (arama, toplantı, not, vb.)"""
+
     __tablename__ = "crm_activities"
 
     id = Column(String, primary_key=True, index=True)
@@ -212,6 +239,7 @@ class CRMActivity(Base):
 
 class CRMNote(Base):
     """Genel notlar (herhangi bir CRM kaydına bağlanabilir)"""
+
     __tablename__ = "crm_notes"
 
     id = Column(String, primary_key=True, index=True)
@@ -222,41 +250,52 @@ class CRMNote(Base):
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
+
 # ═══════════════════════════════════════════════════════════════
 # MÜŞTERİ DESTEK (TICKET) MODÜLÜ
 # ═══════════════════════════════════════════════════════════════
 
+
 class CRMTicket(Base):
     """Müşteri destek talebi (Ticket)"""
+
     __tablename__ = "crm_tickets"
 
     id = Column(String, primary_key=True, index=True)
     account_id = Column(String, ForeignKey("crm_accounts.id"), nullable=False, index=True)
     subject = Column(String, nullable=False)
     description = Column(Text, nullable=False)
-    status = Column(String, default="OPEN", index=True) # OPEN, IN_PROGRESS, RESOLVED, CLOSED
-    priority = Column(String, default="NORMAL") # LOW, NORMAL, HIGH, URGENT
-    
+    status = Column(String, default="OPEN", index=True)  # OPEN, IN_PROGRESS, RESOLVED, CLOSED
+    priority = Column(String, default="NORMAL")  # LOW, NORMAL, HIGH, URGENT
+
     assigned_to_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     created_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now())
 
     account = relationship("CRMAccount", backref="tickets")
-    messages = relationship("CRMTicketMessage", back_populates="ticket", cascade="all, delete-orphan", order_by="CRMTicketMessage.created_at")
+    messages = relationship(
+        "CRMTicketMessage",
+        back_populates="ticket",
+        cascade="all, delete-orphan",
+        order_by="CRMTicketMessage.created_at",
+    )
 
 
 class CRMTicketMessage(Base):
     """Destek talebi (Ticket) altındaki yanıtlar/mesajlar"""
+
     __tablename__ = "crm_ticket_messages"
 
     id = Column(String, primary_key=True, index=True)
     ticket_id = Column(String, ForeignKey("crm_tickets.id"), nullable=False, index=True)
-    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False) # Müşteri veya Operatör ID
+    sender_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # Müşteri veya Operatör ID
     message = Column(Text, nullable=False)
-    is_internal = Column(Boolean, default=False) # Operatörlerin sadece kendi aralarında göreceği iç notlar
-    
+    is_internal = Column(
+        Boolean, default=False
+    )  # Operatörlerin sadece kendi aralarında göreceği iç notlar
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
     ticket = relationship("CRMTicket", back_populates="messages")

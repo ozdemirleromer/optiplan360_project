@@ -1,11 +1,11 @@
+import re
 from datetime import datetime
 from enum import Enum
-from typing import Any, List, Optional
-import re
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from .models import OrderStatusEnum, PartGroupEnum, GrainDirectionEnum
+from .models import GrainDirectionEnum, PartGroupEnum
 
 
 # --- Legacy/Shared Schemas ---
@@ -150,7 +150,9 @@ class OrderPartCreate(BaseModel):
     def validate_part_group(cls, v: str) -> str:
         v = v.strip().upper()
         if v not in VALID_PART_GROUPS:
-            raise ValueError(f"part_group '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_PART_GROUPS))}")
+            raise ValueError(
+                f"part_group '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_PART_GROUPS))}"
+            )
         return v
 
     @field_validator("boy_mm")
@@ -184,7 +186,9 @@ class OrderPartCreate(BaseModel):
     @classmethod
     def validate_grain_code(cls, v: str) -> str:
         if v not in VALID_GRAIN_CODES:
-            raise ValueError(f"grain_code '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_GRAIN_CODES))}")
+            raise ValueError(
+                f"grain_code '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_GRAIN_CODES))}"
+            )
         return v
 
     @model_validator(mode="after")
@@ -217,7 +221,9 @@ class OrderCreate(BaseModel):
     @classmethod
     def validate_thickness(cls, v: float) -> float:
         if v not in VALID_THICKNESSES:
-            raise ValueError(f"Kalınlık {v} geçersiz. İzin verilen: {', '.join(str(t) for t in sorted(VALID_THICKNESSES))}")
+            raise ValueError(
+                f"Kalınlık {v} geçersiz. İzin verilen: {', '.join(str(t) for t in sorted(VALID_THICKNESSES))}"
+            )
         return v
 
     @field_validator("plate_w_mm")
@@ -310,6 +316,7 @@ class OrderOut(BaseModel):
 
 class OrderListItem(BaseModel):
     """Liste endpoint'i için hafif sipariş — parça dizisi yerine sadece sayı."""
+
     id: str
     order_no: Optional[int] = None
     customer_id: int
@@ -389,9 +396,11 @@ class LoginResponse(BaseModel):
 
 # --- Product / Master Data Schemas ---
 
+
 class BrandCreate(BaseModel):
     code: str
     name: str
+
 
 class BrandOut(BaseModel):
     id: int
@@ -400,9 +409,11 @@ class BrandOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class ColorCreate(BaseModel):
     code: str
     name: str
+
 
 class ColorOut(BaseModel):
     id: int
@@ -411,10 +422,12 @@ class ColorOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class ProductTypeCreate(BaseModel):
     code: str
     short_code: str
     name: str
+
 
 class ProductTypeOut(BaseModel):
     id: int
@@ -424,12 +437,14 @@ class ProductTypeOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class MaterialSpecCreate(BaseModel):
     product_type_id: int
     color_id: int
     thickness_mm: float
     width_cm: float
     height_cm: float
+
 
 class MaterialSpecOut(BaseModel):
     id: int
@@ -442,12 +457,14 @@ class MaterialSpecOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class SupplierItemCreate(BaseModel):
     spec_id: int
     brand_id: int
     display_name: Optional[str] = None
     is_default: bool = False
     priority: int = 0
+
 
 class SupplierItemOut(BaseModel):
     id: int
@@ -459,6 +476,7 @@ class SupplierItemOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class ItemCreate(BaseModel):
     supplier_item_id: int
     unit: str = "ADET"
@@ -466,6 +484,7 @@ class ItemCreate(BaseModel):
     default_price: Optional[float] = None
     barcode: Optional[str] = None
     mikro_stok_kodu: Optional[str] = None
+
 
 class ItemOut(BaseModel):
     id: int
@@ -479,14 +498,17 @@ class ItemOut(BaseModel):
     is_active: bool = True
     model_config = ConfigDict(from_attributes=True)
 
+
 class SpecSearchQuery(BaseModel):
     """Spec-first arama parametreleri"""
+
     query: Optional[str] = None  # Serbest metin arama (ör: "BEYAZ 18")
     product_type_id: Optional[int] = None
     color_id: Optional[int] = None
     thickness_mm: Optional[float] = None
     width_cm: Optional[float] = None
     height_cm: Optional[float] = None
+
 
 class SpecSearchResult(BaseModel):
     spec: MaterialSpecOut
@@ -495,6 +517,7 @@ class SpecSearchResult(BaseModel):
     supplier_items: List[SupplierItemOut] = []
     match_status: str = "MATCHED"  # MATCHED, AMBIGUOUS, NO_MATCH
 
+
 class IncomingSpecCreate(BaseModel):
     external_line_id: Optional[str] = None
     product_type_short: Optional[str] = None
@@ -502,6 +525,7 @@ class IncomingSpecCreate(BaseModel):
     thickness_mm: Optional[float] = None
     width_cm: Optional[float] = None
     height_cm: Optional[float] = None
+
 
 class IncomingSpecOut(BaseModel):
     id: int
@@ -517,6 +541,7 @@ class IncomingSpecOut(BaseModel):
     created_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ProductRequestCreate(BaseModel):
     product_type_short: Optional[str] = None
     color_text: Optional[str] = None
@@ -524,6 +549,7 @@ class ProductRequestCreate(BaseModel):
     width_cm: Optional[float] = None
     height_cm: Optional[float] = None
     notes: Optional[str] = None
+
 
 class ProductRequestOut(BaseModel):
     id: int
@@ -539,6 +565,7 @@ class ProductRequestOut(BaseModel):
 
 
 # --- Orchestrator Job Schemas ---
+
 
 class OptiJobPartInput(BaseModel):
     id: str
@@ -594,7 +621,6 @@ class OptiJobOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-
 class OptiJobListResponse(BaseModel):
     jobs: List[OptiJobOut]
     total: int
@@ -604,8 +630,10 @@ class OptiJobListResponse(BaseModel):
 # WHATSAPP ŞEMALARI
 # ═══════════════════════════════════════════════════
 
+
 class WhatsAppConfigUpdate(BaseModel):
     """WhatsApp yapılandırma güncelleme isteği"""
+
     phone_number_id: str = ""
     business_account_id: str = ""
     access_token: str = ""
@@ -614,6 +642,7 @@ class WhatsAppConfigUpdate(BaseModel):
 
 class WhatsAppConfigResponse(BaseModel):
     """WhatsApp yapılandırma yanıtı (token gizli)"""
+
     configured: bool
     phone_number_id: str = ""
     business_account_id: str = ""
@@ -622,6 +651,7 @@ class WhatsAppConfigResponse(BaseModel):
 
 class WhatsAppMessageSend(BaseModel):
     """WhatsApp mesaj gönderme isteği"""
+
     to_phone: str
     template_name: Optional[str] = None
     message_text: Optional[str] = None
@@ -630,6 +660,7 @@ class WhatsAppMessageSend(BaseModel):
 
 class WhatsAppMessageResponse(BaseModel):
     """WhatsApp mesaj yanıtı"""
+
     id: str
     to_phone: str
     message: str
@@ -644,6 +675,7 @@ class WhatsAppMessageResponse(BaseModel):
 
 class WhatsAppTemplateResponse(BaseModel):
     """WhatsApp şablon bilgisi"""
+
     name: str
     label: str
     body: str
@@ -652,6 +684,7 @@ class WhatsAppTemplateResponse(BaseModel):
 
 class WhatsAppSummaryResponse(BaseModel):
     """WhatsApp mesaj özeti"""
+
     configured: bool
     total_sent: int
     today_sent: int
@@ -661,14 +694,17 @@ class WhatsAppSummaryResponse(BaseModel):
 
 class WhatsAppUnreadResponse(BaseModel):
     """Okunmamış mesaj listesi"""
+
     unread_messages: list
     count: int
 
 
 # ── Price Tracking Şemaları ──
 
+
 class PriceUploadJobOut(BaseModel):
     """Fiyat yükleme işi yanıtı"""
+
     id: str
     status: str
     original_filename: Optional[str] = None
@@ -700,6 +736,7 @@ def _decimal_to_float(v):
 
 class PriceItemOut(BaseModel):
     """Fiyat listesi ürün satırı yanıtı"""
+
     id: str
     urun_kodu: Optional[str] = None
     urun_adi: str
@@ -717,7 +754,9 @@ class PriceItemOut(BaseModel):
     tedarikci: str
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator("liste_fiyati", "iskonto_orani", "net_fiyat", "kdv_orani", "kdv_dahil_fiyat", mode="before")
+    @field_validator(
+        "liste_fiyati", "iskonto_orani", "net_fiyat", "kdv_orani", "kdv_dahil_fiyat", mode="before"
+    )
     @classmethod
     def coerce_decimal(cls, v):
         return _decimal_to_float(v)
@@ -725,21 +764,25 @@ class PriceItemOut(BaseModel):
 
 class PriceJobDetailOut(PriceUploadJobOut):
     """Fiyat işi detay yanıtı (ürünlerle birlikte)"""
+
     items: list[PriceItemOut] = Field(default_factory=list)
 
 
 class PriceExportRequest(BaseModel):
     """Excel export isteği"""
+
     job_ids: list[str]
 
 
 # ── Customer Portal Schemas ──
+
 
 class PortalDashboardStats(BaseModel):
     active_orders_count: int
     completed_orders_count: int
     total_balance: float
     currency: str = "TRY"
+
 
 class PortalOrderOut(BaseModel):
     id: str
@@ -752,6 +795,7 @@ class PortalOrderOut(BaseModel):
     total_parts: int = 0
     model_config = ConfigDict(from_attributes=True)
 
+
 class PortalInvoiceOut(BaseModel):
     id: str
     invoice_number: str
@@ -763,7 +807,9 @@ class PortalInvoiceOut(BaseModel):
     pdf_url: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 # ── Müşteri Destek / Ticket Schemas ──
+
 
 class PortalTicketMessageOut(BaseModel):
     id: str
@@ -773,6 +819,7 @@ class PortalTicketMessageOut(BaseModel):
     message: str
     created_at: datetime
     model_config = ConfigDict(from_attributes=True)
+
 
 class PortalTicketOut(BaseModel):
     id: str
@@ -785,16 +832,19 @@ class PortalTicketOut(BaseModel):
     messages: List[PortalTicketMessageOut] = []
     model_config = ConfigDict(from_attributes=True)
 
+
 class PortalTicketCreate(BaseModel):
     subject: str
     description: str
     priority: str = "NORMAL"
+
 
 class PortalTicketReply(BaseModel):
     message: str
 
 
 # ── OptiPlanning Advanced Schemas ──
+
 
 class MachineConfigBase(BaseModel):
     name: str
@@ -807,8 +857,10 @@ class MachineConfigBase(BaseModel):
     advanced_params: Optional[dict] = None
     is_active: bool = True
 
+
 class MachineConfigCreate(MachineConfigBase):
     pass
+
 
 class MachineConfigUpdate(BaseModel):
     name: Optional[str] = None
@@ -821,20 +873,24 @@ class MachineConfigUpdate(BaseModel):
     advanced_params: Optional[dict] = None
     is_active: Optional[bool] = None
 
+
 class MachineConfigOut(MachineConfigBase):
     id: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class OptimizationParamsBase(BaseModel):
-    optimization_mode: str = "Standard" # High Yield, Fast, Standard
-    grain_priority: int = 1 # 1: Strict, 0: Ignore
+    optimization_mode: str = "Standard"  # High Yield, Fast, Standard
+    grain_priority: int = 1  # 1: Strict, 0: Ignore
     allow_rotation: bool = True
     spacing_mm: float = 0.0
 
+
 class OptimizationParamsCreate(OptimizationParamsBase):
     pass
+
 
 class OptimizationParamsUpdate(BaseModel):
     optimization_mode: Optional[str] = None
@@ -842,37 +898,19 @@ class OptimizationParamsUpdate(BaseModel):
     allow_rotation: Optional[bool] = None
     spacing_mm: Optional[float] = None
 
+
 class OptimizationParamsOut(OptimizationParamsBase):
     id: str
     model_config = ConfigDict(from_attributes=True)
+
 
 class OptimizationJobRunRequest(BaseModel):
     order_ids: List[int]
     params: Optional[OptimizationParamsUpdate] = None
     config_name: str = "DEFAULT"
 
-class OptimizationJobOut(BaseModel):
-    id: str
-    name: str
-    status: str
-    format_type: str
-    related_orders: Optional[List[str]] = None
-    result_file_path: Optional[str] = None
-    error_message: Optional[str] = None
-    created_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    model_config = ConfigDict(from_attributes=True)
 
-class OptimizationReportOut(BaseModel):
-    id: int
-    job_id: str
-    total_parts: int
-    total_boards_used: int
-    yield_percentage: float
-    waste_percentage: float
-    report_data: Optional[dict] = None
-    created_at: Optional[datetime] = None
-    model_config = ConfigDict(from_attributes=True)
+# OptimizationJobOut ve OptimizationReportOut aşağıda Base sınıfları üzerinden tanımlanmıştır
 
 
 class OptimizationReportBase(BaseModel):
@@ -881,6 +919,7 @@ class OptimizationReportBase(BaseModel):
     yield_percentage: float = 0.0
     waste_percentage: float = 0.0
     report_data: Optional[dict] = None
+
 
 class OptimizationReportOut(OptimizationReportBase):
     id: int
@@ -897,13 +936,16 @@ class OptimizationJobBase(BaseModel):
     result_file_path: Optional[str] = None
     error_message: Optional[str] = None
 
+
 class OptimizationJobCreate(OptimizationJobBase):
     pass
+
 
 class OptimizationJobUpdate(BaseModel):
     status: Optional[str] = None
     result_file_path: Optional[str] = None
     error_message: Optional[str] = None
+
 
 class OptimizationJobOut(OptimizationJobBase):
     id: str

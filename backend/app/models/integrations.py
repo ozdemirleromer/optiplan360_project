@@ -1,8 +1,21 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Numeric, TIMESTAMP, Text, Boolean, LargeBinary
+from app.database import Base
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Enum,
+    ForeignKey,
+    Integer,
+    LargeBinary,
+    Numeric,
+    String,
+    Text,
+)
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
-from .enums import SyncDirectionEnum, SyncStatusEnum, IntegrationTypeEnum
+
+from .enums import IntegrationTypeEnum, SyncDirectionEnum, SyncStatusEnum
+
 
 class TelegramOCRConfig(Base):
     __tablename__ = "telegram_ocr_configs"
@@ -33,39 +46,41 @@ class DeviceOCRConfig(Base):
 
 class OCRJob(Base):
     __tablename__ = "ocr_jobs"
-    
+
     id = Column(String, primary_key=True, index=True)
-    status = Column(String, nullable=False, default="PENDING")  # PENDING, PROCESSING, COMPLETED, FAILED, ORDER_CREATED
-    
+    status = Column(
+        String, nullable=False, default="PENDING"
+    )  # PENDING, PROCESSING, COMPLETED, FAILED, ORDER_CREATED
+
     # Dosya bilgileri
     original_filename = Column(String)
     content_type = Column(String)
     file_size = Column(Integer)
     image_data = Column(LargeBinary)  # raw bytes
-    
+
     # OCR sonuçları
     extracted_text = Column(Text)
     confidence = Column(Numeric(3, 2), default=0.0)
-    
+
     # Müşteri eşleştirme
     phone = Column(String)
     customer_id = Column(Integer, ForeignKey("customers.id"))
     customer_match_confidence = Column(Numeric(3, 2))
-    
+
     # Sipariş oluşturma
     order_id = Column(Integer, ForeignKey("orders.id"))
-    
+
     # Notlar
     notes = Column(Text)
     error_message = Column(Text)
-    
+
     # Kullanıcı
     uploaded_by_id = Column(Integer, ForeignKey("users.id"))
-    
+
     # Zamanlar
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     completed_at = Column(TIMESTAMP(timezone=True))
-    
+
     # İlişkiler
     lines = relationship("OCRLine", back_populates="job", cascade="all, delete-orphan")
     customer = relationship("Customer")
@@ -74,22 +89,22 @@ class OCRJob(Base):
 
 class OCRLine(Base):
     __tablename__ = "ocr_lines"
-    
+
     id = Column(String, primary_key=True, index=True)
     ocr_job_id = Column(String, ForeignKey("ocr_jobs.id"), nullable=False)
-    
+
     # Satır bilgileri
     line_number = Column(Integer, nullable=False)
     text = Column(Text, nullable=False)
     confidence = Column(Numeric(3, 2), default=0.0)
-    
+
     # Validasyon
     is_valid = Column(Boolean, default=False)
     validation_error = Column(String)
-    
+
     # Parse edilmiş veri (JSON)
     parsed_data = Column(Text)  # JSON: {"boy": 700, "en": 400, "adet": 2}
-    
+
     # İlişkiler
     job = relationship("OCRJob", back_populates="lines")
 
@@ -98,28 +113,29 @@ class OCRLine(Base):
 # WHATSAPP MODELLERİ
 # ═══════════════════════════════════════════════════
 
+
 class WhatsAppMessage(Base):
     __tablename__ = "whatsapp_messages"
-    
+
     id = Column(String, primary_key=True, index=True)
     to_phone = Column(String, nullable=False)
     message = Column(Text, nullable=False)
     status = Column(String, nullable=False, default="PENDING")  # PENDING, SENT, FAILED
     waba_message_id = Column(String)
-    
+
     order_id = Column(Integer, ForeignKey("orders.id"))
     order_ts_code = Column(String)
-    
+
     sent_by_id = Column(Integer, ForeignKey("users.id"))
     sent_by_name = Column(String)
     sent_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
-    
+
     error = Column(Text)
 
 
 class WhatsAppSetting(Base):
     __tablename__ = "whatsapp_settings"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False)
     value = Column(Text)
@@ -130,9 +146,10 @@ class WhatsAppSetting(Base):
 # AZURE & GOOGLE MODELLERİ
 # ═══════════════════════════════════════════════════
 
+
 class AzureConfig(Base):
     __tablename__ = "azure_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -142,7 +159,7 @@ class AzureConfig(Base):
 
 class GoogleVisionConfig(Base):
     __tablename__ = "google_vision_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -152,7 +169,7 @@ class GoogleVisionConfig(Base):
 
 class AWSTextractConfig(Base):
     __tablename__ = "aws_textract_configs"
-    
+
     id = Column(Integer, primary_key=True, index=True)
     key = Column(String, unique=True, nullable=False, index=True)
     value = Column(Text)
@@ -164,8 +181,10 @@ class AWSTextractConfig(Base):
 # ENTEGRASYON MODÜLLERİ — Mikro Senkron / Outbox-Inbox Pattern
 # ═══════════════════════════════════════════════════════════════
 
+
 class IntegrationEntityMap(Base):
     """OptiPlan ↔ Mikro entity eşleme tablosu"""
+
     __tablename__ = "integration_entity_map"
 
     id = Column(String, primary_key=True, index=True)
@@ -182,6 +201,7 @@ class IntegrationEntityMap(Base):
 
 class IntegrationSyncJob(Base):
     """Senkronizasyon iş kaydı"""
+
     __tablename__ = "integration_sync_jobs"
 
     id = Column(String, primary_key=True, index=True)
@@ -202,6 +222,7 @@ class IntegrationSyncJob(Base):
 
 class IntegrationOutbox(Base):
     """Giden senkron kuyruğu (OptiPlan → Mikro)"""
+
     __tablename__ = "integration_outbox"
 
     id = Column(String, primary_key=True, index=True)
@@ -220,6 +241,7 @@ class IntegrationOutbox(Base):
 
 class IntegrationInbox(Base):
     """Gelen senkron kuyruğu (Mikro → OptiPlan)"""
+
     __tablename__ = "integration_inbox"
 
     id = Column(String, primary_key=True, index=True)
@@ -238,6 +260,7 @@ class IntegrationInbox(Base):
 
 class IntegrationError(Base):
     """Entegrasyon hata kaydı"""
+
     __tablename__ = "integration_errors"
 
     id = Column(String, primary_key=True, index=True)
@@ -255,6 +278,7 @@ class IntegrationError(Base):
 
 class IntegrationAudit(Base):
     """Entegrasyon denetim izi"""
+
     __tablename__ = "integration_audit"
 
     id = Column(String, primary_key=True, index=True)
@@ -269,6 +293,7 @@ class IntegrationAudit(Base):
 
 class IntegrationSettings(Base):
     """Entegrasyon ayarları"""
+
     __tablename__ = "integration_settings"
 
     id = Column(String, primary_key=True, index=True)
@@ -284,32 +309,33 @@ class IntegrationSettings(Base):
 
 class StockCard(Base):
     """Mikro stok kartı"""
+
     __tablename__ = "stock_cards"
 
     id = Column(String, primary_key=True, index=True)
     stock_code = Column(String, unique=True, index=True, nullable=False)  # Mikro stok kodu
     stock_name = Column(String, nullable=False)  # Malzeme adı
     unit = Column(String, nullable=True)  # Birim (m², m³, kg, vb.)
-    
+
     # Fiyat bilgileri
     purchase_price = Column(Numeric(12, 2), nullable=True)  # Alış fiyatı
     sale_price = Column(Numeric(12, 2), nullable=True)  # Satış fiyatı
-    
+
     # Stok miktarları
     total_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Toplam miktar
     available_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Uygun miktar
     reserved_quantity = Column(Numeric(12, 2), nullable=False, default=0)  # Rezerve miktar
-    
+
     # Depo bilgisi
     warehouse_location = Column(String, nullable=True)  # Depo konumu
-    
+
     # Özellikleri
     thickness = Column(String, nullable=True)  # Kalınlık (18mm vb.)
     color = Column(String, nullable=True)  # Renk
-    
+
     # Durumu
     is_active = Column(Boolean, default=True, nullable=False)
-    
+
     # Meta
     last_sync_date = Column(TIMESTAMP(timezone=True), nullable=True)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
@@ -321,21 +347,22 @@ class StockCard(Base):
 
 class StockMovement(Base):
     """Stok hareket kaydı (Mikro'dan senkronize)"""
+
     __tablename__ = "stock_movements"
 
     id = Column(String, primary_key=True, index=True)
     stock_code = Column(String, ForeignKey("stock_cards.stock_code"), nullable=False)
-    
+
     movement_type = Column(String, nullable=False)  # ENTRY, EXIT, ADJUSTMENT, TRANSFER
     quantity = Column(Numeric(12, 2), nullable=False)
     unit_price = Column(Numeric(12, 2), nullable=True)
     total_amount = Column(Numeric(12, 2), nullable=True)
-    
+
     reference_document = Column(String, nullable=True)  # Referans belge (Sip/Fatura vb.)
     reference_id = Column(String, nullable=True)  # Referans ID
-    
+
     description = Column(Text, nullable=True)
-    
+
     movement_date = Column(TIMESTAMP(timezone=True), nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)

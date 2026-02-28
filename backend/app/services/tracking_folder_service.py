@@ -29,11 +29,11 @@ Klasor yapisi:
       +-- _raporlar\              <- Siparis fisleri
       +-- _loglar\                <- Worker/collector loglari
 """
-import json
+
 import logging
 import os
 import shutil
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -75,18 +75,28 @@ STATE_FOLDER_MAP = {
     "FAILED": OPTIPLAN_HATALI,
 }
 
+
 # Tum klasorleri baslangicta olustur
 def _ensure_dirs():
     for d in [
-        OPTIPLANNING_IMPORT, OPTIPLANNING_IMPORT_ARCHIVE,
-        OPTIPLANNING_EXPORT_SOL, OPTIPLANNING_EXPORT_ARCHIVE,
+        OPTIPLANNING_IMPORT,
+        OPTIPLANNING_IMPORT_ARCHIVE,
+        OPTIPLANNING_EXPORT_SOL,
+        OPTIPLANNING_EXPORT_ARCHIVE,
         OPTIPLANNING_LOGS,
-        OPTIPLAN_ISLENIYOR, OPTIPLAN_GELEN, OPTIPLAN_ISLENEN,
-        OPTIPLAN_HATALI, OPTIPLAN_OPT_BEKLIYOR, OPTIPLAN_KESIME,
-        OPTIPLAN_KESIM_TAMAM, OPTIPLAN_TESLIM,
-        OPTIPLAN_RAPORLAR, OPTIPLAN_LOGLAR,
+        OPTIPLAN_ISLENIYOR,
+        OPTIPLAN_GELEN,
+        OPTIPLAN_ISLENEN,
+        OPTIPLAN_HATALI,
+        OPTIPLAN_OPT_BEKLIYOR,
+        OPTIPLAN_KESIME,
+        OPTIPLAN_KESIM_TAMAM,
+        OPTIPLAN_TESLIM,
+        OPTIPLAN_RAPORLAR,
+        OPTIPLAN_LOGLAR,
     ]:
         os.makedirs(d, exist_ok=True)
+
 
 try:
     _ensure_dirs()
@@ -186,10 +196,7 @@ def on_state_change(
 
     # Hata durumunda detay dosyasi olustur
     if new_state == "FAILED" and error_message:
-        error_file = os.path.join(
-            OPTIPLAN_HATALI,
-            f"{os.path.splitext(fname)[0]}_HATA.txt"
-        )
+        error_file = os.path.join(OPTIPLAN_HATALI, f"{os.path.splitext(fname)[0]}_HATA.txt")
         try:
             with open(error_file, "w", encoding="utf-8") as f:
                 f.write(f"Job ID: {job_id}\n")

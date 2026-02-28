@@ -1,20 +1,25 @@
 """
 Tahsilat Yönetimi API Router
 """
-from fastapi import APIRouter, Depends, HTTPException
-from app.exceptions import BusinessRuleError, NotFoundError
-from sqlalchemy.orm import Session
-from typing import List, Optional
-from datetime import datetime
-from pydantic import BaseModel, ConfigDict
 
-from app.database import get_db
+from datetime import datetime
+from typing import List, Optional
+
 from app.auth import require_permissions
-from app.models import User, PaymentStatusEnum, PaymentMethodEnum, ReminderTypeEnum, ReminderStatusEnum
+from app.database import get_db
+from app.exceptions import BusinessRuleError, NotFoundError
+from app.models import (
+    PaymentMethodEnum,
+    PaymentStatusEnum,
+    ReminderTypeEnum,
+    User,
+)
 from app.permissions import Permission
 from app.services import payment_service
 from app.utils import create_audit_log
-
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel, ConfigDict
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/payments", tags=["Tahsilat"])
 
@@ -22,6 +27,7 @@ router = APIRouter(prefix="/api/v1/payments", tags=["Tahsilat"])
 # ══════════════════════════════════════════════════════════════
 # PYDANTIC SCHEMAS
 # ══════════════════════════════════════════════════════════════
+
 
 class InvoiceCreate(BaseModel):
     account_id: str
@@ -141,11 +147,12 @@ class PaymentPromiseStatusUpdate(BaseModel):
 # FATURA ENDPOINTLERİ
 # ══════════════════════════════════════════════════════════════
 
+
 @router.post("/invoices", response_model=InvoiceOut)
 def create_invoice(
     data: InvoiceCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE)),
 ):
     """Yeni fatura oluştur"""
     try:
@@ -164,10 +171,14 @@ def create_invoice(
             user_id=current_user.id,
             # Ödeme Hatırlatıcısı Bilgileri
             reminder_type=data.reminder_type,
-            next_reminder_date=data.next_reminder_date
+            next_reminder_date=data.next_reminder_date,
         )
-        create_audit_log(db, str(current_user.id), "CREATE_INVOICE",
-                         f"Fatura oluşturuldu: {invoice.invoice_number}, tutar={invoice.total_amount}")
+        create_audit_log(
+            db,
+            str(current_user.id),
+            "CREATE_INVOICE",
+            f"Fatura oluşturuldu: {invoice.invoice_number}, tutar={invoice.total_amount}",
+        )
         return invoice
     except Exception as e:
         raise BusinessRuleError(str(e))
@@ -181,7 +192,7 @@ def list_invoices(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Fatura listesi"""
     return payment_service.list_invoices(
@@ -190,7 +201,7 @@ def list_invoices(
         status=status,
         overdue_only=overdue_only,
         skip=skip,
-        limit=limit
+        limit=limit,
     )
 
 
@@ -198,7 +209,7 @@ def list_invoices(
 def get_invoice(
     invoice_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Fatura detayı"""
     invoice = payment_service.get_invoice(db, invoice_id)
@@ -212,14 +223,14 @@ def update_invoice(
     invoice_id: str,
     data: InvoiceCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
 ):
     """Fatura güncelle"""
     try:
         invoice = payment_service.get_invoice(db, invoice_id)
         if not invoice:
             raise NotFoundError("Fatura")
-        
+
         # Update invoice fields
         invoice.account_id = data.account_id
         if data.order_id is not None:
@@ -233,17 +244,18 @@ def update_invoice(
         invoice.due_date = data.due_date
         invoice.invoice_type = data.invoice_type
         invoice.notes = data.notes
-        
+
         # Update reminder fields
         if data.reminder_type:
             invoice.reminder_type = data.reminder_type
         if data.next_reminder_date:
             invoice.next_reminder_date = data.next_reminder_date
-        
+
         db.commit()
         db.refresh(invoice)
-        create_audit_log(db, str(current_user.id), "UPDATE_INVOICE",
-                         f"Fatura güncellendi: {invoice_id}")
+        create_audit_log(
+            db, str(current_user.id), "UPDATE_INVOICE", f"Fatura güncellendi: {invoice_id}"
+        )
         return invoice
     except Exception as e:
         db.rollback()
@@ -254,19 +266,23 @@ def update_invoice(
 def delete_invoice(
     invoice_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
 ):
     """Fatura sil"""
     try:
         invoice = payment_service.get_invoice(db, invoice_id)
         if not invoice:
             raise NotFoundError("Fatura")
-        
+
         invoice_number = invoice.invoice_number
         db.delete(invoice)
         db.commit()
-        create_audit_log(db, str(current_user.id), "DELETE_INVOICE",
-                         f"Fatura silindi: {invoice_number} (id={invoice_id})")
+        create_audit_log(
+            db,
+            str(current_user.id),
+            "DELETE_INVOICE",
+            f"Fatura silindi: {invoice_number} (id={invoice_id})",
+        )
         return {"status": "success", "message": "Fatura silindi"}
     except Exception as e:
         db.rollback()
@@ -277,11 +293,12 @@ def delete_invoice(
 # ÖDEME ENDPOINTLERİ
 # ══════════════════════════════════════════════════════════════
 
+
 @router.post("/payments", response_model=PaymentOut)
 def create_payment(
     data: PaymentCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE)),
 ):
     """Yeni ödeme kaydı"""
     try:
@@ -298,7 +315,7 @@ def create_payment(
             card_last_4=data.card_last_4,
             transaction_ref=data.transaction_ref,
             notes=data.notes,
-            user_id=current_user.id
+            user_id=current_user.id,
         )
         return payment
     except Exception as e:
@@ -313,7 +330,7 @@ def list_payments(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Ödeme listesi"""
     return payment_service.list_payments(
@@ -322,7 +339,7 @@ def list_payments(
         account_id=account_id,
         payment_method=payment_method,
         skip=skip,
-        limit=limit
+        limit=limit,
     )
 
 
@@ -330,7 +347,7 @@ def list_payments(
 def cancel_payment(
     payment_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
 ):
     """Ödemeyi iptal et"""
     try:
@@ -343,11 +360,12 @@ def cancel_payment(
 # ÖDEME SÖZÜ ENDPOINTLERİ
 # ══════════════════════════════════════════════════════════════
 
+
 @router.post("/promises", response_model=PaymentPromiseOut)
 def create_payment_promise(
     data: PaymentPromiseCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_CREATE)),
 ):
     """Yeni ödeme sözü oluştur"""
     try:
@@ -361,7 +379,7 @@ def create_payment_promise(
             contact_person=data.contact_person,
             contact_note=data.contact_note,
             notes=data.notes,
-            user_id=current_user.id
+            user_id=current_user.id,
         )
         return promise
     except Exception as e:
@@ -378,7 +396,7 @@ def list_payment_promises(
     skip: int = 0,
     limit: int = 100,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Ödeme sözü listesi"""
     return payment_service.list_payment_promises(
@@ -389,7 +407,7 @@ def list_payment_promises(
         overdue_only=overdue_only,
         today_only=today_only,
         skip=skip,
-        limit=limit
+        limit=limit,
     )
 
 
@@ -398,15 +416,12 @@ def update_payment_promise_status(
     promise_id: str,
     data: PaymentPromiseStatusUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
 ):
     """Ödeme sözü durumu güncelle"""
     try:
         return payment_service.update_payment_promise_status(
-            db=db,
-            promise_id=promise_id,
-            status=data.status,
-            notes=data.notes
+            db=db, promise_id=promise_id, status=data.status, notes=data.notes
         )
     except Exception as e:
         raise BusinessRuleError(str(e))
@@ -416,7 +431,7 @@ def update_payment_promise_status(
 def send_payment_reminder(
     promise_id: str,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
 ):
     """Ödeme sözü hatırlatması gönder"""
     try:
@@ -429,11 +444,12 @@ def send_payment_reminder(
 # İSTATİSTİK VE RAPOR ENDPOINTLERİ
 # ══════════════════════════════════════════════════════════════
 
+
 @router.get("/statistics")
 def get_payment_statistics(
     account_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Tahsilat istatistikleri"""
     return payment_service.get_payment_statistics(db, account_id)
@@ -443,7 +459,7 @@ def get_payment_statistics(
 def get_aging_report(
     account_id: Optional[str] = None,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW))
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_VIEW)),
 ):
     """Yaşlandırma raporu"""
     return payment_service.get_aging_report(db, account_id)

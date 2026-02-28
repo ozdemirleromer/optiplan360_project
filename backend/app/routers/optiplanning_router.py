@@ -8,10 +8,6 @@ import uuid
 from datetime import datetime, timezone
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException
-from pydantic import BaseModel
-from sqlalchemy.orm import Session
-
 from app.auth import require_operator
 from app.database import get_db
 from app.models import Order, OrderPart, User
@@ -25,6 +21,9 @@ from app.schemas import (
 )
 from app.services.optiplan_csv_otomasyon import optiplan_csv_otomasyon, optiplan_kuyrugu_isle
 from app.services.optiplanning_service import optiplanning_service
+from fastapi import APIRouter, Depends, HTTPException
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
@@ -198,9 +197,7 @@ def run_advanced_optimization(
                     }
                 )
 
-            siparis_no = (
-                f"{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f')}_{idx:04d}_SIPARIS_{order.id}"
-            )
+            siparis_no = f"{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S_%f')}_{idx:04d}_SIPARIS_{order.id}"
             queued_path = optiplan_csv_otomasyon(
                 siparis_no=siparis_no,
                 parca_listesi=parca_listesi,
@@ -211,14 +208,20 @@ def run_advanced_optimization(
 
         if not queued_files:
             job.status = "FAILED"
-            job.error_message = " ; ".join(validation_errors) if validation_errors else "Kuyruga alinacak siparis yok"
+            job.error_message = (
+                " ; ".join(validation_errors)
+                if validation_errors
+                else "Kuyruga alinacak siparis yok"
+            )
             job.completed_at = datetime.now(timezone.utc)
             db.commit()
             db.refresh(job)
             return job
 
         queue_results = optiplan_kuyrugu_isle()
-        processed_files = [item["output"] for item in queue_results if item.get("status") == "processed"]
+        processed_files = [
+            item["output"] for item in queue_results if item.get("status") == "processed"
+        ]
         failed_files = [item["output"] for item in queue_results if item.get("status") == "failed"]
 
         if failed_files:

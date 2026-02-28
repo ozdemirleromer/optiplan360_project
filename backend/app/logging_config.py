@@ -3,6 +3,7 @@ OptiPlan 360 - Log Rotation Konfigürasyonu
 
 Üretim ortamında log dosyalarının boyutunu sınırlar ve eski logları arşivler.
 """
+
 import logging
 import logging.handlers
 import os
@@ -13,6 +14,7 @@ LOG_DIR = Path(os.getenv("LOG_DIR", "./logs"))
 
 # Log seviyesi
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO")
+
 
 def _ensure_log_dir() -> Path | None:
     """
@@ -29,7 +31,7 @@ def _ensure_log_dir() -> Path | None:
 def setup_logging() -> logging.Logger:
     """
     Uygulama loglama konfigürasyonunu ayarla.
-    
+
     Özellikler:
     - RotatingFileHandler: 10MB'da bir yeni dosya oluşturur, 5 yedek tutar
     - TimedRotatingFileHandler: Günlük log döndürme (gece yarısı)
@@ -41,13 +43,12 @@ def setup_logging() -> logging.Logger:
         return root_logger
 
     root_logger.setLevel(getattr(logging, LOG_LEVEL.upper()))
-    
+
     # Formatter
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
-    
+
     log_dir = _ensure_log_dir()
     if log_dir is not None:
         try:
@@ -56,7 +57,7 @@ def setup_logging() -> logging.Logger:
                 filename=log_dir / "app.log",
                 maxBytes=10 * 1024 * 1024,  # 10MB
                 backupCount=5,
-                encoding="utf-8"
+                encoding="utf-8",
             )
             app_handler.setLevel(logging.INFO)
             app_handler.setFormatter(formatter)
@@ -71,7 +72,7 @@ def setup_logging() -> logging.Logger:
                 when="midnight",
                 interval=1,
                 backupCount=30,  # 30 gün sakla
-                encoding="utf-8"
+                encoding="utf-8",
             )
             daily_handler.setLevel(logging.INFO)
             daily_handler.setFormatter(formatter)
@@ -85,14 +86,14 @@ def setup_logging() -> logging.Logger:
                 filename=log_dir / "error.log",
                 maxBytes=5 * 1024 * 1024,  # 5MB
                 backupCount=10,
-                encoding="utf-8"
+                encoding="utf-8",
             )
             error_handler.setLevel(logging.ERROR)
             error_handler.setFormatter(formatter)
             root_logger.addHandler(error_handler)
         except OSError:
             pass
-    
+
     # 4. Console Handler - Geliştirme ortamı için
     if os.getenv("ENV", "development") == "development":
         console_handler = logging.StreamHandler()
@@ -107,7 +108,7 @@ def setup_logging() -> logging.Logger:
         root_logger.addHandler(fallback_handler)
 
     setattr(root_logger, "_optiplan_logging_configured", True)
-    
+
     return root_logger
 
 

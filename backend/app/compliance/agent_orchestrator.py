@@ -1,5 +1,7 @@
-from typing import List, Dict, Any
-from .base_agent import BaseAgent, Finding
+from typing import Any, Dict, List
+
+from .base_agent import BaseAgent
+
 
 class AgentOrchestrator:
     """

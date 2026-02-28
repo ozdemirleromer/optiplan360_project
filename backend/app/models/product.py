@@ -1,14 +1,16 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Numeric, TIMESTAMP, Float
+from app.database import Base
+from sqlalchemy import TIMESTAMP, Boolean, Column, Float, ForeignKey, Integer, Numeric, String
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
 
 # ═══════════════════════════════════════════════════════════════
 # ÜRÜN MODELİ — Master Data + Spec + Supplier + SKU
 # ═══════════════════════════════════════════════════════════════
 
+
 class Brand(Base):
     """Marka / tedarikçi firma"""
+
     __tablename__ = "brands"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -23,6 +25,7 @@ class Brand(Base):
 
 class Color(Base):
     """Renk tanımı"""
+
     __tablename__ = "colors"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -36,6 +39,7 @@ class Color(Base):
 
 class ProductType(Base):
     """Ürün tipi (MDF, Lam, Suntalam, vb.)"""
+
     __tablename__ = "product_types"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -50,6 +54,7 @@ class ProductType(Base):
 
 class MaterialSpec(Base):
     """Firma bağımsız malzeme özellik seti"""
+
     __tablename__ = "material_specs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -75,6 +80,7 @@ class MaterialSpec(Base):
 
 class SupplierItem(Base):
     """Firma varyantı (aynı spec'in marka bazlı versiyonu)"""
+
     __tablename__ = "supplier_items"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -94,6 +100,7 @@ class SupplierItem(Base):
 
 class Item(Base):
     """SKU — satışa hazır ürün kartı"""
+
     __tablename__ = "items"
 
     id = Column(Integer, primary_key=True, index=True)

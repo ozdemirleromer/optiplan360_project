@@ -2,6 +2,7 @@
 Fiyat Takip Servisi — dosya yükleme, işleme, birleştirme, export.
 İş mantığı bu katmanda; router sadece HTTP in/out yapar.
 """
+
 import io
 import logging
 import tempfile
@@ -10,12 +11,6 @@ from pathlib import Path
 from uuid import uuid4
 
 import pandas as pd
-from fastapi import BackgroundTasks
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.utils.dataframe import dataframe_to_rows
-from sqlalchemy.orm import Session, sessionmaker
-
 from app.exceptions import (
     AuthorizationError,
     BusinessRuleError,
@@ -35,6 +30,11 @@ from app.services.price_tracking_ocr import (
     extract_text_from_image,
     extract_text_from_pdf_images,
 )
+from fastapi import BackgroundTasks
+from openpyxl import Workbook
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+from openpyxl.utils.dataframe import dataframe_to_rows
+from sqlalchemy.orm import Session, sessionmaker
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +51,7 @@ class PriceTrackingService:
             return
         if role in ("OPERATOR", "SALES"):
             if job.uploaded_by_id != user.id:
-                raise AuthorizationError(
-                    "Yalnızca kendi yüklediğiniz işleri değiştirebilirsiniz"
-                )
+                raise AuthorizationError("Yalnızca kendi yüklediğiniz işleri değiştirebilirsiniz")
             return
         raise AuthorizationError("Bu işlem için yetersiz rol")
 
@@ -63,9 +61,7 @@ class PriceTrackingService:
     def list_jobs(db: Session, user: User) -> list[PriceUploadJob]:
         """Kullanıcının erişebildiği tüm job'ları listeler."""
         role = (user.role or "").upper()
-        query = db.query(PriceUploadJob).order_by(
-            PriceUploadJob.created_at.desc()
-        )
+        query = db.query(PriceUploadJob).order_by(PriceUploadJob.created_at.desc())
         if role != "ADMIN":
             query = query.filter(PriceUploadJob.uploaded_by_id == user.id)
         return query.all()
@@ -242,9 +238,7 @@ class PriceTrackingService:
             job.status = PriceJobStatusEnum.COMPLETED.value
             job.rows_extracted = items_created
             db.commit()
-            logger.info(
-                "Fiyat işleme tamamlandı: job=%s, %d ürün", job.id, items_created
-            )
+            logger.info("Fiyat işleme tamamlandı: job=%s, %d ürün", job.id, items_created)
 
         finally:
             Path(tmp_path).unlink(missing_ok=True)
@@ -268,27 +262,27 @@ class PriceTrackingService:
 
         col_mapping = normalize_columns(df.columns.tolist())
         logger.info("ESLEME SONUCU: %s", col_mapping)
-        
+
         if col_mapping:
             df = df.rename(columns=col_mapping)
-            
+
             # DEBUG: Rename sonrası sütunları logla
             logger.info("RENAME SONRASI SUTUNLAR: %s", list(df.columns))
             logger.info("RENAME SONRASI UNIQUE MI: %s", df.columns.is_unique)
-            
+
             # Duplicate sütunları temizle (güvenlik katmanı)
             if not df.columns.is_unique:
                 logger.warning("DUPLICATE SUTUN TESPIT EDILDI! Temizleniyor...")
                 # Her sütun grubu için son geçerli değeri al
                 df = df.T.groupby(level=0).last().T
                 logger.info("TEMIZLIK SONRASI SUTUNLAR: %s", list(df.columns))
-            
+
             # Sayisal donusumleri burada da yap
             df = PriceTrackingService._normalize_data_types(df)
-            
+
             # ── Renk ayrıştırma: "/" ile ayrılmış çoklu renkleri ayrı satırlara aç ──
             df = PriceTrackingService._explode_multi_color(df)
-            
+
             # DEBUG: İlk satırı logla
             if len(df) > 0:
                 first_row = df.iloc[0]
@@ -388,16 +382,22 @@ class PriceTrackingService:
                 # Önce para birimi sembollerini temizle (örn: "1.250,00 TL" -> 1250.00)
                 # Basit bir temizlik: sadece rakam, nokta, virgül ve eksi kalsın
                 if df[col].dtype == "object":
-                   # Virgül ondalık ise noktaya çevir, binlik ayırıcı noktaları kaldır (Tr stili)
-                   # Ancak format belirsiz olabilir. pd.to_numeric "coerce" en güvenlisi.
-                   # Karmaşık string temizliği gerekebilir, şimdilik basit coerce:
-                   pass
-                
+                    # Virgül ondalık ise noktaya çevir, binlik ayırıcı noktaları kaldır (Tr stili)
+                    # Ancak format belirsiz olabilir. pd.to_numeric "coerce" en güvenlisi.
+                    # Karmaşık string temizliği gerekebilir, şimdilik basit coerce:
+                    pass
+
                 df[col] = pd.to_numeric(df[col], errors="coerce")
-        
+
         # String temizliği - Sadece numeric olmayan kolonlar
         for col in df.columns:
-            if col not in ("LISTE_FIYATI", "ISKONTO_ORANI", "NET_FIYAT", "KDV_ORANI", "KDV_DAHIL_FIYAT"):
+            if col not in (
+                "LISTE_FIYATI",
+                "ISKONTO_ORANI",
+                "NET_FIYAT",
+                "KDV_ORANI",
+                "KDV_DAHIL_FIYAT",
+            ):
                 if df[col].dtype == "object":
                     df[col] = df[col].astype(str).str.strip()
 
@@ -450,33 +450,33 @@ class PriceTrackingService:
     def _explode_multi_color(df: pd.DataFrame) -> pd.DataFrame:
         """
         Çoklu renk ayrıştırma kuralı:
-        
+
         RENK sütununda '/' ile ayrılmış değerler varsa (ör: 'ALTIN/BRONZ/FIR.ANTİK/MAT ALTIN/MAT FÜME'),
         her renk için ayrı bir satır oluşturur. Her satır orijinal ürünün tüm verilerini taşır.
-        
+
         İş kuralı: 32'nin katları olan sayılar (32, 64, 96, 128, 160, 192, 224, 256, 288, 320, 352...)
         ürün boyutudur (mm cinsinden).
         """
         if "RENK" not in df.columns:
             return df
-        
+
         new_rows = []
         exploded = False
-        
+
         for _, row in df.iterrows():
             renk_val = row.get("RENK")
-            
+
             # Renk değeri yoksa veya NaN ise olduğu gibi bırak
             if pd.isna(renk_val) or not str(renk_val).strip():
                 new_rows.append(row.to_dict())
                 continue
-            
+
             renk_str = str(renk_val).strip()
-            
+
             # '/' ile ayrılmış çoklu renkler var mı?
             if "/" in renk_str:
                 colors = [c.strip() for c in renk_str.split("/") if c.strip()]
-                
+
                 if len(colors) > 1:
                     exploded = True
                     for color in colors:
@@ -487,30 +487,29 @@ class PriceTrackingService:
                     new_rows.append(row.to_dict())
             else:
                 new_rows.append(row.to_dict())
-        
+
         if exploded:
             result = pd.DataFrame(new_rows)
             logger.info(
-                "Renk ayrıştırma: %d satır → %d satır (çoklu renkler açıldı)",
-                len(df), len(result)
+                "Renk ayrıştırma: %d satır → %d satır (çoklu renkler açıldı)", len(df), len(result)
             )
             return result.reset_index(drop=True)
-        
+
         return df
 
     @staticmethod
     def _calculate_derived_fields(df: pd.DataFrame) -> pd.DataFrame:
         """NET_FIYAT ve KDV_DAHIL_FIYAT hesaplar."""
-        
+
         # ── Güvenlik: Duplicate sütunları temizle ──
         if not df.columns.is_unique:
             df = df.T.groupby(level=0).last().T
-        
+
         # ── Güvenlik: Sayısal sütunları zorla sayısal yap ──
         for col in ("LISTE_FIYATI", "ISKONTO_ORANI", "NET_FIYAT", "KDV_ORANI", "KDV_DAHIL_FIYAT"):
             if col in df.columns:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
-        
+
         # Default değerler
         if "ISKONTO_ORANI" not in df.columns:
             df["ISKONTO_ORANI"] = 0
@@ -527,8 +526,8 @@ class PriceTrackingService:
                 if "NET_FIYAT" in df.columns
                 else pd.Series(True, index=df.index)
             )
-            df.loc[mask, "NET_FIYAT"] = (
-                df.loc[mask, "LISTE_FIYATI"] * (1 - df.loc[mask, "ISKONTO_ORANI"] / 100)
+            df.loc[mask, "NET_FIYAT"] = df.loc[mask, "LISTE_FIYATI"] * (
+                1 - df.loc[mask, "ISKONTO_ORANI"] / 100
             )
 
         # KDV dahil fiyat
@@ -538,8 +537,8 @@ class PriceTrackingService:
                 if "KDV_DAHIL_FIYAT" in df.columns
                 else pd.Series(True, index=df.index)
             )
-            df.loc[mask, "KDV_DAHIL_FIYAT"] = (
-                df.loc[mask, "NET_FIYAT"] * (1 + df.loc[mask, "KDV_ORANI"] / 100)
+            df.loc[mask, "KDV_DAHIL_FIYAT"] = df.loc[mask, "NET_FIYAT"] * (
+                1 + df.loc[mask, "KDV_ORANI"] / 100
             )
 
         # Ürün adı boş satırları kaldır
@@ -552,9 +551,7 @@ class PriceTrackingService:
     # ── Excel Export ───────────────────────────────────────
 
     @staticmethod
-    def export_to_excel(
-        db: Session, job_ids: list[str], user: User
-    ) -> bytes:
+    def export_to_excel(db: Session, job_ids: list[str], user: User) -> bytes:
         """Seçili job'ların ürünlerini birleştirilmiş Excel dosyasına çevirir."""
         all_items: list[PriceItem] = []
 
@@ -571,20 +568,24 @@ class PriceTrackingService:
         # DataFrame oluştur
         data = []
         for item in all_items:
-            data.append({
-                "URUN_KODU": item.urun_kodu or "",
-                "URUN_ADI": item.urun_adi,
-                "BIRIM": item.birim,
-                "LISTE_FIYATI": float(item.liste_fiyati) if item.liste_fiyati else None,
-                "ISKONTO_ORANI": float(item.iskonto_orani) if item.iskonto_orani else 0,
-                "NET_FIYAT": float(item.net_fiyat) if item.net_fiyat else None,
-                "KDV_ORANI": float(item.kdv_orani) if item.kdv_orani else 20,
-                "KDV_DAHIL_FIYAT": float(item.kdv_dahil_fiyat) if item.kdv_dahil_fiyat else None,
-                "PARA_BIRIMI": item.para_birimi,
-                "KATEGORI": item.kategori or "",
-                "MARKA": item.marka or "",
-                "TEDARIKCI": item.tedarikci,
-            })
+            data.append(
+                {
+                    "URUN_KODU": item.urun_kodu or "",
+                    "URUN_ADI": item.urun_adi,
+                    "BIRIM": item.birim,
+                    "LISTE_FIYATI": float(item.liste_fiyati) if item.liste_fiyati else None,
+                    "ISKONTO_ORANI": float(item.iskonto_orani) if item.iskonto_orani else 0,
+                    "NET_FIYAT": float(item.net_fiyat) if item.net_fiyat else None,
+                    "KDV_ORANI": float(item.kdv_orani) if item.kdv_orani else 20,
+                    "KDV_DAHIL_FIYAT": (
+                        float(item.kdv_dahil_fiyat) if item.kdv_dahil_fiyat else None
+                    ),
+                    "PARA_BIRIMI": item.para_birimi,
+                    "KATEGORI": item.kategori or "",
+                    "MARKA": item.marka or "",
+                    "TEDARIKCI": item.tedarikci,
+                }
+            )
 
         df = pd.DataFrame(data)
 
@@ -598,8 +599,10 @@ class PriceTrackingService:
         header_fill = PatternFill(start_color="2E75B6", end_color="2E75B6", fill_type="solid")
         header_align = Alignment(horizontal="center", vertical="center", wrap_text=True)
         thin_border = Border(
-            left=Side(style="thin"), right=Side(style="thin"),
-            top=Side(style="thin"), bottom=Side(style="thin"),
+            left=Side(style="thin"),
+            right=Side(style="thin"),
+            top=Side(style="thin"),
+            bottom=Side(style="thin"),
         )
         alt_fill = PatternFill(start_color="F2F7FB", end_color="F2F7FB", fill_type="solid")
 
@@ -641,18 +644,17 @@ class PriceTrackingService:
         return buffer.read()
 
     @staticmethod
-    def export_jobs_to_excel(
-        db: Session, job_ids: list[str], user: User
-    ) -> bytes:
+    def export_jobs_to_excel(db: Session, job_ids: list[str], user: User) -> bytes:
         """Geriye uyumluluk için eski export metodu."""
         return PriceTrackingService.export_to_excel(db, job_ids, user)
 
 
 # ── Yardımcı fonksiyonlar ─────────────────────────────────
 
+
 def _extract_scalar(value):
     """
-    Pandas Series/DataFrame gibi çoklu değer dönebilen yapıların içinden 
+    Pandas Series/DataFrame gibi çoklu değer dönebilen yapıların içinden
     tekil (skalar) değeri çıkarır. Defensive programming.
     """
     if isinstance(value, (pd.Series, pd.DataFrame)):
@@ -687,10 +689,10 @@ def _safe_float(value, default=None) -> float | None:
 def _add_summary_sheet(wb: Workbook, df: pd.DataFrame) -> None:
     """Özet istatistik sayfası ekler."""
     ws = wb.create_sheet("Özet")
-    
+
     # Duplicate sütun kontrolü (defensive)
     if not df.columns.is_unique:
-        df = df.loc[:, ~df.columns.duplicated(keep='last')]
+        df = df.loc[:, ~df.columns.duplicated(keep="last")]
 
     summary = [
         ("Toplam Ürün Sayısı", len(df)),
@@ -701,13 +703,15 @@ def _add_summary_sheet(wb: Workbook, df: pd.DataFrame) -> None:
     if "LISTE_FIYATI" in df.columns:
         valid = df["LISTE_FIYATI"].dropna()
         if not valid.empty:
-            summary.extend([
-                ("", ""),
-                ("Fiyat İstatistikleri", ""),
-                ("Ortalama Fiyat", f"{valid.mean():,.2f}"),
-                ("Minimum Fiyat", f"{valid.min():,.2f}"),
-                ("Maksimum Fiyat", f"{valid.max():,.2f}"),
-            ])
+            summary.extend(
+                [
+                    ("", ""),
+                    ("Fiyat İstatistikleri", ""),
+                    ("Ortalama Fiyat", f"{valid.mean():,.2f}"),
+                    ("Minimum Fiyat", f"{valid.min():,.2f}"),
+                    ("Maksimum Fiyat", f"{valid.max():,.2f}"),
+                ]
+            )
 
     if "TEDARIKCI" in df.columns:
         summary.append(("", ""))

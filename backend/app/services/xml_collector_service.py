@@ -27,6 +27,7 @@ Env vars:
   XML_COLLECT_TIMEOUT_S : OPTI_RUNNING -> FAILED zaman asimi (saniye, varsayilan 1200=20dk)
   MACHINE_ACK_TIMEOUT_S : DELIVERED -> FAILED zaman asimi (saniye, varsayilan 300=5dk)
 """
+
 import json
 import logging
 import os
@@ -38,7 +39,7 @@ from xml.etree import ElementTree as ET
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
-from ..models import OptiJob, OptiAuditEvent, OptiJobStateEnum
+from ..models import OptiAuditEvent, OptiJob, OptiJobStateEnum
 from . import tracking_folder_service as tracking
 
 logger = logging.getLogger(__name__)
@@ -63,13 +64,22 @@ MACHINE_PROCESSED_DIR = os.path.join(MACHINE_DROP_DIR, "processed")
 MACHINE_FAILED_DIR = os.path.join(MACHINE_DROP_DIR, "failed")
 
 # Klasorleri olustur (yoksa)
-for _d in (OPTIPLAN_EXPORT_DIR, MACHINE_DROP_DIR, MACHINE_INBOX_DIR, MACHINE_PROCESSED_DIR, MACHINE_FAILED_DIR):
+for _d in (
+    OPTIPLAN_EXPORT_DIR,
+    MACHINE_DROP_DIR,
+    MACHINE_INBOX_DIR,
+    MACHINE_PROCESSED_DIR,
+    MACHINE_FAILED_DIR,
+):
     os.makedirs(_d, exist_ok=True)
 
 
 # -- Yardimci Fonksiyonlar --
 
-def _add_audit(db: Session, job_id: str, event_type: str, message: str, details: dict | None = None):
+
+def _add_audit(
+    db: Session, job_id: str, event_type: str, message: str, details: dict | None = None
+):
     event = OptiAuditEvent(
         job_id=job_id,
         event_type=event_type,
@@ -126,7 +136,9 @@ def _find_any_new_xml(since: datetime) -> Optional[str]:
     return None
 
 
-def _get_state_transition_time(db: Session, job_id: str, target_event_type: str) -> Optional[datetime]:
+def _get_state_transition_time(
+    db: Session, job_id: str, target_event_type: str
+) -> Optional[datetime]:
     """Audit event'ten belirli bir state gecis zamanini bulur."""
     event = (
         db.query(OptiAuditEvent)
@@ -152,6 +164,7 @@ def _file_in_dir(filename: str, directory: str) -> bool:
 
 # -- Ana Collect Dongusu --
 
+
 def collect_xml_once() -> dict:
     """
     Tek bir tarama dongusu. APScheduler tarafindan periyodik olarak cagrilir.
@@ -168,11 +181,15 @@ def collect_xml_once() -> dict:
         # -- 1) OPTI_IMPORTED / OPTI_RUNNING / OPTI_DONE -> XML_READY --
         running_jobs = (
             db.query(OptiJob)
-            .filter(OptiJob.state.in_([
-                OptiJobStateEnum.OPTI_IMPORTED,
-                OptiJobStateEnum.OPTI_RUNNING,
-                OptiJobStateEnum.OPTI_DONE,
-            ]))
+            .filter(
+                OptiJob.state.in_(
+                    [
+                        OptiJobStateEnum.OPTI_IMPORTED,
+                        OptiJobStateEnum.OPTI_RUNNING,
+                        OptiJobStateEnum.OPTI_DONE,
+                    ]
+                )
+            )
             .all()
         )
 
@@ -191,11 +208,20 @@ def collect_xml_once() -> dict:
                 job.state = OptiJobStateEnum.FAILED
                 job.error_code = "E_OPTI_XML_TIMEOUT"
                 job.error_message = f"XML bekleme zaman asimi ({XML_COLLECT_TIMEOUT_S}s)"
-                _add_audit(db, job.id, "STATE_FAILED", "Zaman asimi: XML gelmedi",
-                           {"timeout_s": XML_COLLECT_TIMEOUT_S})
+                _add_audit(
+                    db,
+                    job.id,
+                    "STATE_FAILED",
+                    "Zaman asimi: XML gelmedi",
+                    {"timeout_s": XML_COLLECT_TIMEOUT_S},
+                )
                 db.commit()
-                tracking.on_state_change("FAILED", job.id, error_message=f"XML timeout ({XML_COLLECT_TIMEOUT_S}s)")
-                tracking.write_daily_log(f"Job {job.id[:8]}: FAILED - XML timeout", log_type="collector")
+                tracking.on_state_change(
+                    "FAILED", job.id, error_message=f"XML timeout ({XML_COLLECT_TIMEOUT_S}s)"
+                )
+                tracking.write_daily_log(
+                    f"Job {job.id[:8]}: FAILED - XML timeout", log_type="collector"
+                )
                 stats["failed"] += 1
                 continue
 
@@ -214,11 +240,14 @@ def collect_xml_once() -> dict:
                 job.state = OptiJobStateEnum.FAILED
                 job.error_code = "E_XML_INVALID"
                 job.error_message = err_msg
-                _add_audit(db, job.id, "STATE_FAILED", f"Gecersiz XML: {err_msg}",
-                           {"xml_path": xml_path})
+                _add_audit(
+                    db, job.id, "STATE_FAILED", f"Gecersiz XML: {err_msg}", {"xml_path": xml_path}
+                )
                 db.commit()
                 tracking.on_state_change("FAILED", job.id, xml_path=xml_path, error_message=err_msg)
-                tracking.write_daily_log(f"Job {job.id[:8]}: FAILED - Gecersiz XML: {err_msg}", log_type="collector")
+                tracking.write_daily_log(
+                    f"Job {job.id[:8]}: FAILED - Gecersiz XML: {err_msg}", log_type="collector"
+                )
                 stats["failed"] += 1
                 _move_to_failed(xml_path)
                 continue
@@ -233,8 +262,13 @@ def collect_xml_once() -> dict:
             if hasattr(job, "result_json"):
                 job.result_json = json.dumps(parse_result, default=str)
 
-            _add_audit(db, job.id, "STATE_XML_READY", "XML bulundu, dogrulandi ve parse edildi",
-                       {"xml_file": xml_fname, **parse_result})
+            _add_audit(
+                db,
+                job.id,
+                "STATE_XML_READY",
+                "XML bulundu, dogrulandi ve parse edildi",
+                {"xml_file": xml_fname, **parse_result},
+            )
             db.commit()
             stats["processed"] += 1
 
@@ -258,8 +292,13 @@ def collect_xml_once() -> dict:
 
             job.state = OptiJobStateEnum.DELIVERED
             job.xml_file_path = inbox_final
-            _add_audit(db, job.id, "STATE_DELIVERED", "XML makine inbox klasorune kopyalandi",
-                       {"inbox_path": inbox_final, "xml_file": xml_fname})
+            _add_audit(
+                db,
+                job.id,
+                "STATE_DELIVERED",
+                "XML makine inbox klasorune kopyalandi",
+                {"inbox_path": inbox_final, "xml_file": xml_fname},
+            )
             db.commit()
 
             # Tracking: XML_READY ve DELIVERED klasorlerine tasi
@@ -273,11 +312,7 @@ def collect_xml_once() -> dict:
             logger.info("Job %s: XML_READY -> DELIVERED (%s)", job.id, xml_fname)
 
         # -- 2) DELIVERED -> DONE (ACK bekleniyor: file_move modu) --
-        delivered_jobs = (
-            db.query(OptiJob)
-            .filter(OptiJob.state == OptiJobStateEnum.DELIVERED)
-            .all()
-        )
+        delivered_jobs = db.query(OptiJob).filter(OptiJob.state == OptiJobStateEnum.DELIVERED).all()
 
         for job in delivered_jobs:
             xml_fname = _get_delivered_xml_fname(db, job.id)
@@ -287,11 +322,20 @@ def collect_xml_once() -> dict:
             # AGENT_ONEFILE §4: processed/ altinda gorunurse DONE
             if _file_in_dir(xml_fname, MACHINE_PROCESSED_DIR):
                 job.state = OptiJobStateEnum.DONE
-                _add_audit(db, job.id, "STATE_DONE", "Makine ACK alindi (processed/)",
-                           {"xml_file": xml_fname})
+                _add_audit(
+                    db,
+                    job.id,
+                    "STATE_DONE",
+                    "Makine ACK alindi (processed/)",
+                    {"xml_file": xml_fname},
+                )
                 db.commit()
-                tracking.on_state_change("DONE", job.id, xml_path=os.path.join(MACHINE_PROCESSED_DIR, xml_fname))
-                tracking.write_daily_log(f"Job {job.id[:8]}: DONE - Makine ACK", log_type="collector")
+                tracking.on_state_change(
+                    "DONE", job.id, xml_path=os.path.join(MACHINE_PROCESSED_DIR, xml_fname)
+                )
+                tracking.write_daily_log(
+                    f"Job {job.id[:8]}: DONE - Makine ACK", log_type="collector"
+                )
                 stats["done"] += 1
                 logger.info("Job %s: DELIVERED -> DONE", job.id)
                 continue
@@ -301,11 +345,14 @@ def collect_xml_once() -> dict:
                 job.state = OptiJobStateEnum.FAILED
                 job.error_code = "E_OSI_ACK_FAILED"
                 job.error_message = "Makine hata bildirdi (failed/ klasorunde bulundu)"
-                _add_audit(db, job.id, "STATE_FAILED", "Makine hata ACK (failed/)",
-                           {"xml_file": xml_fname})
+                _add_audit(
+                    db, job.id, "STATE_FAILED", "Makine hata ACK (failed/)", {"xml_file": xml_fname}
+                )
                 db.commit()
                 tracking.on_state_change("FAILED", job.id, error_message="Makine hata ACK")
-                tracking.write_daily_log(f"Job {job.id[:8]}: FAILED - Makine hata ACK", log_type="collector")
+                tracking.write_daily_log(
+                    f"Job {job.id[:8]}: FAILED - Makine hata ACK", log_type="collector"
+                )
                 stats["failed"] += 1
                 continue
 
@@ -320,11 +367,20 @@ def collect_xml_once() -> dict:
                 job.state = OptiJobStateEnum.FAILED
                 job.error_code = "E_OSI_ACK_TIMEOUT"
                 job.error_message = f"Makine ACK zaman asimi ({MACHINE_ACK_TIMEOUT_S}s)"
-                _add_audit(db, job.id, "STATE_FAILED", "Makine ACK zaman asimi",
-                           {"timeout_s": MACHINE_ACK_TIMEOUT_S})
+                _add_audit(
+                    db,
+                    job.id,
+                    "STATE_FAILED",
+                    "Makine ACK zaman asimi",
+                    {"timeout_s": MACHINE_ACK_TIMEOUT_S},
+                )
                 db.commit()
-                tracking.on_state_change("FAILED", job.id, error_message=f"ACK timeout ({MACHINE_ACK_TIMEOUT_S}s)")
-                tracking.write_daily_log(f"Job {job.id[:8]}: FAILED - ACK timeout", log_type="collector")
+                tracking.on_state_change(
+                    "FAILED", job.id, error_message=f"ACK timeout ({MACHINE_ACK_TIMEOUT_S}s)"
+                )
+                tracking.write_daily_log(
+                    f"Job {job.id[:8]}: FAILED - ACK timeout", log_type="collector"
+                )
                 stats["failed"] += 1
 
     except Exception as exc:

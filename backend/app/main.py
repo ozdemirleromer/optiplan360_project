@@ -1,32 +1,36 @@
-﻿from fastapi import FastAPI, Depends, Response, Request
-from dotenv import load_dotenv
+﻿from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, Request, Response
+
 load_dotenv()
+import os
+import time
+from datetime import datetime
+
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
-from sqlalchemy.orm import Session
 from sqlalchemy import text
-from datetime import datetime
+from sqlalchemy.orm import Session
+
 from . import models
 from .database import SessionLocal, engine
-from .security import add_security_middleware
-from .routers.v1 import v1_router
-from .tasks.reminders import start_scheduler
 from .exceptions import AppError
-from .rate_limit import limiter
-from .middleware.cache_middleware import CacheMiddleware
 from .logging_config import setup_logging
-import os
-import time
+from .middleware.cache_middleware import CacheMiddleware
+from .rate_limit import limiter
+from .routers.v1 import v1_router
+from .security import add_security_middleware
+from .tasks.reminders import start_scheduler
 
 # Setup logging with rotation
 logger = setup_logging()
 
 # NOT: Tablo oluÅŸturma Alembic migration'larÄ±na bÄ±rakÄ±ldÄ±.
 # models.Base.metadata.create_all kaldÄ±rÄ±ldÄ± â€” migration geÃ§miÅŸini eziyordu.
+
 
 def _get_cors_origins() -> list[str]:
     """
@@ -56,12 +60,13 @@ def _get_cors_origins() -> list[str]:
         "https://www.optiplan360.com",
     ]
 
+
 app = FastAPI(
     title="OPTIPLAN360",
     description="OptiPlan 360 - Ãœretim YÃ¶netim Sistemi",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 # Add security middleware
@@ -91,6 +96,7 @@ app.add_middleware(
 # GÃ¼venlik header'larÄ± security.py'deki middleware tarafÄ±ndan ekleniyor.
 # Burada tekrar eklenmiyordu â€” Ã§ift kayÄ±t kaldÄ±rÄ±ldÄ±.
 
+
 # Performance monitoring middleware
 @app.middleware("http")
 async def add_performance_monitoring(request, call_next):
@@ -98,11 +104,12 @@ async def add_performance_monitoring(request, call_next):
     response = await call_next(request)
     process_time = time.time() - start_time
     response.headers["X-Process-Time"] = f"{process_time:.3f}s"
-    
+
     if process_time > 1.0:  # Slow request warning
         logger.warning(f"Slow request: {request.method} {request.url} took {process_time:.3f}s")
-    
+
     return response
+
 
 # â”€â”€ Global exception handler: AppError â†’ standart JSON yanÄ±t â”€â”€
 @app.exception_handler(AppError)
@@ -118,8 +125,10 @@ async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
         },
     )
 
+
 # Include routers
 app.include_router(v1_router)
+
 
 # Dependency
 def get_db():
@@ -129,14 +138,11 @@ def get_db():
     finally:
         db.close()
 
+
 @app.get("/")
 async def root():
-    return {
-        "message": "OptiPlan 360 API",
-        "version": "1.0.0",
-        "docs": "/docs",
-        "health": "/health"
-    }
+    return {"message": "OptiPlan 360 API", "version": "1.0.0", "docs": "/docs", "health": "/health"}
+
 
 @app.get("/auth")
 async def auth_root():
@@ -147,6 +153,7 @@ async def auth_root():
         "me": "/api/v1/auth/me",
     }
 
+
 @app.get("/orchestrator")
 async def orchestrator_root():
     return {
@@ -154,6 +161,7 @@ async def orchestrator_root():
         "base": "/api/v1/orchestrator",
         "jobs": "/api/v1/orchestrator/jobs",
     }
+
 
 def _seed_canonical_stations(db: Session) -> None:
     """
@@ -193,12 +201,14 @@ def _seed_canonical_stations(db: Session) -> None:
     for s in canonical:
         exists = db.query(Station).filter(Station.name == s["name"]).first()
         if not exists:
-            db.add(Station(
-                name=s["name"],
-                description=s["description"],
-                active=True,
-                istasyon_durumu=s["istasyon_durumu"],
-            ))
+            db.add(
+                Station(
+                    name=s["name"],
+                    description=s["description"],
+                    active=True,
+                    istasyon_durumu=s["istasyon_durumu"],
+                )
+            )
             created += 1
     if created:
         db.commit()
@@ -241,16 +251,14 @@ def _column_exists(conn, table_name: str, column_name: str) -> bool:
         return any(str(row[1]) == column_name for row in rows)
 
     row = conn.execute(
-        text(
-            """
+        text("""
             SELECT 1
             FROM information_schema.columns
             WHERE table_schema = current_schema()
               AND table_name = :table_name
               AND column_name = :column_name
             LIMIT 1
-            """
-        ),
+            """),
         {"table_name": table_name, "column_name": column_name},
     ).first()
     return row is not None
@@ -294,11 +302,17 @@ def _run_startup_schema_fixes() -> None:
                 logger.warning("Schema fix atlandi (%s.%s): %s", table_name, column_name, exc)
 
         try:
-            conn.execute(text("CREATE UNIQUE INDEX IF NOT EXISTS ix_orders_tracking_token ON orders(tracking_token)"))
-            conn.execute(text(
-                "CREATE UNIQUE INDEX IF NOT EXISTS uq_single_opti_running "
-                "ON opti_jobs(state) WHERE state = 'OPTI_RUNNING'"
-            ))
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS ix_orders_tracking_token ON orders(tracking_token)"
+                )
+            )
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uq_single_opti_running "
+                    "ON opti_jobs(state) WHERE state = 'OPTI_RUNNING'"
+                )
+            )
         except Exception as exc:
             logger.warning("Schema index fix atlandi: %s", exc)
 
@@ -319,8 +333,10 @@ def startup_event():
         # Runtime UUID + order_no doldurma
         db = SessionLocal()
         try:
-            from app.models import Order
             import uuid
+
+            from app.models import Order
+
             null_orders = db.query(Order).filter(Order.tracking_token == None).all()
             if null_orders:
                 for o in null_orders:
@@ -329,9 +345,15 @@ def startup_event():
                 logger.info(f"{len(null_orders)} eski siparise tracking_token atandi.")
 
             # Mevcut siparişlere sıralı order_no ata
-            null_no_orders = db.query(Order).filter(Order.order_no == None).order_by(Order.created_at.asc()).all()
+            null_no_orders = (
+                db.query(Order)
+                .filter(Order.order_no == None)
+                .order_by(Order.created_at.asc())
+                .all()
+            )
             if null_no_orders:
                 from sqlalchemy import func as sa_func
+
                 max_no = db.query(sa_func.max(Order.order_no)).scalar() or 0
                 for o in null_no_orders:
                     max_no += 1
@@ -355,8 +377,11 @@ def startup_event():
     finally:
         db.close()
 
+
 from fastapi import WebSocket, WebSocketDisconnect
+
 from .websockets import manager
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -367,6 +392,7 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db), response: Response = None):
@@ -396,6 +422,6 @@ def health_check(db: Session = Depends(get_db), response: Response = None):
         "service": "OPTIPLAN360 API",
     }
 
+
 # GET /api/v1/config/permissions endpoint'i
 # config_router.py'e taÅŸÄ±ndÄ± â€” app/routers/config_router.py
-

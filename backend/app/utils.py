@@ -1,8 +1,10 @@
-from sqlalchemy.orm import Session
 from datetime import datetime, timezone
-from uuid import uuid4
 from typing import Optional
+from uuid import uuid4
+
 from app.models import AuditLog
+from sqlalchemy.orm import Session
+
 
 def create_audit_log(
     db: Session,
@@ -13,7 +15,7 @@ def create_audit_log(
 ):
     """
     Merkezi Audit Log oluşturma fonksiyonu.
-    
+
     Args:
         db: Veritabanı oturumu
         user_id: İşlemi yapan kullanıcı ID

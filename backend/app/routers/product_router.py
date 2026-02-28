@@ -1,22 +1,31 @@
 """
 Product Catalog Router — Master data CRUD + Spec-first arama
 """
+
+from typing import List, Optional
+
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from typing import Optional, List
 
+from ..auth import require_permissions
 from ..database import get_db
-from ..auth import get_current_user, require_permissions
 from ..models import User
 from ..permissions import Permission
 from ..schemas import (
-    BrandCreate, BrandOut, ColorCreate, ColorOut,
-    ProductTypeCreate, ProductTypeOut,
-    MaterialSpecCreate, MaterialSpecOut,
-    SupplierItemCreate, SupplierItemOut,
-    ItemCreate, ItemOut,
-    IncomingSpecCreate, IncomingSpecOut,
-    ProductRequestOut,
+    BrandCreate,
+    BrandOut,
+    ColorCreate,
+    ColorOut,
+    IncomingSpecCreate,
+    IncomingSpecOut,
+    ItemCreate,
+    ItemOut,
+    MaterialSpecCreate,
+    MaterialSpecOut,
+    ProductTypeCreate,
+    ProductTypeOut,
+    SupplierItemCreate,
+    SupplierItemOut,
 )
 from ..services.product_service import ProductService
 
@@ -92,8 +101,11 @@ def create_spec(
 ):
     svc = ProductService(db)
     return svc.create_spec(
-        body.product_type_id, body.color_id,
-        body.thickness_mm, body.width_cm, body.height_cm,
+        body.product_type_id,
+        body.color_id,
+        body.thickness_mm,
+        body.width_cm,
+        body.height_cm,
     )
 
 
@@ -126,8 +138,12 @@ def search_specs(
     """
     svc = ProductService(db)
     raw_results = svc.search_specs(
-        query=query, product_type_id=product_type_id, color_id=color_id,
-        thickness_mm=thickness_mm, width_cm=width_cm, height_cm=height_cm,
+        query=query,
+        product_type_id=product_type_id,
+        color_id=color_id,
+        thickness_mm=thickness_mm,
+        width_cm=width_cm,
+        height_cm=height_cm,
         limit=limit,
     )
     # ORM nesnelerini JSON-serializable dict'lere cevir
@@ -136,25 +152,27 @@ def search_specs(
         spec = r["spec"]
         pt = r["product_type"]
         color = r["color"]
-        results.append({
-            "id": spec.id,
-            "product_type_name": pt.name if pt else "",
-            "color_name": color.name if color else "",
-            "thickness_mm": float(spec.thickness_mm) if spec.thickness_mm else 0,
-            "width_cm": float(spec.width_cm) if spec.width_cm else 0,
-            "height_cm": float(spec.height_cm) if spec.height_cm else 0,
-            "spec_hash": spec.spec_hash or "",
-            "match_status": r["match_status"],
-            "supplier_items": [
-                {
-                    "id": si.id,
-                    "brand_name": si.brand.name if si.brand else "",
-                    "display_name": si.display_name or "",
-                    "is_default": bool(si.is_default),
-                }
-                for si in r["supplier_items"]
-            ],
-        })
+        results.append(
+            {
+                "id": spec.id,
+                "product_type_name": pt.name if pt else "",
+                "color_name": color.name if color else "",
+                "thickness_mm": float(spec.thickness_mm) if spec.thickness_mm else 0,
+                "width_cm": float(spec.width_cm) if spec.width_cm else 0,
+                "height_cm": float(spec.height_cm) if spec.height_cm else 0,
+                "spec_hash": spec.spec_hash or "",
+                "match_status": r["match_status"],
+                "supplier_items": [
+                    {
+                        "id": si.id,
+                        "brand_name": si.brand.name if si.brand else "",
+                        "display_name": si.display_name or "",
+                        "is_default": bool(si.is_default),
+                    }
+                    for si in r["supplier_items"]
+                ],
+            }
+        )
     return {"results": results, "total": len(results)}
 
 
@@ -167,7 +185,11 @@ def create_supplier_item(
 ):
     svc = ProductService(db)
     return svc.create_supplier_item(
-        body.spec_id, body.brand_id, body.display_name, body.is_default, body.priority,
+        body.spec_id,
+        body.brand_id,
+        body.display_name,
+        body.is_default,
+        body.priority,
     )
 
 
@@ -180,8 +202,12 @@ def create_item(
 ):
     svc = ProductService(db)
     return svc.create_item(
-        body.supplier_item_id, body.unit, body.vat_rate,
-        body.default_price, body.barcode, body.mikro_stok_kodu,
+        body.supplier_item_id,
+        body.unit,
+        body.vat_rate,
+        body.default_price,
+        body.barcode,
+        body.mikro_stok_kodu,
     )
 
 

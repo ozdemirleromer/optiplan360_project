@@ -1,8 +1,9 @@
 # Security Headers Middleware
-from fastapi import FastAPI, Request, Response
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 import secrets
 from urllib.parse import urlparse
+
+from fastapi import FastAPI, Request, Response
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 
 def _extract_host(value: str) -> str:
@@ -21,20 +22,20 @@ def _is_allowed_host(host: str) -> bool:
         return True
     return host.endswith(".optiplan360.com")
 
+
 def add_security_middleware(app: FastAPI):
     """Add comprehensive security middleware to FastAPI app"""
-    
+
     # Trusted Host Middleware
     app.add_middleware(
-        TrustedHostMiddleware,
-        allowed_hosts=["localhost", "127.0.0.1", "*.optiplan360.com"]
+        TrustedHostMiddleware, allowed_hosts=["localhost", "127.0.0.1", "*.optiplan360.com"]
     )
-    
+
     # Security Headers Middleware
     @app.middleware("http")
     async def security_headers_middleware(request: Request, call_next):
         response = await call_next(request)
-        
+
         # Security Headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "DENY"
@@ -44,13 +45,13 @@ def add_security_middleware(app: FastAPI):
             "geolocation=(), microphone=(), camera=(), "
             "payment=(), usb=(), magnetometer=(), gyroscope=()"
         )
-        
+
         # HSTS (only in production)
         if "optiplan360.com" in request.url.hostname:
             response.headers["Strict-Transport-Security"] = (
                 "max-age=31536000; includeSubDomains; preload"
             )
-        
+
         # Content Security Policy
         csp = (
             "default-src 'self'; "
@@ -64,9 +65,9 @@ def add_security_middleware(app: FastAPI):
             "form-action 'self'"
         )
         response.headers["Content-Security-Policy"] = csp
-        
+
         return response
-    
+
     # CSRF Protection
     @app.middleware("http")
     async def csrf_protection_middleware(request: Request, call_next):
@@ -82,25 +83,25 @@ def add_security_middleware(app: FastAPI):
                 return Response(
                     content="Invalid origin",
                     status_code=403,
-                    headers={"Content-Type": "text/plain"}
+                    headers={"Content-Type": "text/plain"},
                 )
 
             if referer_host and not _is_allowed_host(referer_host):
                 return Response(
                     content="Invalid referer",
                     status_code=403,
-                    headers={"Content-Type": "text/plain"}
+                    headers={"Content-Type": "text/plain"},
                 )
-        
+
         response = await call_next(request)
         return response
-    
+
     # Request ID
     @app.middleware("http")
     async def request_id_middleware(request: Request, call_next):
         request_id = secrets.token_hex(16)
         request.state.request_id = request_id
-        
+
         response = await call_next(request)
         response.headers["X-Request-ID"] = request_id
         return response

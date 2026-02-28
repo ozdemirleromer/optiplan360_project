@@ -3,34 +3,40 @@ OptiPlan 360 — Order Service Layer
 Sipariş iş mantığını merkezi olarak yönetir.
 Router'lar bu servisi kullanır; transaction bütünlüğü burada sağlanır.
 """
+
 import json
 import logging
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import List
 from uuid import uuid4
 
+from app.exceptions import (
+    AuthorizationError,
+    BusinessRuleError,
+    FieldError,
+    NotFoundError,
+    StatusTransitionError,
+    ValidationError,
+)
+from app.models import Customer, Order, OrderPart, User
+from app.schemas import (
+    VALID_THICKNESSES,
+    MergeSuggestion,
+    OrderCreate,
+    OrderListItem,
+    OrderOut,
+    OrderPartCreate,
+    OrderPartOut,
+    OrderUpdate,
+)
+from app.schemas import ValidationError as VError
+from app.schemas import (
+    ValidationResult,
+)
+from app.services.optimization import MergeService
+from app.utils import create_audit_log
 from sqlalchemy import func as sa_func
 from sqlalchemy.orm import Session, joinedload
-
-from app.models import Order, OrderPart, Customer, User
-from app.schemas import (
-    OrderCreate, OrderUpdate, OrderPartCreate,
-    OrderOut, OrderPartOut, OrderListItem,
-    ValidationResult,
-    ValidationError as VError,
-    MergeSuggestion,
-    VALID_THICKNESSES,
-)
-from app.exceptions import (
-    NotFoundError,
-    ValidationError,
-    BusinessRuleError,
-    StatusTransitionError,
-    AuthorizationError,
-    FieldError,
-)
-from app.utils import create_audit_log
-from app.services.optimization import MergeService
 
 logger = logging.getLogger(__name__)
 
@@ -39,14 +45,14 @@ logger = logging.getLogger(__name__)
 # DURUM GEÇİŞ KURALLARI
 # ═══════════════════════════════════════════════════
 VALID_TRANSITIONS = {
-    "DRAFT":         ["NEW", "HOLD", "CANCELLED"],
-    "NEW":           ["HOLD", "CANCELLED", "IN_PRODUCTION"],
-    "HOLD":          ["NEW", "CANCELLED", "IN_PRODUCTION"],
+    "DRAFT": ["NEW", "HOLD", "CANCELLED"],
+    "NEW": ["HOLD", "CANCELLED", "IN_PRODUCTION"],
+    "HOLD": ["NEW", "CANCELLED", "IN_PRODUCTION"],
     "IN_PRODUCTION": ["HOLD", "CANCELLED", "READY"],
-    "READY":         ["IN_PRODUCTION", "DELIVERED"],
-    "DELIVERED":     ["DONE"],
-    "DONE":          [],
-    "CANCELLED":     ["NEW"],
+    "READY": ["IN_PRODUCTION", "DELIVERED"],
+    "DELIVERED": ["DONE"],
+    "DONE": [],
+    "CANCELLED": ["NEW"],
 }
 
 
@@ -145,7 +151,9 @@ class OrderService:
         db.commit()
         db.refresh(order)
 
-        logger.info("Sipariş oluşturuldu: %s (user=%s, parts=%d)", order.id, user.id, len(body.parts))
+        logger.info(
+            "Sipariş oluşturuldu: %s (user=%s, parts=%d)", order.id, user.id, len(body.parts)
+        )
         return order
 
     # ─── Sipariş Başlık Güncelle ───
@@ -198,7 +206,9 @@ class OrderService:
         db.commit()
         db.refresh(order)
 
-        logger.info("Sipariş güncellendi: %s (user=%s, fields=%s)", order_id, user.id, list(changes.keys()))
+        logger.info(
+            "Sipariş güncellendi: %s (user=%s, fields=%s)", order_id, user.id, list(changes.keys())
+        )
         return order
 
     # ─── Parça Ekle ───
@@ -222,7 +232,9 @@ class OrderService:
 
     # ─── Parçaları Güncelle (replace) ───
     @staticmethod
-    def replace_parts(db: Session, order_id: str, parts: List[OrderPartCreate], user: User) -> Order:
+    def replace_parts(
+        db: Session, order_id: str, parts: List[OrderPartCreate], user: User
+    ) -> Order:
         """Siparişin tüm parçalarını yenileriyle değiştirir."""
         order = OrderService.get_order(db, order_id)
         OrderService._assert_can_modify(order, user)
@@ -237,11 +249,15 @@ class OrderService:
             new_parts.append(part)
 
         order.updated_at = datetime.now(timezone.utc)
-        create_audit_log(db, user.id, "UPDATE_PARTS", f"{len(new_parts)} parça güncellendi", order_id)
+        create_audit_log(
+            db, user.id, "UPDATE_PARTS", f"{len(new_parts)} parça güncellendi", order_id
+        )
         db.commit()
         db.refresh(order)
 
-        logger.info("Parçalar güncellendi: order=%s, count=%d (user=%s)", order_id, len(new_parts), user.id)
+        logger.info(
+            "Parçalar güncellendi: order=%s, count=%d (user=%s)", order_id, len(new_parts), user.id
+        )
         return order
 
     # ─── Validasyon ───
@@ -279,7 +295,9 @@ class OrderService:
 
         # Telefon normalize kontrolü
         if not order.customer or not order.customer.phone:
-            errors.append(VError(field="phone", message="Telefon numarası eksik veya normalize edilemedi"))
+            errors.append(
+                VError(field="phone", message="Telefon numarası eksik veya normalize edilemedi")
+            )
 
         # Export grouping kontrolü
         govde = [p for p in order.parts if p.part_group == "GOVDE"]
@@ -288,8 +306,12 @@ class OrderService:
             errors.append(VError(field="grouping", message="GOVDE ve ARKALIK grupları eksik"))
 
         # Merge önerisi
-        for sug in MergeService.compute_suggestions(order.parts, part_group_filter="GOVDE", row_start=1):
-            merge_suggestions.append(MergeSuggestion(rows=sug.rows, reason=sug.reason, band_match=sug.band_match))
+        for sug in MergeService.compute_suggestions(
+            order.parts, part_group_filter="GOVDE", row_start=1
+        ):
+            merge_suggestions.append(
+                MergeSuggestion(rows=sug.rows, reason=sug.reason, band_match=sug.band_match)
+            )
 
         return ValidationResult(
             valid=len(errors) == 0,
@@ -304,9 +326,10 @@ class OrderService:
         val = OrderService.validate_order(db, order_id)
         if not val.valid:
             error_summary = "; ".join(f"{e.field}: {e.message}" for e in val.errors[:5])
-            raise ValidationError(f"Onaylama başarısız: {error_summary}", [
-                FieldError(field=e.field, message=e.message, row=e.row) for e in val.errors
-            ])
+            raise ValidationError(
+                f"Onaylama başarısız: {error_summary}",
+                [FieldError(field=e.field, message=e.message, row=e.row) for e in val.errors],
+            )
 
         order = OrderService.get_order(db, order_id)
         OrderService._assert_can_modify(order, user)
@@ -345,10 +368,18 @@ class OrderService:
         elif new_status == "DELIVERED":
             order.delivered_at = datetime.now(timezone.utc)
 
-        create_audit_log(db, user.id, "STATUS_CHANGED", json.dumps({"from": old_status, "to": new_status}), order.id)
+        create_audit_log(
+            db,
+            user.id,
+            "STATUS_CHANGED",
+            json.dumps({"from": old_status, "to": new_status}),
+            order.id,
+        )
         db.commit()
 
-        logger.info("Durum değişti: order=%s %s→%s (user=%s)", order_id, old_status, new_status, user.id)
+        logger.info(
+            "Durum değişti: order=%s %s→%s (user=%s)", order_id, old_status, new_status, user.id
+        )
         return {"status": "ok", "old": old_status, "new": new_status}
 
     # ─── Sipariş Sil ───
@@ -356,10 +387,10 @@ class OrderService:
     def delete_order(db: Session, order_id: str, user: User) -> dict:
         """Siparişi siler. Sadece NEW/DRAFT durumunda."""
         from app.models import AuditLog, WhatsAppMessage
-        from app.models.order import OptiJob, OptiAuditEvent, Message
-        from app.models.integrations import OCRJob
         from app.models.crm import CRMOpportunity
         from app.models.finance import Invoice
+        from app.models.integrations import OCRJob
+        from app.models.order import Message, OptiAuditEvent, OptiJob
 
         order = OrderService.get_order(db, order_id, with_parts=False)
         OrderService._assert_can_modify(order, user)
@@ -371,15 +402,23 @@ class OrderService:
         # FK zinciri: opti_audit_events → opti_jobs → diğer tablolar → order_parts → orders
         job_ids = [j.id for j in db.query(OptiJob.id).filter(OptiJob.order_id == oid).all()]
         if job_ids:
-            db.query(OptiAuditEvent).filter(OptiAuditEvent.job_id.in_(job_ids)).delete(synchronize_session=False)
+            db.query(OptiAuditEvent).filter(OptiAuditEvent.job_id.in_(job_ids)).delete(
+                synchronize_session=False
+            )
             db.query(OptiJob).filter(OptiJob.order_id == oid).delete(synchronize_session=False)
 
         db.query(AuditLog).filter(AuditLog.order_id == oid).delete()
         db.query(WhatsAppMessage).filter(WhatsAppMessage.order_id == oid).delete()
         db.query(Message).filter(Message.order_id == oid).delete()
-        db.query(OCRJob).filter(OCRJob.order_id == oid).update({OCRJob.order_id: None}, synchronize_session=False)
-        db.query(CRMOpportunity).filter(CRMOpportunity.order_id == oid).update({CRMOpportunity.order_id: None}, synchronize_session=False)
-        db.query(Invoice).filter(Invoice.order_id == oid).update({Invoice.order_id: None}, synchronize_session=False)
+        db.query(OCRJob).filter(OCRJob.order_id == oid).update(
+            {OCRJob.order_id: None}, synchronize_session=False
+        )
+        db.query(CRMOpportunity).filter(CRMOpportunity.order_id == oid).update(
+            {CRMOpportunity.order_id: None}, synchronize_session=False
+        )
+        db.query(Invoice).filter(Invoice.order_id == oid).update(
+            {Invoice.order_id: None}, synchronize_session=False
+        )
         db.query(OrderPart).filter(OrderPart.order_id == oid).delete()
         db.delete(order)
 

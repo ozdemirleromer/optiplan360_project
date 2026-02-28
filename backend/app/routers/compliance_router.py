@@ -2,19 +2,20 @@
 OptiPlan 360 — Compliance Router (Genişletilmiş)
 Uyumluluk kuralları, parça tipi kuralları ve tane haritalama endpoint'leri.
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.exceptions import NotFoundError
-from pydantic import BaseModel, Field
-from typing import Any, Dict, List, Optional
-from datetime import datetime
-from sqlalchemy.orm import Session
 
-from app.database import get_db
-from app.compliance.agent_orchestrator import AgentOrchestrator
-from app.compliance.part_type_rules_agent import PartTypeRulesAgent
-from app.compliance.grain_mapping_agent import GrainMappingAgent
+from datetime import datetime
+from typing import Any, Dict, List, Optional
+
 from app.auth import get_current_user, require_admin
+from app.compliance.agent_orchestrator import AgentOrchestrator
+from app.compliance.grain_mapping_agent import GrainMappingAgent
+from app.compliance.part_type_rules_agent import PartTypeRulesAgent
+from app.database import get_db
+from app.exceptions import NotFoundError
 from app.models import User
+from fastapi import APIRouter, Depends, Query
+from pydantic import BaseModel, Field
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/compliance", tags=["Compliance"])
 
@@ -96,28 +97,32 @@ class ComplianceStats(BaseModel):
 # SİPARİŞ UYUMLULUK KONTROLÜ
 # ═══════════════════════════════════════════════════
 
+
 @router.post("/compile", response_model=ComplianceReport)
 def compile_order(
-    order: OrderDraft,
-    db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user)
+    order: OrderDraft, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
     """
     Siparişi uyumluluk kurallarına göre derle ve kontrol et.
     """
-    orchestrator = AgentOrchestrator([
-        PartTypeRulesAgent(),
-        GrainMappingAgent(),
-    ])
+    orchestrator = AgentOrchestrator(
+        [
+            PartTypeRulesAgent(),
+            GrainMappingAgent(),
+        ]
+    )
 
     result = orchestrator.run(order.dict())
-    
+
     # Audit log
     from app.utils import create_audit_log
+
     create_audit_log(
-        db, current_user.id, "COMPLIANCE_CHECK",
+        db,
+        current_user.id,
+        "COMPLIANCE_CHECK",
         f"Compliance check completed. Status: {'OK' if result['ok'] else 'FAIL'}",
-        None
+        None,
     )
     db.commit()
 
@@ -134,35 +139,40 @@ def compile_order(
                 status=r.get("status", ""),
                 message=r.get("message", ""),
                 severity=r.get("severity", "MEDIUM"),
-                field=r.get("field")
+                field=r.get("field"),
             )
             for r in result.get("report", [])
         ],
-        compliant_order=result.get("compliant_order")
+        compliant_order=result.get("compliant_order"),
     )
 
 
 @router.post("/check/quick")
-def quick_compliance_check(
-    parts: List[Dict[str, Any]],
-    _: User = Depends(get_current_user)
-):
+def quick_compliance_check(parts: List[Dict[str, Any]], _: User = Depends(get_current_user)):
     """Hızlı uyumluluk kontrolü - sadece kritik kuralları kontrol eder."""
     violations = []
-    
+
     for i, part in enumerate(parts):
         part_type = part.get("part_type", "").upper()
-        
+
         if not part.get("part_code"):
-            violations.append({"part_index": i, "field": "part_code", "error": "Parça kodu zorunludur"})
-        
+            violations.append(
+                {"part_index": i, "field": "part_code", "error": "Parça kodu zorunludur"}
+            )
+
         if part_type in ["TB", "KM"] and not part.get("length_mm"):
-            violations.append({"part_index": i, "field": "length_mm", "error": f"{part_type} parçalar için boyut zorunludur"})
-    
+            violations.append(
+                {
+                    "part_index": i,
+                    "field": "length_mm",
+                    "error": f"{part_type} parçalar için boyut zorunludur",
+                }
+            )
+
     return {
         "ok": len(violations) == 0,
         "violations": violations,
-        "checked_at": datetime.utcnow().isoformat()
+        "checked_at": datetime.utcnow().isoformat(),
     }
 
 
@@ -178,7 +188,7 @@ _part_type_rules: List[PartTypeRule] = [
         rule_description="Tekne parçaları için boyut bilgisi zorunludur",
         required_fields=["length_mm", "width_mm", "thickness_mm"],
         error_message="Tekne (TB) parçalar için boyut bilgileri eksik",
-        is_active=True
+        is_active=True,
     ),
     PartTypeRule(
         id="rule-002",
@@ -188,7 +198,7 @@ _part_type_rules: List[PartTypeRule] = [
         required_fields=["part_code"],
         validation_regex=r"^KM-\d{4}$",
         error_message="Kapak menteşesi kodu KM-XXXX formatında olmalıdır",
-        is_active=True
+        is_active=True,
     ),
     PartTypeRule(
         id="rule-003",
@@ -197,7 +207,7 @@ _part_type_rules: List[PartTypeRule] = [
         rule_description="Kapı parçaları için tane yönü belirtilmelidir",
         required_fields=["grain_direction", "material_type"],
         error_message="Kapı (DR) parçalar için tane yönü zorunludur",
-        is_active=True
+        is_active=True,
     ),
 ]
 
@@ -206,7 +216,7 @@ _part_type_rules: List[PartTypeRule] = [
 def list_part_type_rules(
     part_type: Optional[str] = Query(None),
     is_active: Optional[bool] = Query(None),
-    _: User = Depends(get_current_user)
+    _: User = Depends(get_current_user),
 ):
     """Tüm parça tipi kurallarını listele."""
     rules = _part_type_rules
@@ -221,13 +231,16 @@ def list_part_type_rules(
 def create_part_type_rule(rule: PartTypeRuleCreate, admin: User = Depends(require_admin)):
     """Yeni parça tipi kuralı oluştur."""
     import uuid
+
     new_rule = PartTypeRule(id=f"rule-{uuid.uuid4().hex[:8]}", **rule.dict())
     _part_type_rules.append(new_rule)
     return new_rule
 
 
 @router.put("/rules/part-types/{rule_id}", response_model=PartTypeRule)
-def update_part_type_rule(rule_id: str, updates: PartTypeRuleCreate, admin: User = Depends(require_admin)):
+def update_part_type_rule(
+    rule_id: str, updates: PartTypeRuleCreate, admin: User = Depends(require_admin)
+):
     """Parça tipi kuralını güncelle."""
     for i, rule in enumerate(_part_type_rules):
         if rule.id == rule_id:
@@ -254,17 +267,29 @@ def delete_part_type_rule(rule_id: str, admin: User = Depends(require_admin)):
 
 _grain_mappings: List[GrainMappingEntry] = [
     GrainMappingEntry(
-        id="grain-001", material_type="MDF", thickness_mm=18,
-        grain_direction="LENGTHWISE", rotation_allowed=True, notes="Standart MDF için tane yönü"
+        id="grain-001",
+        material_type="MDF",
+        thickness_mm=18,
+        grain_direction="LENGTHWISE",
+        rotation_allowed=True,
+        notes="Standart MDF için tane yönü",
     ),
     GrainMappingEntry(
-        id="grain-002", material_type="MDF", thickness_mm=25,
-        grain_direction="LENGTHWISE", rotation_allowed=False, notes="Kalın MDF için sabit tane"
+        id="grain-002",
+        material_type="MDF",
+        thickness_mm=25,
+        grain_direction="LENGTHWISE",
+        rotation_allowed=False,
+        notes="Kalın MDF için sabit tane",
     ),
     GrainMappingEntry(
-        id="grain-003", material_type="LAMINATE", thickness_mm=0.8,
-        grain_direction="AUTO", rotation_allowed=True, preferred_cut_direction="LENGTHWISE",
-        notes="Laminat için esnek tane"
+        id="grain-003",
+        material_type="LAMINATE",
+        thickness_mm=0.8,
+        grain_direction="AUTO",
+        rotation_allowed=True,
+        preferred_cut_direction="LENGTHWISE",
+        notes="Laminat için esnek tane",
     ),
 ]
 
@@ -273,7 +298,7 @@ _grain_mappings: List[GrainMappingEntry] = [
 def list_grain_mappings(
     material_type: Optional[str] = Query(None),
     thickness_mm: Optional[float] = Query(None),
-    _: User = Depends(get_current_user)
+    _: User = Depends(get_current_user),
 ):
     """Tane haritalama kurallarını listele."""
     mappings = _grain_mappings
@@ -288,13 +313,16 @@ def list_grain_mappings(
 def create_grain_mapping(mapping: GrainMappingCreate, admin: User = Depends(require_admin)):
     """Yeni tane haritalama kuralı oluştur."""
     import uuid
+
     new_mapping = GrainMappingEntry(id=f"grain-{uuid.uuid4().hex[:8]}", **mapping.dict())
     _grain_mappings.append(new_mapping)
     return new_mapping
 
 
 @router.put("/grain-mappings/{mapping_id}", response_model=GrainMappingEntry)
-def update_grain_mapping(mapping_id: str, updates: GrainMappingCreate, admin: User = Depends(require_admin)):
+def update_grain_mapping(
+    mapping_id: str, updates: GrainMappingCreate, admin: User = Depends(require_admin)
+):
     """Tane haritalama kuralını güncelle."""
     for i, mapping in enumerate(_grain_mappings):
         if mapping.id == mapping_id:
@@ -316,43 +344,66 @@ def delete_grain_mapping(mapping_id: str, admin: User = Depends(require_admin)):
 
 
 @router.get("/grain-mappings/suggest")
-def suggest_grain_mapping(material_type: str, thickness_mm: float, _: User = Depends(get_current_user)):
+def suggest_grain_mapping(
+    material_type: str, thickness_mm: float, _: User = Depends(get_current_user)
+):
     """Verilen malzeme ve kalınlık için tane yönü önerisi getir."""
     for mapping in _grain_mappings:
-        if (mapping.material_type.upper() == material_type.upper() and
-            mapping.thickness_mm == thickness_mm and mapping.is_active):
+        if (
+            mapping.material_type.upper() == material_type.upper()
+            and mapping.thickness_mm == thickness_mm
+            and mapping.is_active
+        ):
             return {"exact_match": True, "suggestion": mapping, "confidence": "HIGH"}
-    
-    material_mappings = [m for m in _grain_mappings if m.material_type.upper() == material_type.upper() and m.is_active]
+
+    material_mappings = [
+        m
+        for m in _grain_mappings
+        if m.material_type.upper() == material_type.upper() and m.is_active
+    ]
     if material_mappings:
         closest = min(material_mappings, key=lambda m: abs(m.thickness_mm - thickness_mm))
         return {"exact_match": False, "suggestion": closest, "confidence": "MEDIUM"}
-    
-    return {"exact_match": False, "confidence": "LOW", "note": "Bu malzeme için tanımlı kural bulunamadı"}
+
+    return {
+        "exact_match": False,
+        "confidence": "LOW",
+        "note": "Bu malzeme için tanımlı kural bulunamadı",
+    }
 
 
 # ═══════════════════════════════════════════════════
 # UYUMLULUK İSTATİSTİKLERİ
 # ═══════════════════════════════════════════════════
 
+
 @router.get("/stats", response_model=ComplianceStats)
 def get_compliance_stats(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
     """Uyumluluk sistemi istatistiklerini getir."""
-    from sqlalchemy import func
     from app.models import AuditLog
-    
+    from sqlalchemy import func
+
     today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
-    total_checks = db.query(func.count(AuditLog.id)).filter(
-        AuditLog.action == "COMPLIANCE_CHECK", AuditLog.created_at >= today_start
-    ).scalar() or 0
-    
-    success_checks = db.query(func.count(AuditLog.id)).filter(
-        AuditLog.action == "COMPLIANCE_CHECK", AuditLog.created_at >= today_start,
-        AuditLog.details.contains("OK")
-    ).scalar() or 0
-    
+    total_checks = (
+        db.query(func.count(AuditLog.id))
+        .filter(AuditLog.action == "COMPLIANCE_CHECK", AuditLog.created_at >= today_start)
+        .scalar()
+        or 0
+    )
+
+    success_checks = (
+        db.query(func.count(AuditLog.id))
+        .filter(
+            AuditLog.action == "COMPLIANCE_CHECK",
+            AuditLog.created_at >= today_start,
+            AuditLog.details.contains("OK"),
+        )
+        .scalar()
+        or 0
+    )
+
     pass_rate = (success_checks / max(total_checks, 1)) * 100
-    
+
     return ComplianceStats(
         total_checks_today=total_checks,
         pass_rate_percentage=round(pass_rate, 1),
@@ -362,7 +413,7 @@ def get_compliance_stats(db: Session = Depends(get_db), _: User = Depends(get_cu
             "inactive_part_rules": len([r for r in _part_type_rules if not r.is_active]),
             "active_grain_mappings": len([m for m in _grain_mappings if m.is_active]),
             "inactive_grain_mappings": len([m for m in _grain_mappings if not m.is_active]),
-        }
+        },
     )
 
 
@@ -370,20 +421,24 @@ def get_compliance_stats(db: Session = Depends(get_db), _: User = Depends(get_cu
 def batch_compliance_check(
     orders: List[OrderDraft],
     strict_mode: bool = False,
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ):
     """Birden fazla siparişi toplu olarak kontrol et."""
     orchestrator = AgentOrchestrator([PartTypeRulesAgent(), GrainMappingAgent()])
-    
+
     results = []
     for i, order in enumerate(orders):
         result = orchestrator.run(order.dict())
-        results.append({
-            "order_index": i,
-            "ok": result["ok"],
-            "violation_count": len([r for r in result.get("report", []) if r.get("status") == "FAIL"]),
-        })
-    
+        results.append(
+            {
+                "order_index": i,
+                "ok": result["ok"],
+                "violation_count": len(
+                    [r for r in result.get("report", []) if r.get("status") == "FAIL"]
+                ),
+            }
+        )
+
     failed_count = sum(1 for r in results if not r["ok"])
     return {
         "checked_at": datetime.utcnow().isoformat(),
@@ -391,7 +446,7 @@ def batch_compliance_check(
         "passed": len(orders) - failed_count,
         "failed": failed_count,
         "results": results,
-        "strict_mode": strict_mode
+        "strict_mode": strict_mode,
     }
 
 
@@ -403,5 +458,5 @@ def compliance_health_check():
         "agents": {"part_type_rules": "active", "grain_mapping": "active"},
         "rules_loaded": len(_part_type_rules),
         "mappings_loaded": len(_grain_mappings),
-        "checked_at": datetime.utcnow().isoformat()
+        "checked_at": datetime.utcnow().isoformat(),
     }

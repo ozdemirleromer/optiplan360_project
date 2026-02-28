@@ -2,23 +2,28 @@
 Integration Service — Mikro Muhasebe Senkronizasyon İş Mantığı
 Outbox/Inbox Pattern — Job tabanlı senkron — Exponential Backoff Retry
 """
-from sqlalchemy.orm import Session
-from sqlalchemy import func as sa_func
-from uuid import uuid4
-from datetime import datetime, timezone, timedelta
-from typing import Optional, List, Dict, Any
-import os
+
 import json
-import traceback
 import logging
+import os
+import traceback
+from datetime import datetime, timedelta, timezone
+from typing import Any, Dict, Optional
+from uuid import uuid4
 
 from app.models import (
-    IntegrationEntityMap, IntegrationSyncJob, IntegrationOutbox,
-    IntegrationInbox, IntegrationError, IntegrationAudit,
-    SyncStatusEnum, SyncDirectionEnum,
-    CRMAccount, Order,
+    IntegrationAudit,
+    IntegrationEntityMap,
+    IntegrationError,
+    IntegrationInbox,
+    IntegrationOutbox,
+    IntegrationSyncJob,
+    Order,
+    SyncDirectionEnum,
+    SyncStatusEnum,
 )
-from app.utils import create_audit_log
+from sqlalchemy import func as sa_func
+from sqlalchemy.orm import Session
 
 logger = logging.getLogger("integration")
 
@@ -27,7 +32,10 @@ logger = logging.getLogger("integration")
 # ENTITY MAP İŞLEMLERİ
 # ═══════════════════════════════════════
 
-def list_entity_maps(db: Session, entity_type: Optional[str] = None, skip: int = 0, limit: int = 50):
+
+def list_entity_maps(
+    db: Session, entity_type: Optional[str] = None, skip: int = 0, limit: int = 50
+):
     q = db.query(IntegrationEntityMap)
     if entity_type:
         q = q.filter(IntegrationEntityMap.entity_type == entity_type)
@@ -36,12 +44,23 @@ def list_entity_maps(db: Session, entity_type: Optional[str] = None, skip: int =
     return items, total
 
 
-def create_entity_map(db: Session, entity_type: str, internal_id: str, external_id: str, user_id: int, mapping_data: Optional[str] = None) -> IntegrationEntityMap:
-    existing = db.query(IntegrationEntityMap).filter(
-        IntegrationEntityMap.entity_type == entity_type,
-        IntegrationEntityMap.internal_id == internal_id,
-        IntegrationEntityMap.external_system == "MIKRO",
-    ).first()
+def create_entity_map(
+    db: Session,
+    entity_type: str,
+    internal_id: str,
+    external_id: str,
+    user_id: int,
+    mapping_data: Optional[str] = None,
+) -> IntegrationEntityMap:
+    existing = (
+        db.query(IntegrationEntityMap)
+        .filter(
+            IntegrationEntityMap.entity_type == entity_type,
+            IntegrationEntityMap.internal_id == internal_id,
+            IntegrationEntityMap.external_system == "MIKRO",
+        )
+        .first()
+    )
     if existing:
         existing.external_id = external_id
         existing.mapping_data = mapping_data
@@ -60,7 +79,14 @@ def create_entity_map(db: Session, entity_type: str, internal_id: str, external_
         last_synced_at=datetime.now(timezone.utc),
     )
     db.add(m)
-    _audit(db, "MAP_CREATE", entity_type, internal_id, f"Eşleme oluşturuldu: {internal_id} ↔ {external_id}", user_id)
+    _audit(
+        db,
+        "MAP_CREATE",
+        entity_type,
+        internal_id,
+        f"Eşleme oluşturuldu: {internal_id} ↔ {external_id}",
+        user_id,
+    )
     db.commit()
     db.refresh(m)
     return m
@@ -71,7 +97,14 @@ def delete_entity_map(db: Session, map_id: str, user_id: int) -> bool:
     if not m:
         return False
     m.is_active = False
-    _audit(db, "MAP_DELETE", m.entity_type, m.internal_id, f"Eşleme pasifleştirildi: {m.internal_id} ↔ {m.external_id}", user_id)
+    _audit(
+        db,
+        "MAP_DELETE",
+        m.entity_type,
+        m.internal_id,
+        f"Eşleme pasifleştirildi: {m.internal_id} ↔ {m.external_id}",
+        user_id,
+    )
     db.commit()
     return True
 
@@ -79,6 +112,7 @@ def delete_entity_map(db: Session, map_id: str, user_id: int) -> bool:
 # ═══════════════════════════════════════
 # SYNC JOB İŞLEMLERİ
 # ═══════════════════════════════════════
+
 
 def list_sync_jobs(db: Session, skip: int = 0, limit: int = 20, status: Optional[str] = None):
     q = db.query(IntegrationSyncJob)
@@ -93,7 +127,9 @@ def get_sync_job(db: Session, job_id: str):
     return db.query(IntegrationSyncJob).filter(IntegrationSyncJob.id == job_id).first()
 
 
-def create_sync_job(db: Session, job_type: str, direction: str, entity_type: Optional[str], user_id: int) -> IntegrationSyncJob:
+def create_sync_job(
+    db: Session, job_type: str, direction: str, entity_type: Optional[str], user_id: int
+) -> IntegrationSyncJob:
     job = IntegrationSyncJob(
         id=str(uuid4()),
         job_type=job_type,
@@ -103,13 +139,26 @@ def create_sync_job(db: Session, job_type: str, direction: str, entity_type: Opt
         triggered_by_id=user_id,
     )
     db.add(job)
-    _audit(db, "SYNC_START", entity_type, job.id, f"Senkron işi başlatıldı: {job_type} / {direction}", user_id)
+    _audit(
+        db,
+        "SYNC_START",
+        entity_type,
+        job.id,
+        f"Senkron işi başlatıldı: {job_type} / {direction}",
+        user_id,
+    )
     db.commit()
     db.refresh(job)
     return job
 
 
-def update_job_status(db: Session, job_id: str, status: str, error_message: Optional[str] = None, stats: Optional[dict] = None):
+def update_job_status(
+    db: Session,
+    job_id: str,
+    status: str,
+    error_message: Optional[str] = None,
+    stats: Optional[dict] = None,
+):
     job = db.query(IntegrationSyncJob).filter(IntegrationSyncJob.id == job_id).first()
     if not job:
         return None
@@ -134,13 +183,20 @@ def update_job_status(db: Session, job_id: str, status: str, error_message: Opti
 # OUTBOX İŞLEMLERİ (OptiPlan → Mikro)
 # ═══════════════════════════════════════
 
-def enqueue_outbox(db: Session, entity_type: str, entity_id: str, operation: str, payload: dict) -> IntegrationOutbox:
+
+def enqueue_outbox(
+    db: Session, entity_type: str, entity_id: str, operation: str, payload: dict
+) -> IntegrationOutbox:
     """Giden kuyruğuna mesaj ekle (idempotent — aynı entity+operation için bekleyen varsa güncelle)"""
-    existing = db.query(IntegrationOutbox).filter(
-        IntegrationOutbox.entity_type == entity_type,
-        IntegrationOutbox.entity_id == entity_id,
-        IntegrationOutbox.status == SyncStatusEnum.QUEUED,
-    ).first()
+    existing = (
+        db.query(IntegrationOutbox)
+        .filter(
+            IntegrationOutbox.entity_type == entity_type,
+            IntegrationOutbox.entity_id == entity_id,
+            IntegrationOutbox.status == SyncStatusEnum.QUEUED,
+        )
+        .first()
+    )
     if existing:
         existing.payload = json.dumps(payload, ensure_ascii=False, default=str)
         existing.operation = operation
@@ -173,6 +229,7 @@ def list_outbox(db: Session, status: Optional[str] = None, skip: int = 0, limit:
 
 def _get_mikro_sync_service(db: Session):
     from app.services.mikro_sync_service import MikroSyncService
+
     return MikroSyncService(db)
 
 
@@ -196,7 +253,9 @@ def _is_permanent_outbox_error(code: Optional[str], message: str) -> bool:
     return False
 
 
-def _dispatch_outbox_push(db: Session, item: IntegrationOutbox, payload: Dict[str, Any]) -> Dict[str, Any]:
+def _dispatch_outbox_push(
+    db: Session, item: IntegrationOutbox, payload: Dict[str, Any]
+) -> Dict[str, Any]:
     """
     Outbox item'ini ilgili Mikro sync handler'ina route eder.
     Payload sozlesmesi:
@@ -296,11 +355,19 @@ def process_outbox_item(db: Session, item_id: str) -> dict:
         else:
             item.status = SyncStatusEnum.QUEUED
             # Exponential backoff: 2^retry * 30 saniye
-            delay = (2 ** item.retry_count) * 30
+            delay = (2**item.retry_count) * 30
             item.next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=delay)
             item.error_message = f"Retry {item.retry_count}/{item.max_retries}: {str(e)}"
 
-        _log_error(db, None, item.entity_type, item.entity_id, "OUTBOX_ERROR", str(e), traceback.format_exc())
+        _log_error(
+            db,
+            None,
+            item.entity_type,
+            item.entity_id,
+            "OUTBOX_ERROR",
+            str(e),
+            traceback.format_exc(),
+        )
         db.commit()
         return {"ok": False, "error": str(e), "retry": item.retry_count < item.max_retries}
 
@@ -308,6 +375,7 @@ def process_outbox_item(db: Session, item_id: str) -> dict:
 # ═══════════════════════════════════════
 # INBOX İŞLEMLERİ (Mikro → OptiPlan)
 # ═══════════════════════════════════════
+
 
 def list_inbox(db: Session, status: Optional[str] = None, skip: int = 0, limit: int = 50):
     q = db.query(IntegrationInbox)
@@ -318,7 +386,9 @@ def list_inbox(db: Session, status: Optional[str] = None, skip: int = 0, limit: 
     return items, total
 
 
-def resolve_conflict(db: Session, inbox_id: str, resolution: str, user_id: int) -> Optional[IntegrationInbox]:
+def resolve_conflict(
+    db: Session, inbox_id: str, resolution: str, user_id: int
+) -> Optional[IntegrationInbox]:
     """Çakışma çözme — ACCEPT, REJECT, MERGE"""
     item = db.query(IntegrationInbox).filter(IntegrationInbox.id == inbox_id).first()
     if not item:
@@ -337,7 +407,14 @@ def resolve_conflict(db: Session, inbox_id: str, resolution: str, user_id: int) 
 
     item.resolved_at = datetime.now(timezone.utc)
     item.resolved_by_id = user_id
-    _audit(db, "CONFLICT_RESOLVE", item.entity_type, item.external_id, f"Çakışma çözüldü: {resolution}", user_id)
+    _audit(
+        db,
+        "CONFLICT_RESOLVE",
+        item.entity_type,
+        item.external_id,
+        f"Çakışma çözüldü: {resolution}",
+        user_id,
+    )
     db.commit()
     db.refresh(item)
     return item
@@ -353,14 +430,15 @@ def _apply_incoming_data(db: Session, item: IntegrationInbox):
             if order:
                 # Gelen veriyi siparişe uygula
                 for key, value in payload.items():
-                    if hasattr(order, key) and key not in ['id', 'created_at']:
+                    if hasattr(order, key) and key not in ["id", "created_at"]:
                         setattr(order, key, value)
         elif item.entity_type == "CUSTOMER":
             from app.models import Customer
+
             customer = db.query(Customer).filter(Customer.id == item.external_id).first()
             if customer:
                 for key, value in payload.items():
-                    if hasattr(customer, key) and key not in ['id', 'created_at']:
+                    if hasattr(customer, key) and key not in ["id", "created_at"]:
                         setattr(customer, key, value)
         db.commit()
     except Exception as e:
@@ -372,23 +450,24 @@ def _merge_incoming_data(db: Session, item: IntegrationInbox):
     try:
         payload = json.loads(item.payload) if item.payload else {}
         conflict_data = json.loads(item.conflict_data) if item.conflict_data else {}
-        
+
         # Mevcut veri ile gelen veriyi birleştir
         merged = {**conflict_data, **payload}
-        
+
         # Birleştirilmiş veriyi uygula
         if item.entity_type == "ORDER":
             order = db.query(Order).filter(Order.id == item.external_id).first()
             if order:
                 for key, value in merged.items():
-                    if hasattr(order, key) and key not in ['id', 'created_at']:
+                    if hasattr(order, key) and key not in ["id", "created_at"]:
                         setattr(order, key, value)
         elif item.entity_type == "CUSTOMER":
             from app.models import Customer
+
             customer = db.query(Customer).filter(Customer.id == item.external_id).first()
             if customer:
                 for key, value in merged.items():
-                    if hasattr(customer, key) and key not in ['id', 'created_at']:
+                    if hasattr(customer, key) and key not in ["id", "created_at"]:
                         setattr(customer, key, value)
         db.commit()
     except Exception as e:
@@ -399,7 +478,16 @@ def _merge_incoming_data(db: Session, item: IntegrationInbox):
 # HATA YÖNETİMİ
 # ═══════════════════════════════════════
 
-def _log_error(db: Session, job_id: Optional[str], entity_type: Optional[str], entity_id: Optional[str], error_code: str, message: str, stack: Optional[str] = None):
+
+def _log_error(
+    db: Session,
+    job_id: Optional[str],
+    entity_type: Optional[str],
+    entity_id: Optional[str],
+    error_code: str,
+    message: str,
+    stack: Optional[str] = None,
+):
     err = IntegrationError(
         id=str(uuid4()),
         job_id=job_id,
@@ -436,7 +524,15 @@ def resolve_error(db: Session, error_id: str, user_id: int) -> bool:
 # AUDIT + SAĞLIK
 # ═══════════════════════════════════════
 
-def _audit(db: Session, action: str, entity_type: Optional[str], entity_id: Optional[str], detail: Optional[str], user_id: Optional[int] = None):
+
+def _audit(
+    db: Session,
+    action: str,
+    entity_type: Optional[str],
+    entity_id: Optional[str],
+    detail: Optional[str],
+    user_id: Optional[int] = None,
+):
     a = IntegrationAudit(
         id=str(uuid4()),
         action=action,
@@ -467,6 +563,7 @@ def _resolve_mikro_connection() -> tuple[bool, Optional[str]]:
     """Mikro baglanti testini guvenli sekilde calistir."""
     try:
         from app.mikro_db import test_connection
+
         result = test_connection()
     except Exception as exc:
         return False, str(exc)
@@ -492,6 +589,7 @@ def _resolve_mikro_read_only_flags() -> dict:
 
     try:
         from app.mikro_db import get_config
+
         cfg = get_config() or {}
         if "read_only" in cfg:
             cfg_read_only = _to_bool(cfg.get("read_only"), default=True)
@@ -512,12 +610,42 @@ def _resolve_mikro_read_only_flags() -> dict:
 
 def get_health(db: Session) -> dict:
     """Senkronizasyon sağlık durumu"""
-    outbox_queued = db.query(sa_func.count(IntegrationOutbox.id)).filter(IntegrationOutbox.status == SyncStatusEnum.QUEUED).scalar() or 0
-    outbox_failed = db.query(sa_func.count(IntegrationOutbox.id)).filter(IntegrationOutbox.status == SyncStatusEnum.FAILED).scalar() or 0
-    inbox_queued = db.query(sa_func.count(IntegrationInbox.id)).filter(IntegrationInbox.status == SyncStatusEnum.QUEUED).scalar() or 0
-    inbox_conflicts = db.query(sa_func.count(IntegrationInbox.id)).filter(IntegrationInbox.conflict_type.isnot(None), IntegrationInbox.resolved_at.is_(None)).scalar() or 0
-    unresolved_errors = db.query(sa_func.count(IntegrationError.id)).filter(IntegrationError.is_resolved == False).scalar() or 0
-    active_maps = db.query(sa_func.count(IntegrationEntityMap.id)).filter(IntegrationEntityMap.is_active == True).scalar() or 0
+    outbox_queued = (
+        db.query(sa_func.count(IntegrationOutbox.id))
+        .filter(IntegrationOutbox.status == SyncStatusEnum.QUEUED)
+        .scalar()
+        or 0
+    )
+    outbox_failed = (
+        db.query(sa_func.count(IntegrationOutbox.id))
+        .filter(IntegrationOutbox.status == SyncStatusEnum.FAILED)
+        .scalar()
+        or 0
+    )
+    inbox_queued = (
+        db.query(sa_func.count(IntegrationInbox.id))
+        .filter(IntegrationInbox.status == SyncStatusEnum.QUEUED)
+        .scalar()
+        or 0
+    )
+    inbox_conflicts = (
+        db.query(sa_func.count(IntegrationInbox.id))
+        .filter(IntegrationInbox.conflict_type.isnot(None), IntegrationInbox.resolved_at.is_(None))
+        .scalar()
+        or 0
+    )
+    unresolved_errors = (
+        db.query(sa_func.count(IntegrationError.id))
+        .filter(IntegrationError.is_resolved == False)
+        .scalar()
+        or 0
+    )
+    active_maps = (
+        db.query(sa_func.count(IntegrationEntityMap.id))
+        .filter(IntegrationEntityMap.is_active == True)
+        .scalar()
+        or 0
+    )
 
     last_job = db.query(IntegrationSyncJob).order_by(IntegrationSyncJob.created_at.desc()).first()
     last_sync_status = last_job.status.value if last_job else None
@@ -594,7 +722,12 @@ def run_diagnostics(db: Session) -> dict:
     if outbox_failed == 0:
         add_check("outbox_failed", "PASS", "Basarisiz outbox kaydi yok.")
     elif outbox_failed <= 5:
-        add_check("outbox_failed", "WARN", f"Basarisiz outbox sayisi: {outbox_failed}", "Hata kuyrugunu inceleyin.")
+        add_check(
+            "outbox_failed",
+            "WARN",
+            f"Basarisiz outbox sayisi: {outbox_failed}",
+            "Hata kuyrugunu inceleyin.",
+        )
     else:
         add_check(
             "outbox_failed",
@@ -665,10 +798,14 @@ def run_diagnostics(db: Session) -> dict:
 
 def retry_failed(db: Session, user_id: int) -> dict:
     """Tüm başarısız outbox öğelerini yeniden kuyruğa al"""
-    failed_items = db.query(IntegrationOutbox).filter(
-        IntegrationOutbox.status == SyncStatusEnum.FAILED,
-        IntegrationOutbox.retry_count < IntegrationOutbox.max_retries,
-    ).all()
+    failed_items = (
+        db.query(IntegrationOutbox)
+        .filter(
+            IntegrationOutbox.status == SyncStatusEnum.FAILED,
+            IntegrationOutbox.retry_count < IntegrationOutbox.max_retries,
+        )
+        .all()
+    )
 
     reset_count = 0
     for item in failed_items:
@@ -676,6 +813,8 @@ def retry_failed(db: Session, user_id: int) -> dict:
         item.next_retry_at = datetime.now(timezone.utc) + timedelta(seconds=60)
         reset_count += 1
 
-    _audit(db, "RETRY_ALL", None, None, f"{reset_count} başarısız öğe yeniden kuyruğa alındı", user_id)
+    _audit(
+        db, "RETRY_ALL", None, None, f"{reset_count} başarısız öğe yeniden kuyruğa alındı", user_id
+    )
     db.commit()
     return {"ok": True, "reset_count": reset_count}

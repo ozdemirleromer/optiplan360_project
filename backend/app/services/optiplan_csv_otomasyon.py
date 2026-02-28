@@ -12,7 +12,6 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-
 logger = logging.getLogger(__name__)
 
 DEFAULT_ANA_DIZIN = Path(r"C:\Optiplan360_Entegrasyon")
@@ -111,8 +110,7 @@ def _resolve_optiplan_exe() -> Path:
             return exe_path
 
     raise FileNotFoundError(
-        "OptiPlanning exe bulunamadi. Denenen yollar: "
-        + ", ".join(str(p) for p in candidates)
+        "OptiPlanning exe bulunamadi. Denenen yollar: " + ", ".join(str(p) for p in candidates)
     )
 
 
@@ -400,7 +398,9 @@ def optiplan_kuyrugu_isle(max_items: int | None = None) -> list[dict[str, str]]:
     - Hata varsa `3_HATALI_VERILER`
     """
     ana_dizin = DEFAULT_ANA_DIZIN
-    gelen_klasoru, islenen_klasoru, hatali_klasoru, kural_dosyasi = _ensure_dark_factory_layout(ana_dizin)
+    gelen_klasoru, islenen_klasoru, hatali_klasoru, kural_dosyasi = _ensure_dark_factory_layout(
+        ana_dizin
+    )
     lock_file = ana_dizin / DEFAULT_QUEUE_LOCK
     lock_fd: int | None = None
     processed = 0
@@ -419,9 +419,7 @@ def optiplan_kuyrugu_isle(max_items: int | None = None) -> list[dict[str, str]]:
             try:
                 _run_batch_import(csv_path, kural_dosyasi)
                 final_path = _archive_file(csv_path, islenen_klasoru)
-                results.append(
-                    {"source": source, "status": "processed", "output": str(final_path)}
-                )
+                results.append({"source": source, "status": "processed", "output": str(final_path)})
                 logger.info("Queue item tamamlandi: %s -> %s", source, final_path)
             except Exception as exc:
                 failed_path = _archive_file(csv_path, hatali_klasoru)
@@ -458,7 +456,9 @@ def optiplan_csv_otomasyon(
         tetikle_optiplan = os.environ.get("OPTIPLAN_ENABLE_LEGACY_CLI", "1") == "1"
 
     ana_dizin = DEFAULT_ANA_DIZIN
-    gelen_klasoru, islenen_klasoru, hatali_klasoru, kural_dosyasi = _ensure_dark_factory_layout(ana_dizin)
+    gelen_klasoru, islenen_klasoru, hatali_klasoru, kural_dosyasi = _ensure_dark_factory_layout(
+        ana_dizin
+    )
 
     dosya_stem = _sanitize_file_stem(siparis_no)
     dosya_adi = gelen_klasoru / f"{dosya_stem}.csv"

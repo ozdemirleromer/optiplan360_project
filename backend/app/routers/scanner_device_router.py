@@ -13,14 +13,13 @@ from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, Depends, File, HTTPException, Request, UploadFile
+from app.auth import require_admin
+from app.database import get_db
 from app.exceptions import AuthenticationError, ValidationError
+from app.models import AuditLog, DeviceOCRConfig, OCRJob
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Request, UploadFile
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
-
-from app.database import get_db
-from app.models import AuditLog, DeviceOCRConfig, OCRJob
-from app.auth import require_admin
 
 logger = logging.getLogger(__name__)
 

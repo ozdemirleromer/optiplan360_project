@@ -1,22 +1,27 @@
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, BackgroundTasks, Depends
 from pydantic import BaseModel
+
 
 async def trigger_ws_broadcast(payload: dict):
     from ..websockets import manager
+
     await manager.broadcast(payload)
 
 
-from sqlalchemy.orm import Session
 from typing import List
+
+from sqlalchemy.orm import Session
+
 from .. import crud, schemas
+from ..auth import get_current_user, require_admin
 from ..database import SessionLocal
+from ..exceptions import BusinessRuleError, ConflictError, NotFoundError, StatusTransitionError
 from ..models import Station, StatusLog
-from ..auth import require_admin, get_current_user
-from ..exceptions import NotFoundError, ConflictError, BusinessRuleError, StatusTransitionError
 
 router = APIRouter(prefix="/api/v1", tags=["stations"])
+
 
 def get_db():
     db = SessionLocal()
@@ -25,10 +30,14 @@ def get_db():
     finally:
         db.close()
 
+
 @router.get("/stations/", response_model=List[schemas.Station])
-def read_stations(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), _=Depends(get_current_user)):
+def read_stations(
+    skip: int = 0, limit: int = 100, db: Session = Depends(get_db), _=Depends(get_current_user)
+):
     stations = crud.get_stations(db, skip=skip, limit=limit)
     return stations
+
 
 @router.get("/stations/{station_id}", response_model=schemas.Station)
 def read_station(station_id: int, db: Session = Depends(get_db), _=Depends(get_current_user)):
@@ -36,6 +45,7 @@ def read_station(station_id: int, db: Session = Depends(get_db), _=Depends(get_c
     if db_station is None:
         raise NotFoundError("İstasyon", station_id)
     return db_station
+
 
 @router.post("/stations/", response_model=schemas.Station, status_code=201)
 def create_station(
@@ -48,6 +58,7 @@ def create_station(
         raise ConflictError("Bu istasyon adı zaten mevcut")
     return crud.create_station(db=db, station=station)
 
+
 @router.put("/stations/{station_id}", response_model=schemas.Station)
 def update_station(
     station_id: int,
@@ -59,6 +70,7 @@ def update_station(
     if updated is None:
         raise NotFoundError("İstasyon", station_id)
     return updated
+
 
 @router.patch("/stations/{station_id}/toggle", response_model=schemas.Station)
 def toggle_station(
@@ -76,6 +88,7 @@ def toggle_station(
     db.refresh(station)
     return station
 
+
 @router.delete("/stations/{station_id}")
 def delete_station(
     station_id: int,
@@ -87,13 +100,23 @@ def delete_station(
         raise NotFoundError("İstasyon", station_id)
     return {"ok": True}
 
+
 @router.post("/status_logs/", response_model=schemas.StatusLog)
-def create_status_log(log: schemas.StatusLogCreate, db: Session = Depends(get_db), _=Depends(get_current_user)):
+def create_status_log(
+    log: schemas.StatusLogCreate, db: Session = Depends(get_db), _=Depends(get_current_user)
+):
     return crud.create_status_log(db=db, log=log)
+
 
 @router.post("/stations/{station_id}/update-status")
 @router.post("/{station_id}/update-status")
-def update_status(station_id: int, part_id: int, status: str, db: Session = Depends(get_db), _=Depends(get_current_user)):
+def update_status(
+    station_id: int,
+    part_id: int,
+    status: str,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     station = db.query(Station).filter(Station.id == station_id).first()
     if not station:
         raise NotFoundError("İstasyon", station_id)
@@ -102,11 +125,12 @@ def update_status(station_id: int, part_id: int, status: str, db: Session = Depe
         part_id=part_id,
         station_id=station_id,
         status=status,
-        log_message=f"Status updated to {status} at station {station.name}"
+        log_message=f"Status updated to {status} at station {station.name}",
     )
     db.add(status_log)
     db.commit()
     return {"message": "Status updated successfully"}
+
 
 # Implement station flow enforcement
 
@@ -115,7 +139,7 @@ ALLOWED_TRANSITIONS = {
     "EBATLAMA": ["BANTLAMA"],
     "BANTLAMA": ["KONTROL", "TESLIM"],
     "KONTROL": ["TESLIM"],
-    "TESLIM": []
+    "TESLIM": [],
 }
 
 # MASTER_HANDOFF 0.6.2: Iki adimli akislarda 2. okutma minimum 30 dakika sonra yapilabilir.
@@ -125,10 +149,20 @@ SECOND_SCAN_REQUIRED_TRANSITIONS = {
     ("KONTROL", "TESLIM"),
 }
 
+
 def _normalize_station(name: str) -> str:
     if not name:
         return ""
-    return name.upper().replace("İ", "I").replace("Ş", "S").replace("Ç", "C").replace("Ğ", "G").replace("Ü", "U").replace("Ö", "O")
+    return (
+        name.upper()
+        .replace("İ", "I")
+        .replace("Ş", "S")
+        .replace("Ç", "C")
+        .replace("Ğ", "G")
+        .replace("Ü", "U")
+        .replace("Ö", "O")
+    )
+
 
 def _can_transition(current_name: str, next_name: str) -> bool:
     current = _normalize_station(current_name)
@@ -137,6 +171,7 @@ def _can_transition(current_name: str, next_name: str) -> bool:
         return True
     return nxt in ALLOWED_TRANSITIONS.get(current, [])
 
+
 def _ensure_aware(dt: datetime | None) -> datetime | None:
     if dt is None:
         return None
@@ -144,15 +179,28 @@ def _ensure_aware(dt: datetime | None) -> datetime | None:
         return dt.replace(tzinfo=timezone.utc)
     return dt
 
+
 def _requires_second_scan_wait(current_name: str, next_name: str) -> bool:
     current = _normalize_station(current_name)
     nxt = _normalize_station(next_name)
     return (current, nxt) in SECOND_SCAN_REQUIRED_TRANSITIONS
 
+
 @router.post("/stations/{station_id}/transition")
 @router.post("/{station_id}/transition")
-def transition_station(station_id: int, part_id: int, next_station: str, db: Session = Depends(get_db), _=Depends(get_current_user)):
-    current_log = db.query(StatusLog).filter(StatusLog.part_id == part_id).order_by(StatusLog.created_at.desc()).first()
+def transition_station(
+    station_id: int,
+    part_id: int,
+    next_station: str,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
+    current_log = (
+        db.query(StatusLog)
+        .filter(StatusLog.part_id == part_id)
+        .order_by(StatusLog.created_at.desc())
+        .first()
+    )
 
     if current_log:
         current_station = db.query(Station).filter(Station.id == current_log.station_id).first()
@@ -165,13 +213,15 @@ def transition_station(station_id: int, part_id: int, next_station: str, db: Ses
         part_id=part_id,
         station_id=station_id,
         status="IN_PROGRESS",
-        log_message=f"Transitioned to {next_station}"
+        log_message=f"Transitioned to {next_station}",
     )
     db.add(new_log)
     db.commit()
     return {"message": "Station transition successful"}
 
+
 # Implement barcode scanning and station update logic
+
 
 class ScanBody(BaseModel):
     order_id: str | int
@@ -180,9 +230,15 @@ class ScanBody(BaseModel):
     scan_type: str | None = None
     timestamp: str | None = None
 
+
 @router.post("/stations/scan")
 @router.post("/scan")
-def scan_barcode(body: ScanBody, background_tasks: BackgroundTasks, db: Session = Depends(get_db), _=Depends(get_current_user)):
+def scan_barcode(
+    body: ScanBody,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    _=Depends(get_current_user),
+):
     station = db.query(Station).filter(Station.id == body.station_id).first()
     if not station:
         raise NotFoundError("İstasyon", body.station_id)
@@ -193,7 +249,11 @@ def scan_barcode(body: ScanBody, background_tasks: BackgroundTasks, db: Session 
 
     # Reset daily count if it's a new day
     if station.last_scan_at:
-        last_scan_date = station.last_scan_at.date() if hasattr(station.last_scan_at, 'date') else station.last_scan_at
+        last_scan_date = (
+            station.last_scan_at.date()
+            if hasattr(station.last_scan_at, "date")
+            else station.last_scan_at
+        )
         today = now.date()
         if last_scan_date != today:
             station.scan_count_today = 1
@@ -227,7 +287,9 @@ def scan_barcode(body: ScanBody, background_tasks: BackgroundTasks, db: Session 
             if _requires_second_scan_wait(prev_name, station.name):
                 last_scan_time = _ensure_aware(current_log.created_at)
                 if last_scan_time is not None:
-                    elapsed_minutes = int((datetime.now(timezone.utc) - last_scan_time).total_seconds() / 60)
+                    elapsed_minutes = int(
+                        (datetime.now(timezone.utc) - last_scan_time).total_seconds() / 60
+                    )
                     if elapsed_minutes < SECOND_SCAN_MINUTES:
                         # MASTER_HANDOFF §0.6.2: 2. okutma reddedildi, log kaydı düşür
                         reject_log = StatusLog(
@@ -252,21 +314,24 @@ def scan_barcode(body: ScanBody, background_tasks: BackgroundTasks, db: Session 
             part_id=parsed_part_id,
             station_id=body.station_id,
             status="IN_PROGRESS",
-            log_message=f"Scanned at station {station.name}"
+            log_message=f"Scanned at station {station.name}",
         )
         db.add(new_log)
         db.commit()
         db.refresh(station)  # Refresh station to get updated values
 
-        background_tasks.add_task(trigger_ws_broadcast, {
-            "type": "STATION_SCAN",
-            "data": {
-                "order_id": body.order_id,
-                "part_id": parsed_part_id,
-                "station_name": station.name,
-                "timestamp": str(datetime.now(timezone.utc))
-            }
-        })
+        background_tasks.add_task(
+            trigger_ws_broadcast,
+            {
+                "type": "STATION_SCAN",
+                "data": {
+                    "order_id": body.order_id,
+                    "part_id": parsed_part_id,
+                    "station_name": station.name,
+                    "timestamp": str(datetime.now(timezone.utc)),
+                },
+            },
+        )
 
     return {
         "message": "Scan processed",
@@ -276,5 +341,5 @@ def scan_barcode(body: ScanBody, background_tasks: BackgroundTasks, db: Session 
             "partCount": 1,
             "currentStation": station.name,
             "nextStation": "",
-        }
+        },
     }

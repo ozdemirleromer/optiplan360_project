@@ -2,22 +2,25 @@
 Orchestrator Job Management Router
 Backend ↔ Orchestrator köprüsü: job oluşturma, listeleme, retry, approve
 """
+
 from pathlib import Path
+from typing import Optional
+
 from fastapi import APIRouter, Depends, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from typing import Optional
 
+from ..auth import require_permissions
 from ..database import get_db
-from ..auth import get_current_user, require_permissions
+from ..exceptions import NotFoundError, ValidationError
 from ..models import User
 from ..models.enums import OptiJobStateEnum
 from ..permissions import Permission
-from ..schemas import OptiJobCreate, OptiJobOut, OptiJobListResponse
-from ..exceptions import NotFoundError, ValidationError
+from ..schemas import OptiJobCreate, OptiJobListResponse, OptiJobOut
 from ..services.orchestrator_service import OrchestratorService
 
 router = APIRouter(prefix="/api/v1/orchestrator", tags=["orchestrator"])
+
 
 @router.get("")
 def orchestrator_root():
@@ -126,6 +129,7 @@ def worker_status(
 ):
     """OptiPlanning Worker durumunu getir (circuit breaker, kuyruk, son calisma)."""
     from ..services.optiplan_worker_service import get_worker_status
+
     return get_worker_status()
 
 
@@ -135,6 +139,7 @@ def worker_reset(
 ):
     """Worker circuit breaker'i sifirla."""
     from ..services.optiplan_worker_service import reset_circuit_breaker
+
     reset_circuit_breaker()
     return {"message": "Circuit breaker sifirlandi"}
 
@@ -147,6 +152,7 @@ def get_receipt(
 ):
     """Job icin uretim siparis fisini getir (plaka adedi, bant, fatura)."""
     from ..services.production_receipt_service import get_production_receipt
+
     result = get_production_receipt(db, job_id)
     if not result:
         raise NotFoundError("Siparis fisi", job_id)
@@ -161,9 +167,12 @@ def create_receipt(
 ):
     """Job icin uretim siparis fisi olustur (XML parse + plaka + bant -> Invoice)."""
     from ..services.production_receipt_service import create_production_receipt
+
     invoice = create_production_receipt(db, job_id, user_id=current_user.id)
     if not invoice:
-        raise ValidationError("Siparis fisi olusturulamadi. CRMAccount eslesmesi veya XML parse sonucu eksik olabilir.")
+        raise ValidationError(
+            "Siparis fisi olusturulamadi. CRMAccount eslesmesi veya XML parse sonucu eksik olabilir."
+        )
     return {
         "message": "Siparis fisi olusturuldu",
         "invoice_id": invoice.id,
@@ -203,4 +212,3 @@ def download_xml(
         filename=fname,
         headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
-

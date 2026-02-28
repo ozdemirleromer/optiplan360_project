@@ -1,8 +1,17 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Enum, Numeric, TIMESTAMP, Text, Boolean
+from app.database import Base
+from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from app.database import Base
-from .enums import OrderStatusEnum, PartGroupEnum, GrainDirectionEnum, OptiJobStateEnum, OptiModeEnum, IncomingSpecStatusEnum
+
+from .enums import (
+    GrainDirectionEnum,
+    IncomingSpecStatusEnum,
+    OptiJobStateEnum,
+    OptiModeEnum,
+    OrderStatusEnum,
+    PartGroupEnum,
+)
+
 
 class Customer(Base):
     __tablename__ = "customers"
@@ -16,6 +25,7 @@ class Customer(Base):
     deleted_at = Column(TIMESTAMP(timezone=True), nullable=True)  # Soft-delete support
     orders = relationship("Order", back_populates="customer")
 
+
 class Station(Base):
     __tablename__ = "stations"
     id = Column(Integer, primary_key=True, index=True)
@@ -25,7 +35,7 @@ class Station(Base):
     last_scan_at = Column(TIMESTAMP(timezone=True))
     scan_count_today = Column(Integer, default=0)
     istasyon_durumu = Column(String, default="Hazır")
-    
+
     # Cihaz Tanımlama Alanları
     device_type = Column(String)  # Mobil Cihaz, El Terminali, Entegre Okuyucu, Masaüstü PC
     device_model = Column(String)  # Cihaz modeli (örn: Zebra DS2208)
@@ -34,6 +44,7 @@ class Station(Base):
     connection_type = Column(String)  # USB, Bluetooth, WiFi, Ethernet, Webcam
     installation_date = Column(TIMESTAMP(timezone=True))  # Kurulum tarihi
     last_maintenance_date = Column(TIMESTAMP(timezone=True))  # Son bakım tarihi
+
 
 class Order(Base):
     __tablename__ = "orders"
@@ -68,6 +79,7 @@ class Order(Base):
     parts_legacy = relationship("Part", back_populates="order", cascade="all, delete-orphan")
     audit_logs = relationship("AuditLog", back_populates="order")
 
+
 class Part(Base):
     __tablename__ = "parts"
     id = Column(Integer, primary_key=True, index=True)
@@ -86,6 +98,7 @@ class Part(Base):
     description = Column(Text)
     order = relationship("Order", back_populates="parts_legacy")
 
+
 class StatusLog(Base):
     __tablename__ = "status_logs"
     id = Column(Integer, primary_key=True, index=True)
@@ -94,6 +107,7 @@ class StatusLog(Base):
     status = Column(String, nullable=False)
     log_message = Column(Text)
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
 
 class Message(Base):
     __tablename__ = "messages"
@@ -111,12 +125,13 @@ class Message(Base):
     is_read = Column(Boolean, default=False)  # Okunma durumu
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
+
 class OrderPart(Base):
     __tablename__ = "order_parts"
-    
+
     id = Column(String, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
-    
+
     # New flow fields (used by orders router + export/import)
     part_group = Column(String)
     boy_mm = Column(Numeric(10, 2))
@@ -137,16 +152,19 @@ class OrderPart(Base):
     adet = Column(Integer, default=1)
     grain = Column(String, default="0-Material")
     info = Column(Text)
-    
+
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     order = relationship("Order", back_populates="parts")
+
 
 # ═══════════════════════════════════════════════════════════════
 # ORCHESTRATOR JOB YÖNETİMİ
 # ═══════════════════════════════════════════════════════════════
 
+
 class OptiJob(Base):
     """Orchestrator job kaydı — backend görünürlüğü için"""
+
     __tablename__ = "opti_jobs"
 
     id = Column(String, primary_key=True, index=True)
@@ -170,6 +188,7 @@ class OptiJob(Base):
 
 class OptiAuditEvent(Base):
     """Orchestrator job denetim olayı"""
+
     __tablename__ = "opti_audit_events"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -181,8 +200,10 @@ class OptiAuditEvent(Base):
 
     job = relationship("OptiJob", back_populates="events")
 
+
 class IncomingSpec(Base):
     """OptiPlanning'den gelen firma bilgisi olmayan satırlar"""
+
     __tablename__ = "incoming_specs"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -195,7 +216,9 @@ class IncomingSpec(Base):
     width_cm = Column(Numeric(10, 2), nullable=True)
     height_cm = Column(Numeric(10, 2), nullable=True)
     spec_hash = Column(String, nullable=True, index=True)
-    status = Column(Enum(IncomingSpecStatusEnum), default=IncomingSpecStatusEnum.PENDING, nullable=False)
+    status = Column(
+        Enum(IncomingSpecStatusEnum), default=IncomingSpecStatusEnum.PENDING, nullable=False
+    )
     chosen_brand_id = Column(Integer, ForeignKey("brands.id"), nullable=True)
     chosen_item_id = Column(Integer, ForeignKey("items.id"), nullable=True)
     created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
@@ -205,6 +228,7 @@ class IncomingSpec(Base):
 
 class ProductRequest(Base):
     """NO_MATCH durumunda ürün talebi"""
+
     __tablename__ = "product_requests"
 
     id = Column(Integer, primary_key=True, index=True)

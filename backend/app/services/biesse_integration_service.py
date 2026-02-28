@@ -3,105 +3,107 @@ Biesse OptiPlanning Entegrasyon Servisi
 OptiPlan 360 ile Biesse OptiPlanning sistemleri arasÄ±ndaki veri akÄ±ÅŸÄ±nÄ± yÃ¶netir
 """
 
-import os
-import json
-import xml.etree.ElementTree as ET
-import subprocess
 import logging
+import os
+import subprocess
+import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
-from typing import Dict, List, Optional, Any
 from pathlib import Path
-import tempfile
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from app.database import SessionLocal
-from app.models import StockCard, StockMovement
 from app.exceptions import BusinessRuleError, ValidationError
+from app.models import StockCard, StockMovement
+
 from .optiplan_csv_otomasyon import CSV_ROW1, CSV_ROW2, optiplan_csv_otomasyon
 
 logger = logging.getLogger(__name__)
 
+
 class BiesseIntegrationService:
     """Biesse OptiPlanning entegrasyon servisi"""
-    
+
     def __init__(self, optiplanning_path: str = "C:/Biesse/OptiPlanning"):
         self.optiplanning_path = Path(optiplanning_path)
         self.xml_job_path = self.optiplanning_path / "Tmp" / "Sol"
         self.xml_mat_path = self.optiplanning_path / "XmlMat"
         self.job_path = self.optiplanning_path / "Job"
         self.system_path = self.optiplanning_path / "System"
-        
+
         # KlasÃ¶rleri kontrol et
         self._ensure_directories()
-    
+
     def _ensure_directories(self):
         """Gerekli klasÃ¶rleri oluÅŸtur"""
         for path in [self.xml_job_path, self.xml_mat_path, self.job_path]:
             path.mkdir(parents=True, exist_ok=True)
-    
-    def export_materials_to_biesse(self, material_ids: Optional[List[str]] = None) -> Dict[str, Any]:
+
+    def export_materials_to_biesse(
+        self, material_ids: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
         """
         OptiPlan 360 malzeme stoklarÄ±nÄ± Biesse formatÄ±nda export eder
         """
         try:
             db = SessionLocal()
-            
+
             # Malzemeleri getir
             query = db.query(StockCard).filter(StockCard.is_active == True)
             if material_ids:
                 query = query.filter(StockCard.id.in_(material_ids))
-            
+
             materials = query.all()
-            
+
             # XML yapÄ±sÄ± oluÅŸtur
             root = ET.Element("Inventry")
             materials_elem = ET.SubElement(root, "Material")
-            
+
             for material in materials:
                 # Stok miktarÄ±nÄ± hesapla
                 total_stock = self._calculate_material_stock(db, material.stock_code)
-                
+
                 if total_stock > 0:
                     # Board elementi (tam levhalar)
                     board = ET.SubElement(materials_elem, "Board")
                     board.set("Code", material.stock_code or f"MAT{material.id}")
                     board.set("L", str(material.length or 2800))  # mm
-                    board.set("W", str(material.width or 2070))   # mm
+                    board.set("W", str(material.width or 2070))  # mm
                     board.set("Thickness", str(material.thickness or 18))  # mm
                     board.set("Qty", str(int(total_stock)))
-                    
+
                     # Drop elementi (artÄ±k malzemeler)
                     drops = self._get_material_drops(db, material.id)
                     for drop in drops:
                         drop_elem = ET.SubElement(materials_elem, "Drop")
                         drop_elem.set("Code", f"DROP{material.id}_{drop['id']}")
-                        drop_elem.set("L", str(drop['length']))
-                        drop_elem.set("W", str(drop['width']))
+                        drop_elem.set("L", str(drop["length"]))
+                        drop_elem.set("W", str(drop["width"]))
                         drop_elem.set("Thickness", str(material.thickness or 18))
-                        drop_elem.set("Qty", str(drop['quantity']))
-            
+                        drop_elem.set("Qty", str(drop["quantity"]))
+
             # XML dosyasÄ±nÄ± kaydet
-            xml_content = ET.tostring(root, encoding='utf-8', xml_declaration=True)
+            xml_content = ET.tostring(root, encoding="utf-8", xml_declaration=True)
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             xml_file = self.xml_mat_path / f"optiplan_import_{timestamp}.xml"
-            
-            with open(xml_file, 'wb') as f:
+
+            with open(xml_file, "wb") as f:
                 f.write(xml_content)
-            
+
             db.close()
-            
+
             return {
                 "success": True,
                 "message": f"{len(materials)} malzeme Biesse formatÄ±nda export edildi",
                 "file_path": str(xml_file),
                 "material_count": len(materials),
-                "timestamp": timestamp
+                "timestamp": timestamp,
             }
-            
+
         except Exception as e:
             logger.error(f"Biesse export hatasÄ±: {str(e)}")
             raise BusinessRuleError(f"Malzeme export edilemedi: {str(e)}")
-    
+
     def import_cutting_plan_from_biesse(self, opjx_file_path: str) -> Dict[str, Any]:
         """
         Biesse kesim planÄ±nÄ± OptiPlan 360'a import eder
@@ -109,13 +111,13 @@ class BiesseIntegrationService:
         try:
             if not os.path.exists(opjx_file_path):
                 raise ValidationError("OPJX dosyasÄ± bulunamadÄ±")
-            
+
             # OPJX dosyasÄ±nÄ± parse et
             cutting_plan = self._parse_opjx_file(opjx_file_path)
-            
+
             # VeritabanÄ±na kaydet
             db = SessionLocal()
-            
+
             # Ãœretim kayÄ±tlarÄ± oluÅŸtur
             production_records = []
             for item in cutting_plan.get("items", []):
@@ -126,29 +128,31 @@ class BiesseIntegrationService:
                     "cut_width": item.get("cut_width"),
                     "waste_percentage": item.get("waste_percentage", 0),
                     "production_date": datetime.now(),
-                    "status": "planned"
+                    "status": "planned",
                 }
                 production_records.append(record)
-            
+
             # Stok hareketlerini gÃ¼ncelle
             for record in production_records:
                 self._create_stock_movement(db, record)
-            
+
             db.commit()
             db.close()
-            
+
             return {
                 "success": True,
                 "message": f"Kesim planÄ± import edildi: {len(production_records)} kayÄ±t",
                 "items_processed": len(production_records),
-                "plan_details": cutting_plan
+                "plan_details": cutting_plan,
             }
-            
+
         except Exception as e:
             logger.error(f"Biesse import hatasÄ±: {str(e)}")
             raise BusinessRuleError(f"Kesim planÄ± import edilemedi: {str(e)}")
-    
-    def create_cutting_job(self, order_items: List[Dict[str, Any]], import_format: str = "basic") -> Dict[str, Any]:
+
+    def create_cutting_job(
+        self, order_items: List[Dict[str, Any]], import_format: str = "basic"
+    ) -> Dict[str, Any]:
         """
         Siparis kalemlerini OPF uyumlu 12 kolon CSV'ye donusturur ve
         OptiPlanning'i -silent batch execution ile tetikler.
@@ -172,7 +176,9 @@ class BiesseIntegrationService:
             for item in order_items:
                 mapped_parts.append(
                     {
-                        "malzeme": item.get("material") or item.get("material_code") or "18MM 210*280",
+                        "malzeme": item.get("material")
+                        or item.get("material_code")
+                        or "18MM 210*280",
                         "boy": item.get("length") or item.get("boy") or item.get("L") or 0,
                         "en": item.get("width") or item.get("en") or item.get("W") or 0,
                         "adet": item.get("quantity") or item.get("adet") or item.get("Qty") or 1,
@@ -213,29 +219,25 @@ class BiesseIntegrationService:
         try:
             status = {
                 "optiplanning_installed": self.optiplanning_path.exists(),
-                "directories_exist": all([
-                    self.xml_job_path.exists(),
-                    self.xml_mat_path.exists(),
-                    self.job_path.exists(),
-                    self.system_path.exists()
-                ]),
+                "directories_exist": all(
+                    [
+                        self.xml_job_path.exists(),
+                        self.xml_mat_path.exists(),
+                        self.job_path.exists(),
+                        self.system_path.exists(),
+                    ]
+                ),
                 "executable_available": (self.system_path / "OptiPlan.exe").exists(),
                 "recent_jobs": self._get_recent_jobs(),
-                "material_files": self._get_material_files()
+                "material_files": self._get_material_files(),
             }
-            
-            return {
-                "success": True,
-                "status": status
-            }
-            
+
+            return {"success": True, "status": status}
+
         except Exception as e:
             logger.error(f"Biesse durum kontrolÃ¼ hatasÄ±: {str(e)}")
-            return {
-                "success": False,
-                "error": str(e)
-            }
-    
+            return {"success": False, "error": str(e)}
+
     def sync_materials_bidirectional(self) -> Dict[str, Any]:
         """
         Ä°ki yÃ¶nlÃ¼ malzeme senkronizasyonu
@@ -243,7 +245,7 @@ class BiesseIntegrationService:
         try:
             # OptiPlan 360 â†’ Biesse
             export_result = self.export_materials_to_biesse()
-            
+
             # Biesse â†’ OptiPlan 360 (varsa kesim planlarÄ±)
             import_results = []
             for opjx_file in self._get_pending_opjx_files():
@@ -252,25 +254,28 @@ class BiesseIntegrationService:
                     import_results.append(result)
                 except Exception as e:
                     logger.warning(f"OPJX import hatasÄ±: {opjx_file} - {str(e)}")
-            
+
             return {
                 "success": True,
                 "export_result": export_result,
                 "import_results": import_results,
-                "sync_timestamp": datetime.now().isoformat()
+                "sync_timestamp": datetime.now().isoformat(),
             }
-            
+
         except Exception as e:
             logger.error(f"Ä°ki yÃ¶nlÃ¼ senkronizasyon hatasÄ±: {str(e)}")
             raise BusinessRuleError(f"Senkronizasyon baÅŸarÄ±sÄ±z: {str(e)}")
-    
+
     # YardÄ±mcÄ± metodlar
     def _calculate_material_stock(self, db, stock_code: str) -> float:
         """Malzeme stok miktarÄ±nÄ± hesaplar (stock_code bazli)."""
         try:
-            movements = db.query(StockMovement).filter(
-                StockMovement.stock_code == stock_code
-            ).with_entities(StockMovement.movement_type, StockMovement.quantity).all()
+            movements = (
+                db.query(StockMovement)
+                .filter(StockMovement.stock_code == stock_code)
+                .with_entities(StockMovement.movement_type, StockMovement.quantity)
+                .all()
+            )
 
             balance = 0.0
             for movement_type, quantity in movements:
@@ -283,12 +288,12 @@ class BiesseIntegrationService:
             return max(balance, 0.0)
         except Exception:
             return 0.0
-    
+
     def _get_material_drops(self, db, material_id: int) -> List[Dict[str, Any]]:
         """Malzeme artÄ±klarÄ±nÄ± getir"""
         # Bu metot stok artÄ±klarÄ±nÄ± hesaplar
         return []  # Åimdilik boÅŸ
-    
+
     def _parse_opjx_file(self, file_path: str) -> Dict[str, Any]:
         """OPJX dosyasÄ±nÄ± parse eder"""
         # Basit implementasyon - gerÃ§ek OPJX formatÄ±na gÃ¶re gÃ¼ncellenmeli
@@ -300,11 +305,11 @@ class BiesseIntegrationService:
                     "quantity": 10,
                     "cut_length": 1200,
                     "cut_width": 800,
-                    "waste_percentage": 5.2
+                    "waste_percentage": 5.2,
                 }
-            ]
+            ],
         }
-    
+
     def _generate_opjx_content(self, job_data: Dict[str, Any]) -> str:
         """OPJX dosya iÃ§eriÄŸi oluÅŸturur"""
         # Basit implementasyon - gerÃ§ek OPJX formatÄ±na gÃ¶re gÃ¼ncellenmeli
@@ -316,37 +321,38 @@ Date={job_data['created_date']}
 [ITEMS]
 Count={len(job_data['items'])}
 """
-        
-        for i, item in enumerate(job_data['items'], 1):
+
+        for i, item in enumerate(job_data["items"], 1):
             content += f"""
 Item{i}={item.get('material_code', '')}
 Quantity{i}={item.get('quantity', 0)}
 Length{i}={item.get('length', 0)}
 Width{i}={item.get('width', 0)}
 """
-        
+
         return content
-    
+
     def _run_optiplanning(self, opjx_file: Path) -> bool:
         """OptiPlanning'i Ã§alÄ±ÅŸtÄ±rÄ±r"""
         try:
             exe_path = self.system_path / "OptiPlan.exe"
             if not exe_path.exists():
                 return False
-            
+
             # OptiPlanning'i subprocess ile Ã§alÄ±ÅŸtÄ±r
-            result = subprocess.run([
-                str(exe_path),
-                "-f", str(opjx_file),
-                "-a"  # Otomatik Ã§alÄ±ÅŸtÄ±r
-            ], capture_output=True, text=True, timeout=300)
-            
+            result = subprocess.run(
+                [str(exe_path), "-f", str(opjx_file), "-a"],  # Otomatik Ã§alÄ±ÅŸtÄ±r
+                capture_output=True,
+                text=True,
+                timeout=300,
+            )
+
             return result.returncode == 0
-            
+
         except Exception as e:
             logger.error(f"OptiPlanning Ã§alÄ±ÅŸtÄ±rma hatasÄ±: {str(e)}")
             return False
-    
+
     def _create_stock_movement(self, db, record: Dict[str, Any]):
         """Stok hareketi oluÅŸturur"""
         try:
@@ -375,25 +381,25 @@ Width{i}={item.get('width', 0)}
             db.add(movement)
         except Exception as exc:
             logger.warning("Stok hareketi olusturulamadi: %s", exc)
-    
+
     def _get_recent_jobs(self) -> List[str]:
         """Son iÅŸ dosyalarÄ±nÄ± listeler"""
         try:
             job_files = list(self.job_path.glob("*.opjx"))
             job_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
             return [f.name for f in job_files[:10]]
-        except:
+        except Exception:
             return []
-    
+
     def _get_material_files(self) -> List[str]:
         """Malzeme dosyalarÄ±nÄ± listeler"""
         try:
             mat_files = list(self.xml_mat_path.glob("*.xml"))
             mat_files.sort(key=lambda x: x.stat().st_mtime, reverse=True)
             return [f.name for f in mat_files[:10]]
-        except:
+        except Exception:
             return []
-    
+
     def _generate_csv_content(self, order_items: List[Dict[str, Any]], import_format: str) -> str:
         """
         OPF free-format standardina uygun 12 kolon CSV metni uretir.
@@ -423,7 +429,13 @@ Width{i}={item.get('width', 0)}
             normalized = []
             for value in row:
                 text = str(value if value is not None else "")
-                text = text.replace("\r", " ").replace("\n", " ").replace("\t", " ").replace(",", " ").strip()
+                text = (
+                    text.replace("\r", " ")
+                    .replace("\n", " ")
+                    .replace("\t", " ")
+                    .replace(",", " ")
+                    .strip()
+                )
                 text = text.encode("ascii", "ignore").decode("ascii")
                 normalized.append(text)
 
@@ -436,7 +448,7 @@ Width{i}={item.get('width', 0)}
         try:
             # Basit implementasyon - gerÃ§ek mantÄ±ÄŸa gÃ¶re gÃ¼ncellenmeli
             return []
-        except:
+        except Exception:
             return []
 
     def cleanup_old_files(self, days_old: int = 30) -> Dict[str, Any]:
@@ -480,6 +492,7 @@ Width{i}={item.get('width', 0)}
             "days_old": days_old,
             "errors": errors,
         }
+
 
 # Singleton instance
 biesse_service = BiesseIntegrationService()

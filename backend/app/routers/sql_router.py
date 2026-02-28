@@ -2,19 +2,21 @@
 OptiPlan 360 — SQL Board Router
 Veritabanı tabloları görüntüleme, sorgu çalıştırma, veri yönetimi
 """
-from datetime import datetime, timezone
-from uuid import uuid4
-from typing import List, Optional, Any
-from fastapi import APIRouter, Depends, HTTPException
-from app.exceptions import AuthorizationError, BusinessRuleError, NotFoundError
-from sqlalchemy.orm import Session
-from sqlalchemy import text, inspect as sa_inspect
-from pydantic import BaseModel
 
-from app.database import get_db, engine
-from app.models import User, AuditLog
-from app.auth import get_current_user, require_admin
+from datetime import datetime, timezone
+from typing import Any, List, Optional
+from uuid import uuid4
+
+from app.auth import require_admin
+from app.database import engine, get_db
+from app.exceptions import BusinessRuleError, NotFoundError
+from app.models import AuditLog, User
 from app.utils import create_audit_log
+from fastapi import APIRouter, Depends
+from pydantic import BaseModel
+from sqlalchemy import inspect as sa_inspect
+from sqlalchemy import text
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/sql", tags=["sql"])
 
@@ -49,14 +51,22 @@ class TableDataResult(BaseModel):
 
 
 # ─── Yetki kontrolü (admin only) ───
-def require_admin(current_user: User = Depends(get_current_user)) -> User:
-    if current_user.role.upper() != "ADMIN":
-        raise AuthorizationError("Admin yetkisi gerekli")
-    return current_user
+# require_admin is imported from app.auth (line 10)
 
 
 # Güvenlik: Sadece SELECT sorgularına izin ver
-BLOCKED_KEYWORDS = ["DROP", "DELETE", "TRUNCATE", "ALTER", "CREATE", "INSERT", "UPDATE", "GRANT", "REVOKE"]
+BLOCKED_KEYWORDS = [
+    "DROP",
+    "DELETE",
+    "TRUNCATE",
+    "ALTER",
+    "CREATE",
+    "INSERT",
+    "UPDATE",
+    "GRANT",
+    "REVOKE",
+]
+
 
 def _is_safe_query(sql: str) -> bool:
     normalized = sql.strip()
@@ -134,7 +144,7 @@ def get_table_data(
     offset = (page - 1) * per_page
     data_result = db.execute(
         text(f'SELECT * FROM "{table_name}" LIMIT :limit OFFSET :offset'),
-        {"limit": per_page, "offset": offset}
+        {"limit": per_page, "offset": offset},
     )
     rows = [list(row) for row in data_result.fetchall()]
 
@@ -165,7 +175,9 @@ def execute_query(
 ):
     """SQL sorgusu çalıştır (sadece SELECT)"""
     if not _is_safe_query(body.sql):
-        raise BusinessRuleError("Sadece SELECT sorguları çalıştırılabilir. DML/DDL sorgularına izin verilmez.")
+        raise BusinessRuleError(
+            "Sadece SELECT sorguları çalıştırılabilir. DML/DDL sorgularına izin verilmez."
+        )
 
     limit = min(body.limit, 500)
     start = datetime.now(timezone.utc)
@@ -173,7 +185,7 @@ def execute_query(
     sql_query = body.sql.strip()
     if "LIMIT" not in sql_query.upper():
         sql_query += f" LIMIT {limit}"
-    
+
     try:
         result = db.execute(text(sql_query))
         columns = list(result.keys()) if result.returns_rows else []
@@ -257,7 +269,11 @@ def get_table_schema(
             for fk in fks
         ],
         "indexes": [
-            {"name": idx.get("name"), "columns": idx.get("column_names", []), "unique": idx.get("unique", False)}
+            {
+                "name": idx.get("name"),
+                "columns": idx.get("column_names", []),
+                "unique": idx.get("unique", False),
+            }
             for idx in indexes
         ],
     }
@@ -266,6 +282,7 @@ def get_table_schema(
 # ═══════════════════════════════════════════════════
 # KAYITLI SORGULAR
 # ═══════════════════════════════════════════════════
+
 
 class SavedQueryCreate(BaseModel):
     name: str
@@ -291,6 +308,7 @@ def list_saved_queries(
 ):
     """Kayıtlı sorguları listele"""
     from app.models import SavedQuery
+
     queries = db.query(SavedQuery).order_by(SavedQuery.created_at.desc()).all()
     return [
         SavedQueryOut(
@@ -298,7 +316,7 @@ def list_saved_queries(
             name=q.name,
             description=q.description,
             sql_query=q.sql_query,
-            created_at=q.created_at.isoformat()
+            created_at=q.created_at.isoformat(),
         )
         for q in queries
     ]
@@ -312,9 +330,9 @@ def create_saved_query(
 ):
     """Yeni sorgu kaydet"""
     from app.models import SavedQuery
-    
+
     if not _is_safe_query(body.sql):
-         raise BusinessRuleError("Sadece SELECT sorguları kaydedilebilir.")
+        raise BusinessRuleError("Sadece SELECT sorguları kaydedilebilir.")
 
     q = SavedQuery(
         id=str(uuid4()),
@@ -322,17 +340,17 @@ def create_saved_query(
         description=body.description,
         sql_query=body.sql,
         created_by=admin.id,
-        created_at=datetime.now(timezone.utc)
+        created_at=datetime.now(timezone.utc),
     )
     db.add(q)
     db.commit()
-    
+
     return SavedQueryOut(
         id=q.id,
         name=q.name,
         description=q.description,
         sql_query=q.sql_query,
-        created_at=q.created_at.isoformat()
+        created_at=q.created_at.isoformat(),
     )
 
 
@@ -344,18 +362,21 @@ def delete_saved_query(
 ):
     """Kayıtlı sorguyu sil"""
     from app.models import SavedQuery
+
     db.query(SavedQuery).filter(SavedQuery.id == id).delete()
     db.commit()
     return None
 
+
+import io
+import urllib.parse
 
 # ═══════════════════════════════════════════════════
 # EXPORT
 # ═══════════════════════════════════════════════════
 from fastapi.responses import StreamingResponse
 from openpyxl import Workbook
-import io
-import urllib.parse
+
 
 @router.post("/export")
 def export_query_result(
@@ -367,7 +388,7 @@ def export_query_result(
     if not _is_safe_query(body.sql):
         raise BusinessRuleError("Güvenli olmayan sorgu")
 
-    limit = min(body.limit, 5000) # Export limit higher
+    limit = min(body.limit, 5000)  # Export limit higher
     sql_query = body.sql.strip()
     if "LIMIT" not in sql_query.upper():
         sql_query += f" LIMIT {limit}"
@@ -400,23 +421,18 @@ def export_query_result(
     output = io.BytesIO()
     wb.save(output)
     output.seek(0)
-    
-    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"export_{timestamp}.xlsx"
     encoded_filename = urllib.parse.quote(filename)
 
-    
     # Audit log
     # Audit log
-    create_audit_log(
-        db, admin.id, "SQL_EXPORT",
-        body.sql[:200],
-        None
-    )
+    create_audit_log(db, admin.id, "SQL_EXPORT", body.sql[:200], None)
     db.commit()
 
     return StreamingResponse(
         output,
         media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"}
+        headers={"Content-Disposition": f"attachment; filename*=UTF-8''{encoded_filename}"},
     )

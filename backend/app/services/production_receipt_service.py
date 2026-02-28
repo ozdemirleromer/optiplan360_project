@@ -14,20 +14,18 @@ Fiyatlandirma:
   1. CRMAccount.plaka_birim_fiyat / bant_metre_fiyat (musteriye ozel)
   2. Yoksa config/pricing.json varsayilanlari
 """
+
 import json
 import logging
 import os
-from datetime import datetime, timezone
-from typing import Optional
 
 from sqlalchemy.orm import Session
 
-from ..models import OptiJob, OptiAuditEvent, Order, OrderPart
+from ..models import OptiAuditEvent, OptiJob, Order, OrderPart
 from ..models.crm import CRMAccount
 from ..models.finance import Invoice
-from ..models.enums import PaymentStatusEnum
-from .payment_service import create_invoice
 from . import tracking_folder_service as tracking
+from .payment_service import create_invoice
 
 logger = logging.getLogger(__name__)
 
@@ -71,11 +69,7 @@ def calculate_edge_banding_metres(db: Session, order_id: int) -> float:
       toplam_mm += kenar_uzunluklari_toplami * adet
       return toplam_mm / 1000 (mm -> metre)
     """
-    parts = (
-        db.query(OrderPart)
-        .filter(OrderPart.order_id == order_id)
-        .all()
-    )
+    parts = db.query(OrderPart).filter(OrderPart.order_id == order_id).all()
 
     toplam_mm = 0.0
     for part in parts:
@@ -115,6 +109,7 @@ def calculate_plate_count(mq_boards: float, plate_w_mm: float, plate_h_mm: float
         return max(1, int(mq_boards))
 
     import math
+
     return max(1, math.ceil(mq_boards / plaka_alani_m2))
 
 
@@ -148,15 +143,10 @@ def create_production_receipt(
     # CRMAccount bul (Customer -> CRMAccount)
     account: CRMAccount | None = None
     if order.customer_id:
-        account = (
-            db.query(CRMAccount)
-            .filter(CRMAccount.customer_id == order.customer_id)
-            .first()
-        )
+        account = db.query(CRMAccount).filter(CRMAccount.customer_id == order.customer_id).first()
     if not account:
         logger.warning(
-            "Production receipt: CRMAccount bulunamadi (customer_id=%s). "
-            "Fis olusturulamadi.",
+            "Production receipt: CRMAccount bulunamadi (customer_id=%s). " "Fis olusturulamadi.",
             order.customer_id,
         )
         return None
@@ -234,23 +224,29 @@ def create_production_receipt(
         job_id=job_id,
         event_type="PRODUCTION_RECEIPT",
         message=f"Siparis fisi olusturuldu: {invoice.invoice_number}",
-        details_json=json.dumps({
-            "invoice_id": invoice.id,
-            "invoice_number": invoice.invoice_number,
-            "plaka_adedi": plaka_adedi,
-            "bant_metre": round(bant_metre, 2),
-            "plaka_fiyat": plaka_fiyat,
-            "bant_fiyat": bant_fiyat,
-            "subtotal": round(subtotal, 2),
-            "total_amount": round(total_amount, 2),
-        }, default=str),
+        details_json=json.dumps(
+            {
+                "invoice_id": invoice.id,
+                "invoice_number": invoice.invoice_number,
+                "plaka_adedi": plaka_adedi,
+                "bant_metre": round(bant_metre, 2),
+                "plaka_fiyat": plaka_fiyat,
+                "bant_fiyat": bant_fiyat,
+                "subtotal": round(subtotal, 2),
+                "total_amount": round(total_amount, 2),
+            },
+            default=str,
+        ),
     )
     db.add(audit)
     db.commit()
 
     logger.info(
         "Production receipt olusturuldu: job=%s, invoice=%s, plaka=%d, bant=%.2fm",
-        job_id, invoice.invoice_number, plaka_adedi, bant_metre,
+        job_id,
+        invoice.invoice_number,
+        plaka_adedi,
+        bant_metre,
     )
 
     # Tracking: siparis fisini _raporlar/ klasorune yaz
@@ -308,12 +304,16 @@ def get_production_receipt(db: Session, job_id: str) -> dict | None:
         "xml_parse": parse_result,
         "plaka_adedi": plaka_adedi,
         "bant_metre": round(bant_metre, 2),
-        "invoice": {
-            "id": invoice.id,
-            "number": invoice.invoice_number,
-            "subtotal": invoice.subtotal,
-            "total_amount": invoice.total_amount,
-            "status": invoice.status.value if invoice.status else None,
-            "notes": invoice.notes,
-        } if invoice else None,
+        "invoice": (
+            {
+                "id": invoice.id,
+                "number": invoice.invoice_number,
+                "subtotal": invoice.subtotal,
+                "total_amount": invoice.total_amount,
+                "status": invoice.status.value if invoice.status else None,
+                "notes": invoice.notes,
+            }
+            if invoice
+            else None
+        ),
     }

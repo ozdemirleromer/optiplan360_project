@@ -2,16 +2,17 @@
 Stok Kartı API Router
 Mikro stok kartları yönetimi API endpointleri
 """
-from fastapi import APIRouter, Depends, HTTPException, Query
-from app.exceptions import NotFoundError
-from sqlalchemy.orm import Session
+
 from typing import List, Optional
 
-from app.database import get_db
-from app.services.stock_card_service import StockCardService
 from app.auth import require_permissions
+from app.database import get_db
+from app.exceptions import NotFoundError
 from app.permissions import Permission
+from app.services.stock_card_service import StockCardService
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/api/v1/stock", tags=["stock"])
 
@@ -54,7 +55,7 @@ def list_stock_cards(
     limit: int = Query(50, ge=1, le=200),
     active_only: bool = Query(True),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    current_user=Depends(require_permissions(Permission.STOCK_VIEW)),
 ):
     """Stok kartlarını listele"""
     service = StockCardService(db)
@@ -67,7 +68,7 @@ def search_stock_cards(
     q: str = Query(..., min_length=2),
     limit: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    current_user=Depends(require_permissions(Permission.STOCK_VIEW)),
 ):
     """Stok kartlarında arama yap"""
     service = StockCardService(db)
@@ -79,15 +80,15 @@ def search_stock_cards(
 def get_stock_card_detail(
     stock_code: str,
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    current_user=Depends(require_permissions(Permission.STOCK_VIEW)),
 ):
     """Stok kartı detaylarını getir"""
     service = StockCardService(db)
     card = service.get_stock_card(stock_code)
-    
+
     if not card:
         raise NotFoundError("Stok kartı")
-    
+
     return card
 
 
@@ -96,27 +97,24 @@ def get_stock_movements(
     stock_code: str,
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    current_user=Depends(require_permissions(Permission.STOCK_VIEW)),
 ):
     """Stok hareket geçmişini getir"""
     service = StockCardService(db)
     service.sync_stock_movements(stock_code, days)
     card = service.get_stock_card(stock_code)
-    
+
     if not card:
         raise NotFoundError("Stok kartı")
-    
-    return {
-        "stock_code": stock_code,
-        "movements": card.get("movements", [])
-    }
+
+    return {"stock_code": stock_code, "movements": card.get("movements", [])}
 
 
 @router.post("/stock-cards", status_code=201, tags=["stock"])
 def create_stock_card(
     body: StockCardCreate,
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_IMPORT))
+    current_user=Depends(require_permissions(Permission.STOCK_IMPORT)),
 ):
     """Yeni stok kartı oluştur"""
     service = StockCardService(db)
@@ -129,7 +127,7 @@ def sync_stock_cards(
     limit: int = Query(100, ge=1, le=500),
     offset: int = Query(0, ge=0),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_IMPORT))
+    current_user=Depends(require_permissions(Permission.STOCK_IMPORT)),
 ):
     """Mikro'dan stok kartlarını senkronize et"""
     service = StockCardService(db)
@@ -142,7 +140,7 @@ def sync_movements(
     stock_code: str,
     days: int = Query(30, ge=1, le=365),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_IMPORT))
+    current_user=Depends(require_permissions(Permission.STOCK_IMPORT)),
 ):
     """Belirli bir stok için hareketleri senkronize et"""
     service = StockCardService(db)
@@ -154,22 +152,17 @@ def sync_movements(
 def get_low_stock_items(
     threshold: float = Query(10, ge=0),
     db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    current_user=Depends(require_permissions(Permission.STOCK_VIEW)),
 ):
     """Düşük stokta olan ürünlerin listesini getir"""
     service = StockCardService(db)
     items = service.get_low_stock_items(threshold)
-    return {
-        "threshold": threshold,
-        "items": items,
-        "count": len(items)
-    }
+    return {"threshold": threshold, "items": items, "count": len(items)}
 
 
 @router.get("/stock-cards/summary/stats", tags=["stock"])
 def get_stock_stats(
-    db: Session = Depends(get_db),
-    current_user = Depends(require_permissions(Permission.STOCK_VIEW))
+    db: Session = Depends(get_db), current_user=Depends(require_permissions(Permission.STOCK_VIEW))
 ):
     """Stok genel istatistiklerini getir"""
     service = StockCardService(db)

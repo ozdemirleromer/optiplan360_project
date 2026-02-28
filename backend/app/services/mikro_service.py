@@ -1,19 +1,18 @@
-
-import os
 import json
 import logging
-import re
-from typing import List, Dict, Any, Optional
-from collections import defaultdict
+import os
+from typing import Any, Dict, List, Optional
 
 try:
     from expiringdict import ExpiringDict
 except Exception:  # pragma: no cover - fallback when dependency is missing
+
     class ExpiringDict(dict):
         def __init__(self, *args, **kwargs):
             super().__init__()
 
-from ..exceptions import ValidationError, AppError
+
+from ..exceptions import AppError, ValidationError
 
 logger = logging.getLogger(__name__)
 
@@ -78,8 +77,9 @@ def _get_db_connection():
     """
     cfg = _load_mikro_config()
     if not cfg:
-        raise ValidationError("Mikro veritabanı bağlantı bilgileri eksik. "
-                              "Admin panelinden yapılandırma yapılmalı.")
+        raise ValidationError(
+            "Mikro veritabanı bağlantı bilgileri eksik. " "Admin panelinden yapılandırma yapılmalı."
+        )
 
     try:
         import pyodbc
@@ -123,6 +123,7 @@ def _get_db_connection():
         logger.error(f"Mikro veritabanı bağlantı hatası: {error_msg}")
         raise AppError(503, "CONNECTION_ERROR", f"Mikro veritabanına bağlanılamadı: {error_msg}")
 
+
 def _normalize_stock_name(name: str) -> str:
     """Handoff Madde 5'e göre stok adını normalize eder."""
     name = name.upper()
@@ -132,6 +133,7 @@ def _normalize_stock_name(name: str) -> str:
         return name.replace("SLAM", "SUNTALAM")
     return name
 
+
 def _fetch_raw_stocks() -> List[Dict[str, Any]]:
     """
     Mikro veritabanından ham stok listesini çeker.
@@ -139,7 +141,7 @@ def _fetch_raw_stocks() -> List[Dict[str, Any]]:
     """
     conn = _get_db_connection()
     cursor = conn.cursor()
-    
+
     # sql_board_fields.md'ye göre alanlar: sto_isim, sto_kalinlik, sto_en, sto_boy, sto_renk
     query = """
     SELECT 
@@ -153,7 +155,7 @@ def _fetch_raw_stocks() -> List[Dict[str, Any]]:
     WHERE 
         sto_grup_kodu = 'LEVHA' AND sto_isim IS NOT NULL
     """
-    
+
     try:
         cursor.execute(query)
         columns = [column[0] for column in cursor.description]
@@ -163,11 +165,12 @@ def _fetch_raw_stocks() -> List[Dict[str, Any]]:
         cursor.close()
         conn.close()
 
+
 def get_all_materials() -> List[Dict[str, Any]]:
     """
     Tüm malzemeleri önbellekten veya veritabanından alıp normalize eder.
     """
-    cached_materials = stock_cache.get('all_materials')
+    cached_materials = stock_cache.get("all_materials")
     if cached_materials:
         return cached_materials
 
@@ -175,18 +178,21 @@ def get_all_materials() -> List[Dict[str, Any]]:
     materials = []
     for stock in raw_stocks:
         # Kalınlık, en, boy gibi sayısal alanları ayrıştır
-        normalized_name = _normalize_stock_name(stock['sto_isim'])
-        materials.append({
-            "name": normalized_name,
-            "raw_name": stock['sto_isim'],
-            "thickness": stock.get('sto_kalinlik'),
-            "width": stock.get('sto_en'),
-            "height": stock.get('sto_boy'),
-            "color": stock.get('sto_renk')
-        })
-    
-    stock_cache['all_materials'] = materials
+        normalized_name = _normalize_stock_name(stock["sto_isim"])
+        materials.append(
+            {
+                "name": normalized_name,
+                "raw_name": stock["sto_isim"],
+                "thickness": stock.get("sto_kalinlik"),
+                "width": stock.get("sto_en"),
+                "height": stock.get("sto_boy"),
+                "color": stock.get("sto_renk"),
+            }
+        )
+
+    stock_cache["all_materials"] = materials
     return materials
+
 
 def suggest_materials(query: str, thickness: Optional[float] = None) -> List[Dict[str, Any]]:
     """
@@ -198,14 +204,14 @@ def suggest_materials(query: str, thickness: Optional[float] = None) -> List[Dic
 
     for mat in all_materials:
         # Kalınlık filtresi
-        if thickness is not None and mat['thickness'] != thickness:
+        if thickness is not None and mat["thickness"] != thickness:
             continue
 
         # Arama sorgusu eşleşmesi
-        if query in mat['name']:
+        if query in mat["name"]:
             suggestions.append(mat)
-            
+
     # En iyi eşleşmeleri başa getirmek için basit bir sıralama
     suggestions.sort(key=lambda x: abs(len(x["name"]) - len(query)))
-    
-    return suggestions[:20] # Çok fazla sonuç dönmemek için limit
+
+    return suggestions[:20]  # Çok fazla sonuç dönmemek için limit

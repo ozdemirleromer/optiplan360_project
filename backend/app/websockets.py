@@ -1,10 +1,11 @@
-import asyncio
 import json
 import logging
 from typing import List
-from fastapi import WebSocket, WebSocketDisconnect
+
+from fastapi import WebSocket
 
 logger = logging.getLogger(__name__)
+
 
 class ConnectionManager:
     def __init__(self):
@@ -27,20 +28,21 @@ class ConnectionManager:
         """
         if not self.active_connections:
             return
-            
+
         json_message = json.dumps(message)
         dead_connections = []
-        
+
         for connection in self.active_connections:
             try:
                 await connection.send_text(json_message)
             except Exception as e:
                 logger.warning(f"Error sending message to websocket client: {e}")
                 dead_connections.append(connection)
-                
+
         # Kopan bağlantıları temizle
         for dead in dead_connections:
             self.disconnect(dead)
+
 
 # Tüm uygulama içinde kullanılacak tekil örnek (Singleton)
 manager = ConnectionManager()

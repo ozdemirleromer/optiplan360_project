@@ -7,15 +7,13 @@ Stok adı sorgusu ve malzeme önerisi için kullanılır.
 Bağlantı parametreleri Admin Panel üzerinden kaydedilir
 ve config/mikro_connection.json dosyasında tutulur.
 """
-import os
+
 import json
-import re
+import os
 from typing import Optional
 
 # Mikro bağlantı config dosyası
-CONFIG_PATH = os.path.join(
-    os.path.dirname(__file__), "..", "..", "config", "mikro_connection.json"
-)
+CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "..", "config", "mikro_connection.json")
 
 # Stok adı normalize kuralları (Handoff §5)
 NORMALIZE_MAP = {
@@ -222,13 +220,15 @@ def search_materials(
             if stok_adi.upper().startswith(normalized):
                 score = 0.95
 
-            results.append({
-                "stok_adi": stok_adi,
-                "kalinlik": thickness,
-                "renk": color or "",
-                "ebat": "",
-                "match_score": score,
-            })
+            results.append(
+                {
+                    "stok_adi": stok_adi,
+                    "kalinlik": thickness,
+                    "renk": color or "",
+                    "ebat": "",
+                    "match_score": score,
+                }
+            )
 
         # Score'a göre sırala
         results.sort(key=lambda x: x["match_score"], reverse=True)

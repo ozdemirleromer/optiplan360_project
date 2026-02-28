@@ -2,6 +2,7 @@
 Fiyat takip sistemi — OCR işleme (Tesseract + PIL).
 Tesseract OCR: ücretsiz, açık kaynak metin tanıma motoru.
 """
+
 import logging
 import os
 from pathlib import Path
@@ -20,7 +21,8 @@ _PROJECT_TESSDATA = Path(__file__).resolve().parent.parent.parent / "tessdata"
 
 try:
     import pytesseract
-    from PIL import Image, ImageEnhance, ImageFilter, ImageOps
+    from PIL import Image, ImageFilter, ImageOps
+
     HAS_OCR = True
 
     # Tesseract binary yolunu bul
@@ -43,6 +45,7 @@ except ImportError:
 
 try:
     import fitz  # PyMuPDF
+
     HAS_FITZ = True
 except ImportError:
     HAS_FITZ = False
@@ -85,9 +88,7 @@ def extract_text_from_image(
             image = image.resize(new_size, Image.LANCZOS)
 
         processed = preprocess_image(image)
-        text = pytesseract.image_to_string(
-            processed, lang=lang, config="--psm 6"
-        )
+        text = pytesseract.image_to_string(processed, lang=lang, config="--psm 6")
         logger.info("OCR tamamlandı: %d karakter — %s", len(text), file_path)
         return text.strip()
 
@@ -111,9 +112,7 @@ def extract_text_from_pdf_images(file_path: str, lang: str = "tur+eng") -> str:
             pix = page.get_pixmap(dpi=300)
             img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
             processed = preprocess_image(img)
-            text = pytesseract.image_to_string(
-                processed, lang=lang, config="--psm 6"
-            )
+            text = pytesseract.image_to_string(processed, lang=lang, config="--psm 6")
             if text.strip():
                 all_text.append(text.strip())
 
