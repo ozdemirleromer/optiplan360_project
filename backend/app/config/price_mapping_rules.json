@@ -1,0 +1,238 @@
+{
+  "_description": "Sütun eşleme kuralları — Farklı tedarikçi formatlarını standart sütunlara dönüştürür",
+  "standard_columns": [
+    "URUN_KODU",
+    "URUN_ADI",
+    "BIRIM",
+    "LISTE_FIYATI",
+    "ISKONTO_ORANI",
+    "NET_FIYAT",
+    "KDV_ORANI",
+    "KDV_DAHIL_FIYAT",
+    "PARA_BIRIMI",
+    "STOK_DURUMU",
+    "KATEGORI",
+    "MARKA",
+    "ACIKLAMA",
+    "TEDARIKCI",
+    "KAYNAK_DOSYA",
+    "ISLEM_TARIHI"
+  ],
+  "column_aliases": {
+    "URUN_KODU": {
+      "aliases": [
+        "Ürün Kodu",
+        "Stok Kodu",
+        "Kod",
+        "Product Code",
+        "SKU",
+        "Item No",
+        "Malzeme Kodu",
+        "Ref No",
+        "Referans",
+        "Part Number",
+        "Barkod"
+      ],
+      "type": "string",
+      "required": false
+    },
+    "URUN_ADI": {
+      "aliases": [
+        "Ürün Adı",
+        "Ürün",
+        "Mal Adı",
+        "Malzeme",
+        "Product Name",
+        "Description",
+        "Item",
+        "Açıklama",
+        "Tanım",
+        "Malzeme Adı",
+        "Stok Adı",
+        "Mamül Adı"
+      ],
+      "type": "string",
+      "required": true
+    },
+    "BIRIM": {
+      "aliases": [
+        "Birim",
+        "Unit",
+        "Ölçü Birimi",
+        "BR",
+        "Adet/Birim",
+        "UOM"
+      ],
+      "type": "string",
+      "required": false,
+      "default": "ADET"
+    },
+    "BOYUT": {
+      "aliases": [
+        "Ölçü",
+        "Boyut",
+        "Ebat",
+        "Size",
+        "Dimension",
+        "Boy",
+        "En",
+        "Uzunluk",
+        "Kalınlık",
+        "mm",
+        "CM"
+      ],
+      "type": "string",
+      "required": false
+    },
+    "RENK": {
+      "aliases": [
+        "Renk",
+        "Color",
+        "Colour",
+        "Finish",
+        "Kaplama"
+      ],
+      "type": "string",
+      "required": false
+    },
+    "LISTE_FIYATI": {
+      "aliases": [
+        "Liste Fiyatı",
+        "Fiyat",
+        "Price",
+        "Birim Fiyat",
+        "Tutar",
+        "Unit Price",
+        "Brüt Fiyat",
+        "Perakende Fiyat",
+        "Satış Fiyatı",
+        "List Price",
+        "Gross Price",
+        "Liste",
+        "LİSTE"
+      ],
+      "type": "float",
+      "required": true
+    },
+    "ISKONTO_ORANI": {
+      "aliases": [
+        "İskonto",
+        "İskonto %",
+        "Discount",
+        "Discount %",
+        "İnd. Oranı",
+        "Indirim"
+      ],
+      "type": "float",
+      "required": false,
+      "default": 0
+    },
+    "NET_FIYAT": {
+      "aliases": [
+        "Net Fiyat",
+        "Net Price",
+        "İskontolu Fiyat",
+        "Dealer Price",
+        "Bayi Fiyat",
+        "Net Liste",
+        "NET LİSTE"
+      ],
+      "type": "float",
+      "required": false
+    },
+    "KDV_ORANI": {
+      "aliases": [
+        "KDV",
+        "KDV %",
+        "KDV Oranı",
+        "VAT",
+        "Tax",
+        "Tax Rate",
+        "Vergi"
+      ],
+      "type": "float",
+      "required": false,
+      "default": 20
+    },
+    "KDV_DAHIL_FIYAT": {
+      "aliases": [
+        "KDV Dahil Fiyat",
+        "KDV Dahil",
+        "Toplam Fiyat",
+        "Total Price",
+        "Gross Amount"
+      ],
+      "type": "float",
+      "required": false
+    },
+    "PARA_BIRIMI": {
+      "aliases": [
+        "Para Birimi",
+        "Currency",
+        "Döviz",
+        "Döviz Cinsi",
+        "PB"
+      ],
+      "type": "string",
+      "required": false,
+      "default": "TRY"
+    },
+    "STOK_DURUMU": {
+      "aliases": [
+        "Stok",
+        "Stok Durumu",
+        "Stock",
+        "Availability",
+        "Mevcut"
+      ],
+      "type": "string",
+      "required": false
+    },
+    "KATEGORI": {
+      "aliases": [
+        "Kategori",
+        "Category",
+        "Grup",
+        "Group",
+        "Sınıf",
+        "Ana Grup"
+      ],
+      "type": "string",
+      "required": false
+    },
+    "MARKA": {
+      "aliases": [
+        "Marka",
+        "Brand",
+        "Üretici",
+        "Manufacturer"
+      ],
+      "type": "string",
+      "required": false
+    }
+  },
+  "currency_symbols": {
+    "₺": "TRY",
+    "TL": "TRY",
+    "$": "USD",
+    "€": "EUR",
+    "£": "GBP"
+  },
+  "unit_normalization": {
+    "AD": "ADET",
+    "Adet": "ADET",
+    "adet": "ADET",
+    "PK": "PAKET",
+    "Paket": "PAKET",
+    "KG": "KG",
+    "kg": "KG",
+    "MT": "METRE",
+    "Metre": "METRE",
+    "m": "METRE",
+    "M2": "M2",
+    "m2": "M2",
+    "m²": "M2",
+    "LT": "LITRE",
+    "lt": "LITRE"
+  }
+}

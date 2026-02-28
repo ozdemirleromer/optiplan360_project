@@ -1,0 +1,797 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OptiPlan360 Theme Concepts</title>
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 32px;
+        font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+        background:
+          radial-gradient(circle at 10% 0%, #dde8ff 0%, transparent 45%),
+          radial-gradient(circle at 90% 100%, #f4e4ff 0%, transparent 40%),
+          #f4f7fc;
+        color: #1f2a44;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+      }
+
+      .intro {
+        margin: 0 0 24px;
+        max-width: 980px;
+        color: #4e5d7c;
+        font-size: 15px;
+      }
+
+      .board {
+        display: grid;
+        gap: 22px;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      }
+
+      .concept {
+        background: #ffffff;
+        border: 1px solid #d8dfec;
+        border-radius: 16px;
+        box-shadow: 0 18px 40px rgba(25, 50, 100, 0.08);
+        overflow: hidden;
+      }
+
+      .concept-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 16px;
+        border-bottom: 1px solid #e6ecf7;
+      }
+
+      .concept-title {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 700;
+      }
+
+      .chip {
+        padding: 5px 10px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .palette {
+        display: flex;
+        gap: 8px;
+      }
+
+      .swatch {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        border: 1px solid rgba(0, 0, 0, 0.18);
+      }
+
+      .frame {
+        aspect-ratio: 16 / 10;
+        margin: 14px;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid rgba(0, 0, 0, 0.14);
+        background: #f7f9ff;
+        position: relative;
+      }
+
+      .caption {
+        margin: 0;
+        padding: 0 16px 16px;
+        color: #5d6b86;
+        font-size: 13px;
+      }
+
+      .compare {
+        margin-top: 30px;
+        padding: 16px;
+        background: #ffffff;
+        border: 1px solid #d8dfec;
+        border-radius: 16px;
+        box-shadow: 0 18px 40px rgba(25, 50, 100, 0.08);
+      }
+
+      .compare h2 {
+        margin: 0 0 6px;
+        font-size: 20px;
+      }
+
+      .compare p {
+        margin: 0 0 14px;
+        color: #5d6b86;
+        font-size: 13px;
+      }
+
+      .compare-grid {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .compare-card {
+        border: 1px solid #dae3f3;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fff;
+      }
+
+      .compare-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-bottom: 1px solid #e9eff9;
+      }
+
+      .compare-head h3 {
+        margin: 0;
+        font-size: 13px;
+      }
+
+      .compare-tag {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 999px;
+        padding: 4px 7px;
+      }
+
+      .compare-frame {
+        position: relative;
+        aspect-ratio: 16 / 10;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+      }
+
+      .label {
+        position: absolute;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 3px 6px;
+        border-radius: 8px;
+        pointer-events: none;
+      }
+
+      .x-top {
+        top: 3%;
+        left: 2.5%;
+      }
+
+      .x-left {
+        top: 20%;
+        left: 2.5%;
+      }
+
+      .x-main {
+        top: 24%;
+        left: 18%;
+      }
+
+      .x-side {
+        top: 24%;
+        right: 3%;
+      }
+
+      .x-grid {
+        top: 26%;
+        left: 4%;
+      }
+
+      .x-table {
+        top: 22%;
+        left: 5%;
+      }
+
+      /* Compare: Executive Slate */
+      .compare-card.exec .compare-tag {
+        background: #dbe8ff;
+        color: #234980;
+      }
+
+      .compare-card.exec .compare-frame {
+        background: linear-gradient(140deg, #0f1930 0%, #142748 58%, #1d3a67 100%);
+      }
+
+      .compare-card.exec .bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 14%;
+        background: rgba(7, 14, 28, 0.82);
+        border-bottom: 1px solid rgba(149, 193, 255, 0.33);
+      }
+
+      .compare-card.exec .rail {
+        position: absolute;
+        top: 14%;
+        left: 0;
+        bottom: 0;
+        width: 12%;
+        background: rgba(6, 12, 24, 0.72);
+        border-right: 1px solid rgba(150, 197, 255, 0.24);
+      }
+
+      .compare-card.exec .kpis {
+        position: absolute;
+        top: 20%;
+        left: 16%;
+        right: 3%;
+        height: 16%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 6px;
+      }
+
+      .compare-card.exec .kpis > div {
+        border-radius: 8px;
+        border: 1px solid rgba(147, 188, 255, 0.38);
+        background: rgba(52, 106, 194, 0.3);
+      }
+
+      .compare-card.exec .main {
+        position: absolute;
+        top: 41%;
+        left: 16%;
+        bottom: 6%;
+        width: 52%;
+        border-radius: 10px;
+        border: 1px solid rgba(152, 190, 255, 0.38);
+        background: rgba(26, 58, 116, 0.5);
+      }
+
+      .compare-card.exec .side {
+        position: absolute;
+        top: 41%;
+        right: 3%;
+        bottom: 6%;
+        width: 27%;
+        border-radius: 10px;
+        border: 1px solid rgba(155, 197, 255, 0.35);
+        background: rgba(10, 22, 48, 0.76);
+      }
+
+      .compare-card.exec .label {
+        background: rgba(199, 222, 255, 0.22);
+        border: 1px solid rgba(182, 214, 255, 0.5);
+        color: #dcecff;
+      }
+
+      /* Compare: Ledger Pro */
+      .compare-card.ledger .compare-tag {
+        background: #ebf1e4;
+        color: #41582f;
+      }
+
+      .compare-card.ledger .compare-frame {
+        background: #f8faf7;
+      }
+
+      .compare-card.ledger .bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 14%;
+        background: #ffffff;
+        border-bottom: 1px solid #dde5d8;
+      }
+
+      .compare-card.ledger .drawer {
+        position: absolute;
+        top: 14%;
+        right: 0;
+        width: 28%;
+        bottom: 0;
+        background: #eef3ea;
+        border-left: 1px solid #d6dfd1;
+      }
+
+      .compare-card.ledger .chips {
+        position: absolute;
+        top: 19%;
+        left: 4%;
+        right: 32%;
+        height: 8%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+
+      .compare-card.ledger .chips > div {
+        border: 1px dashed #b8c7b2;
+        background: #f7faf5;
+      }
+
+      .compare-card.ledger .table {
+        position: absolute;
+        top: 30%;
+        left: 4%;
+        right: 32%;
+        bottom: 6%;
+        border: 1px solid #d3ddd0;
+        background: #ffffff;
+      }
+
+      .compare-card.ledger .table .r {
+        height: 14%;
+        border-bottom: 1px solid #ecf1ea;
+      }
+
+      .compare-card.ledger .table .r:first-child {
+        background: #f2f6ef;
+      }
+
+      .compare-card.ledger .label {
+        background: #f5f8f2;
+        border: 1px solid #d2dec8;
+        color: #3f572e;
+      }
+
+      /* Compare: Industrial Matrix */
+      .compare-card.industrial .compare-tag {
+        background: #ffeab9;
+        color: #654100;
+      }
+
+      .compare-card.industrial .compare-frame {
+        background:
+          linear-gradient(#1d2328, #1d2328),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 22px),
+          repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 22px);
+      }
+
+      .compare-card.industrial .bar {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 14%;
+        border-bottom: 2px solid #facf66;
+        background: #111518;
+      }
+
+      .compare-card.industrial .areas {
+        position: absolute;
+        top: 20%;
+        left: 4%;
+        right: 4%;
+        bottom: 6%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+      }
+
+      .compare-card.industrial .areas > div {
+        border: 2px solid #4f5962;
+        background: rgba(19, 24, 29, 0.93);
+      }
+
+      .compare-card.industrial .areas > div:nth-child(1),
+      .compare-card.industrial .areas > div:nth-child(4) {
+        border-color: #ffcf64;
+      }
+
+      .compare-card.industrial .areas > div:nth-child(2),
+      .compare-card.industrial .areas > div:nth-child(5) {
+        border-color: #35d4ff;
+      }
+
+      .compare-card.industrial .label {
+        background: rgba(255, 214, 122, 0.2);
+        border: 1px solid rgba(255, 216, 133, 0.5);
+        color: #ffdb90;
+      }
+
+      /* 1) Executive Slate */
+      .exec .chip {
+        background: #dbe8ff;
+        color: #234980;
+      }
+      .exec .mock {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, #0f1b37 0%, #14274a 60%, #1d3566 100%);
+      }
+      .exec .top {
+        height: 16%;
+        background: rgba(13, 24, 48, 0.95);
+        border-bottom: 1px solid rgba(141, 180, 255, 0.25);
+      }
+      .exec .rail {
+        position: absolute;
+        top: 16%;
+        left: 0;
+        width: 12%;
+        bottom: 0;
+        background: rgba(9, 16, 33, 0.7);
+        border-right: 1px solid rgba(141, 180, 255, 0.2);
+      }
+      .exec .kpi {
+        position: absolute;
+        top: 22%;
+        left: 16%;
+        right: 4%;
+        height: 20%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+      }
+      .exec .kpi > div {
+        background: rgba(83, 134, 238, 0.22);
+        border: 1px solid rgba(157, 195, 255, 0.4);
+        border-radius: 10px;
+      }
+      .exec .main-a {
+        position: absolute;
+        top: 47%;
+        left: 16%;
+        width: 49%;
+        bottom: 6%;
+        background: rgba(39, 76, 145, 0.28);
+        border: 1px solid rgba(161, 195, 255, 0.4);
+        border-radius: 12px;
+      }
+      .exec .main-b {
+        position: absolute;
+        top: 47%;
+        right: 4%;
+        width: 31%;
+        bottom: 6%;
+        background: rgba(18, 36, 73, 0.78);
+        border: 1px solid rgba(146, 187, 255, 0.32);
+        border-radius: 12px;
+      }
+
+      /* 2) Ledger Pro */
+      .ledger .chip {
+        background: #ebf1e4;
+        color: #41582f;
+      }
+      .ledger .mock {
+        position: absolute;
+        inset: 0;
+        background: #f8faf7;
+      }
+      .ledger .head {
+        height: 14%;
+        background: #ffffff;
+        border-bottom: 1px solid #dde5d8;
+      }
+      .ledger .right {
+        position: absolute;
+        top: 14%;
+        right: 0;
+        width: 27%;
+        bottom: 0;
+        background: #eef3ea;
+        border-left: 1px solid #d6dfd1;
+      }
+      .ledger .table {
+        position: absolute;
+        top: 20%;
+        left: 4%;
+        right: 31%;
+        bottom: 6%;
+        border: 1px solid #d3ddd0;
+        background: #ffffff;
+      }
+      .ledger .table .r {
+        height: 11%;
+        border-bottom: 1px solid #ecf1ea;
+      }
+      .ledger .table .r:first-child {
+        background: #f2f6ef;
+      }
+      .ledger .chips {
+        position: absolute;
+        top: 16%;
+        left: 4%;
+        right: 31%;
+        height: 7%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 7px;
+      }
+      .ledger .chips > div {
+        border: 1px dashed #b8c7b2;
+        background: #f7faf5;
+      }
+
+      /* 3) Industrial Matrix */
+      .industrial .chip {
+        background: #ffeab9;
+        color: #654100;
+      }
+      .industrial .mock {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(#1e2327, #1e2327),
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.04) 0 1px,
+            transparent 1px 24px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.04) 0 1px,
+            transparent 1px 24px
+          );
+        background-blend-mode: normal;
+      }
+      .industrial .top {
+        height: 15%;
+        border-bottom: 2px solid #ffbf4e;
+        background: #121518;
+      }
+      .industrial .modules {
+        position: absolute;
+        top: 20%;
+        left: 4%;
+        right: 4%;
+        bottom: 5%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .industrial .modules > div {
+        border: 2px solid #4e5964;
+        background: rgba(30, 38, 45, 0.92);
+      }
+      .industrial .modules > div:nth-child(1),
+      .industrial .modules > div:nth-child(4) {
+        border-color: #ffbf4e;
+      }
+      .industrial .modules > div:nth-child(2),
+      .industrial .modules > div:nth-child(6) {
+        border-color: #35d0ff;
+      }
+
+      /* 4) Aero Flow */
+      .aero .chip {
+        background: #efe6ff;
+        color: #5f3f9b;
+      }
+      .aero .mock {
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 20% -10%, rgba(255, 255, 255, 0.7), transparent 38%),
+          radial-gradient(circle at 95% 10%, rgba(255, 181, 212, 0.35), transparent 45%),
+          linear-gradient(135deg, #2f285b 0%, #3f3374 45%, #5a488f 100%);
+      }
+      .aero .tabs {
+        position: absolute;
+        top: 8%;
+        left: 5%;
+        right: 5%;
+        height: 10%;
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 10px;
+      }
+      .aero .tabs > div {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+      }
+      .aero .hero {
+        position: absolute;
+        top: 23%;
+        left: 5%;
+        right: 5%;
+        height: 26%;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+      }
+      .aero .cards {
+        position: absolute;
+        top: 54%;
+        left: 5%;
+        right: 5%;
+        bottom: 8%;
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 10px;
+      }
+      .aero .cards > div {
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.24);
+      }
+
+      @media (max-width: 880px) {
+        body {
+          padding: 18px;
+        }
+
+        .compare-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>OptiPlan360 Theme Concepts</h1>
+    <p class="intro">
+      Visual draft before implementation. Each concept shows different layout language,
+      hierarchy, and interaction mood (not only color change).
+    </p>
+    <p class="intro" style="margin-top:-10px;">
+      Applied snapshots: <code>docs/theme-dashboard-snapshots.html</code>
+    </p>
+
+    <section class="board">
+      <article class="concept exec">
+        <div class="concept-head">
+          <h2 class="concept-title">1) Executive Slate</h2>
+          <span class="chip">Corporate Command</span>
+        </div>
+        <div class="frame">
+          <div class="mock"></div>
+          <div class="top"></div>
+          <div class="rail"></div>
+          <div class="kpi"><div></div><div></div><div></div><div></div></div>
+          <div class="main-a"></div>
+          <div class="main-b"></div>
+        </div>
+        <p class="caption">
+          Top command bar + slim side rail + KPI strip + dual analytics zone.
+        </p>
+      </article>
+
+      <article class="concept ledger">
+        <div class="concept-head">
+          <h2 class="concept-title">2) Ledger Pro</h2>
+          <span class="chip">Finance Audit</span>
+        </div>
+        <div class="frame">
+          <div class="mock"></div>
+          <div class="head"></div>
+          <div class="right"></div>
+          <div class="chips"><div></div><div></div><div></div></div>
+          <div class="table">
+            <div class="r"></div>
+            <div class="r"></div>
+            <div class="r"></div>
+            <div class="r"></div>
+            <div class="r"></div>
+            <div class="r"></div>
+          </div>
+        </div>
+        <p class="caption">
+          Table-first workspace + right filter drawer + low visual noise.
+        </p>
+      </article>
+
+      <article class="concept industrial">
+        <div class="concept-head">
+          <h2 class="concept-title">3) Industrial Matrix</h2>
+          <span class="chip">Operations Floor</span>
+        </div>
+        <div class="frame">
+          <div class="mock"></div>
+          <div class="top"></div>
+          <div class="modules">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+        </div>
+        <p class="caption">
+          Hard-edged modules + heavy borders + high contrast status coding.
+        </p>
+      </article>
+
+      <article class="concept aero">
+        <div class="concept-head">
+          <h2 class="concept-title">4) Aero Flow</h2>
+          <span class="chip">Product Experience</span>
+        </div>
+        <div class="frame">
+          <div class="mock"></div>
+          <div class="tabs"><div></div><div></div><div></div></div>
+          <div class="hero"></div>
+          <div class="cards"><div></div><div></div></div>
+        </div>
+        <p class="caption">
+          Fluid card islands + rounded forms + airy storytelling hierarchy.
+        </p>
+      </article>
+    </section>
+
+    <section class="compare">
+      <h2>Same Dashboard, 3 Themes (Side-by-Side)</h2>
+      <p>
+        Same information architecture is compared with three different structural systems:
+        command-driven, table-driven, and module-grid driven.
+      </p>
+
+      <div class="compare-grid">
+        <article class="compare-card exec">
+          <div class="compare-head">
+            <h3>Executive Slate</h3>
+            <span class="compare-tag">Corporate Command</span>
+          </div>
+          <div class="compare-frame">
+            <div class="bar"></div>
+            <div class="rail"></div>
+            <div class="kpis"><div></div><div></div><div></div><div></div></div>
+            <div class="main"></div>
+            <div class="side"></div>
+            <span class="label x-top">Global Top Bar</span>
+            <span class="label x-left">Side Rail</span>
+            <span class="label x-main">Main Analytics</span>
+            <span class="label x-side">Live Feed</span>
+          </div>
+        </article>
+
+        <article class="compare-card ledger">
+          <div class="compare-head">
+            <h3>Ledger Pro</h3>
+            <span class="compare-tag">Finance Audit</span>
+          </div>
+          <div class="compare-frame">
+            <div class="bar"></div>
+            <div class="drawer"></div>
+            <div class="chips"><div></div><div></div><div></div></div>
+            <div class="table">
+              <div class="r"></div>
+              <div class="r"></div>
+              <div class="r"></div>
+              <div class="r"></div>
+              <div class="r"></div>
+              <div class="r"></div>
+            </div>
+            <span class="label x-top">Ledger Header</span>
+            <span class="label x-table">Main Table</span>
+            <span class="label x-side">Filter Drawer</span>
+          </div>
+        </article>
+
+        <article class="compare-card industrial">
+          <div class="compare-head">
+            <h3>Industrial Matrix</h3>
+            <span class="compare-tag">Operations Floor</span>
+          </div>
+          <div class="compare-frame">
+            <div class="bar"></div>
+            <div class="areas">
+              <div></div><div></div><div></div>
+              <div></div><div></div><div></div>
+            </div>
+            <span class="label x-top">Control Strip</span>
+            <span class="label x-grid">Module Grid</span>
+          </div>
+        </article>
+      </div>
+    </section>
+  </body>
+</html>

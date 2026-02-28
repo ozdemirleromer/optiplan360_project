@@ -1,0 +1,1024 @@
+2026-02-24 06:42:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:42:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:42:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:42:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/85aa20fc-102b-4754-9456-a6ca44ff32b0 "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/7b08ae81-edb6-4047-b709-76375f9d7f61 "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/7b08ae81-edb6-4047-b709-76375f9d7f61/transition "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/602f5783-195c-4f1b-8120-b41ca92b3a0c "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/3dc530a2-c98b-4eda-a924-ad86cfc323fa "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:42:14 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c884e5d3f6db424f97ad66de8d4ff1b5\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c884e5d3f6db424f97ad66de8d4ff1b5\ImportKurallari.opf
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_de577df7684b4bd49c781bb437e3dc5c\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_de577df7684b4bd49c781bb437e3dc5c\ImportKurallari.opf
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_de577df7684b4bd49c781bb437e3dc5c\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_de577df7684b4bd49c781bb437e3dc5c\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\ImportKurallari.opf
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_138f07efafcc4ed8a1c1aae5a7ad6ce9\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\ImportKurallari.opf
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\ImportKurallari.opf
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:42:14 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_d785af822e12498ea69119f8d015c255\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034215 (user=2)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:15 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:42:15 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:42:16 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/8082ef28-ba28-4518-a0b3-a32a19ecac00/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:42:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:42:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:43:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/877391c2-0409-4b72-a2aa-8c444fe8ba21 "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/7923aafd-1c7c-478f-b5c7-a61899bf5007 "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/7923aafd-1c7c-478f-b5c7-a61899bf5007/transition "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/12e95e5b-4fa3-4588-9b8a-aa67a8e9f36c "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/5bca681c-1c63-429f-92bf-96e0d292503c "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:43:03 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_771780e8f9224a29b6a6f537eedf840c\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_771780e8f9224a29b6a6f537eedf840c\ImportKurallari.opf
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_449502fbb42643208c6abdc268e37bf8\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_449502fbb42643208c6abdc268e37bf8\ImportKurallari.opf
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_449502fbb42643208c6abdc268e37bf8\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_449502fbb42643208c6abdc268e37bf8\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\ImportKurallari.opf
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_c6ef90d372a94a7db6b2a1cc6c715a9e\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\ImportKurallari.opf
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\ImportKurallari.opf
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:43:03 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_8decc4b7906745da94f21258f55b24d4\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:43:03 - app.services.optiplanning_service - ERROR - Excel dosyasi olusturulurken hata: [Errno 13] Permission denied: 'C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpbt6xbnue\\TestCustomer_20260224_034303_18.0mmBeyaz_GOVDE.tmp'
+2026-02-24 06:43:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034304 (user=2)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:43:04 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:43:04 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/2b587cbc-4fec-4b81-8166-28e8410923c4/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:43:05 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:06 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:40 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:40 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:43:41 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:41 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/83c6d694-247b-4f4b-a9ed-b9ee5992e1c9 "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/d671be6e-a92e-432e-a30b-9d625a9a0fed "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/d671be6e-a92e-432e-a30b-9d625a9a0fed/transition "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/fec68222-3ff0-4297-9bfe-73f2f14fb23e "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/dc948fdf-5e36-4be1-b863-1ad91a339c4c "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:43:42 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_6c314eeb48d54faf9292da28674ab23a\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_6c314eeb48d54faf9292da28674ab23a\ImportKurallari.opf
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_2ec7f12abea44230a9a84ede9c026111\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_2ec7f12abea44230a9a84ede9c026111\ImportKurallari.opf
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_2ec7f12abea44230a9a84ede9c026111\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_2ec7f12abea44230a9a84ede9c026111\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\ImportKurallari.opf
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_b8be7918eafb45a3823b274fbcfd96e9\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\ImportKurallari.opf
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\ImportKurallari.opf
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:43:42 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_717444b384bb40f79a160103e321ad02\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:43:42 - app.services.optiplanning_service - ERROR - Excel dosyasi olusturulurken hata: openpyxl does not support .tmp file format, please check you can open it with Excel first. Supported formats are: .xlsx,.xlsm,.xltx,.xltm
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034343 (user=2)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:43 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:43:43 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:43:44 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/cd0480a4-8e5d-4e53-a3a0-774c00fd38fc/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:44 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:43:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:44:45 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:44:46 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:44:46 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:44:47 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:44:47 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:44:47 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:47 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:47 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/5d98a1a5-a8af-4f26-98e6-277aa41aeb08 "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/bbbbb381-17ee-4694-a8c5-fffd772ce93b "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/bbbbb381-17ee-4694-a8c5-fffd772ce93b/transition "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/be26eadc-51a4-4dfd-973a-65c08e1268ed "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/45735323-b988-42d0-a573-3f137d9cf78f "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:44:48 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_61468f475da84ede9426745610131514\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_61468f475da84ede9426745610131514\ImportKurallari.opf
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_09931b07bf614d2bbd8ac93e5ac898a3\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_09931b07bf614d2bbd8ac93e5ac898a3\ImportKurallari.opf
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_09931b07bf614d2bbd8ac93e5ac898a3\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_09931b07bf614d2bbd8ac93e5ac898a3\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_7f129125c95d41da973f50209155a4bc\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_7f129125c95d41da973f50209155a4bc\ImportKurallari.opf
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_7f129125c95d41da973f50209155a4bc\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_7f129125c95d41da973f50209155a4bc\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_7f129125c95d41da973f50209155a4bc\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_7f129125c95d41da973f50209155a4bc\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_7f129125c95d41da973f50209155a4bc\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\ImportKurallari.opf
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\ImportKurallari.opf
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:44:48 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_fdba202df74f48ee994ccb8cfcff9f64\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:44:48 - app.services.optiplanning_service - ERROR - Excel dosyasi olusturulurken hata: openpyxl does not support .tmp file format, please check you can open it with Excel first. Supported formats are: .xlsx,.xlsm,.xltx,.xltm
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:44:48 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034449 (user=2)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:44:49 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:44:49 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/4372f3c8-a7a0-42a7-82ac-a5a86feb9ff0/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:50 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:44:51 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:45:29 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:45:30 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:45:30 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/35adf752-0280-43bb-9c30-cda60d9599a0 "HTTP/1.1 200 OK"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/b3a13b2d-c4ca-407f-baf2-ff03b9f86875 "HTTP/1.1 200 OK"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/b3a13b2d-c4ca-407f-baf2-ff03b9f86875/transition "HTTP/1.1 200 OK"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:31 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/60623357-4143-41ef-a47e-d11a47c4ba29 "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/495a422f-28d5-4171-a6c8-da731f891666 "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:45:32 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_3deb3006543c463497363644b8f81db9\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_3deb3006543c463497363644b8f81db9\ImportKurallari.opf
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_36812ecdb090465d89237d487c02ac6f\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_36812ecdb090465d89237d487c02ac6f\ImportKurallari.opf
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_36812ecdb090465d89237d487c02ac6f\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_36812ecdb090465d89237d487c02ac6f\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\ImportKurallari.opf
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_1014caa881de41d5bc2dcbefeaf7bdfa\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\ImportKurallari.opf
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\ImportKurallari.opf
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:45:32 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_10fe7c78f04d40c58bb010225bed1302\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:45:32 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034532_18.0mmBeyaz_GOVDE.xlsx
+2026-02-24 06:45:32 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034532_8mmBeyaz_ARKALIK.xlsx
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:45:32 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:32 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034533 (user=2)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:45:33 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/9b808e37-cc10-4ccd-9e18-848d648abca9/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:33 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:45:34 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:46:10 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:46:11 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:46:11 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:46:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:46:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:46:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:12 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:12 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/51bcee5a-086b-4b4a-8114-b2fae8e3b21a "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/8a01a14c-2291-40a1-a012-20cf0c251f6e "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/8a01a14c-2291-40a1-a012-20cf0c251f6e/transition "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/8405ac95-84f6-46b1-b779-cff38da49ac4 "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/e7a1796b-e5d3-402c-9701-d6f6f0cdf228 "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:46:13 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_44d44fbf479e40dbabd0e3f1ab5e912f\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_44d44fbf479e40dbabd0e3f1ab5e912f\ImportKurallari.opf
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b47fe71ea6404614bacb28da7ae4a27b\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b47fe71ea6404614bacb28da7ae4a27b\ImportKurallari.opf
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b47fe71ea6404614bacb28da7ae4a27b\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_b47fe71ea6404614bacb28da7ae4a27b\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_e639629a3b1c467cb1d5159ac537f47e\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_e639629a3b1c467cb1d5159ac537f47e\ImportKurallari.opf
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_e639629a3b1c467cb1d5159ac537f47e\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_e639629a3b1c467cb1d5159ac537f47e\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_e639629a3b1c467cb1d5159ac537f47e\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_e639629a3b1c467cb1d5159ac537f47e\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_e639629a3b1c467cb1d5159ac537f47e\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\ImportKurallari.opf
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\ImportKurallari.opf
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:46:13 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_294cdcf11fd84391a7b7525bcd3a7b77\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:46:13 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034613_18.0mmBeyaz_GOVDE.xlsx
+2026-02-24 06:46:13 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034613_8mmBeyaz_ARKALIK.xlsx
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:46:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034614 (user=2)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:46:14 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:46:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/820e4e67-6c7c-4ceb-8282-e7b7d81a74f6/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:46:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:46:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:47:53 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:47:53 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:47:54 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:47:54 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/f05102ff-baf3-4b58-9725-97b0b43e0afc "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/41cefbbe-2814-4373-a768-93a89d395554 "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/41cefbbe-2814-4373-a768-93a89d395554/transition "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/4c56dd65-d025-4d5d-bb35-83ffdfce6bed "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/a6432baa-f07f-4a4f-899c-2d1e5490ce3b "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:55 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - integration - INFO - Outbox item basarili: ACCOUNT/entity-1
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_ecc38cc2d28341b98613f442b78c409c\1_GELEN_SIPARISLER\Siparis_Ozel_001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_ecc38cc2d28341b98613f442b78c409c\ImportKurallari.opf
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: Siparis_Ozel_001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_82fcf07877bb4adea78ba5802a3ccf06\1_GELEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_82fcf07877bb4adea78ba5802a3ccf06\ImportKurallari.opf
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_82fcf07877bb4adea78ba5802a3ccf06\1_GELEN_SIPARISLER\ORDER_1001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_82fcf07877bb4adea78ba5802a3ccf06\2_ISLENEN_SIPARISLER\ORDER_1001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\1_GELEN_SIPARISLER\ORDER_1002.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\ImportKurallari.opf
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - ERROR - Queue item basarisiz: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\1_GELEN_SIPARISLER\ORDER_1002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\3_HATALI_VERILER\ORDER_1002.csv
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 271, in _run_batch_import
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\tests\test_optiplan_csv_otomasyon.py", line 127, in _failing_run
+    raise subprocess.CalledProcessError(returncode=1, cmd=command, stderr="batch import failed")
+subprocess.CalledProcessError: Command '['C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\\OptiPlanning.exe', '-import', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\\1_GELEN_SIPARISLER\\ORDER_1002.csv', '-rule', 'C:\\PROJE\\optiplan360_project\\tmp\\pytest_local\\opti_csv_9a94daa7f2e94a84836d2c1a1031a720\\ImportKurallari.opf', '-optimize', '-silent']' returned non-zero exit status 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 372, in optiplan_kuyrugu_isle
+    _run_batch_import(csv_path, kural_dosyasi)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\PROJE\optiplan360_project\backend\app\services\optiplan_csv_otomasyon.py", line 276, in _run_batch_import
+    raise RuntimeError(message) from exc
+RuntimeError: batch import failed
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\1_GELEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\ImportKurallari.opf
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0002.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning CSV olusturuldu: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\1_GELEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - OptiPlanning OPF kurali hazir: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\ImportKurallari.opf
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - CLI tetikleme bilincli olarak pas gecildi: QUEUE_0001.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\1_GELEN_SIPARISLER\QUEUE_0002.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\2_ISLENEN_SIPARISLER\QUEUE_0002.csv
+2026-02-24 06:47:56 - app.services.optiplan_csv_otomasyon - INFO - Queue item tamamlandi: C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\1_GELEN_SIPARISLER\QUEUE_0001.csv -> C:\PROJE\optiplan360_project\tmp\pytest_local\opti_csv_aaec35a889d646858f27b2709ae85ef6\2_ISLENEN_SIPARISLER\QUEUE_0001.csv
+2026-02-24 06:47:56 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034756_18.0mmBeyaz_GOVDE.xlsx
+2026-02-24 06:47:56 - app.services.optiplanning_service - INFO - Excel basariyla olusturuldu (template-based): C:\PROJE\optiplan360_project\tmp\optiplan_exports\TestCustomer_20260224_034756_8mmBeyaz_ARKALIK.xlsx
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/auto-create-from-xlsx "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260224_034756 (user=2)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:56 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-24 06:47:56 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:47:57 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/043ef457-0a42-4780-9cf0-5f808bf19276/cancel "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:57 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 200 OK"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/diagnostics "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-24 06:47:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"

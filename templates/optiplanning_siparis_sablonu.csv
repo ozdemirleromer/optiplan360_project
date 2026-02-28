@@ -1,0 +1,3 @@
+[P_CODE_MAT],[P_LENGTH],[P_WIDTH],[P_MINQ],[P_GRAIN],[P_IDESC],[P_EDGE_MAT_UP],[P_EGDE_MAT_LO],[P_EDGE_MAT_SX],[P_EDGE_MAT_DX],[P_IIDESC],[P_DESC1]
+Material,Length,Width,Min Q.,GrainI,Description,Upper strip mat.,Lower strip mat.,Left strip mat.,Right strip mat.,II Description,Description 1
+18MM 210*280,720,450,2,1,GOVDE SOL YAN,1MM,1MM,0.40MM,0.40MM,PARCA-001,BARKOD-001

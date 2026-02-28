@@ -1,0 +1,51 @@
+%% OPTIPLAN 360 — UI AKIŞ DİYAGRAMI (v2 DÜZELTİLMİŞ)
+%% Düzeltmeler:
+%%   [YÜKSEK] Hold/Cancel/Done durumları eklendi
+%%   [ORTA]   Validasyon başarısızlık yolu eklendi
+%%   [ORTA]   WhatsApp bildirim tetikleme noktaları eklendi
+%%   [YENİ]   Arşiv/yedek akışı eklendi
+
+flowchart TD
+  A[📱 WhatsApp Form Geldi] --> B[Order Draft Oluştur - NEW]
+  B --> C[Telefon Normalize + CRM Eşleşme]
+  C -->|Bulunamadı| D[🔔 WA: phone_not_found]
+  D --> D1[Yeni Müşteri Kaydı Zorunlu]
+  D1 --> E
+  C -->|Bulundu| E[OCR/Import: Ölçü Satırları]
+  E -->|Okunamayan Satır| E1[🔔 WA: ocr_unreadable_row]
+  E -->|Form Okunamadı| E2[🔔 WA: ocr_unreadable_global]
+  E --> F[Header Zorunlu Alanlar Doldur]
+  F --> G{Validasyon}
+  G -->|FAIL| F
+  G -->|OK + Merge Önerisi| G1[Operatör Merge Onayı]
+  G1 --> H
+  G -->|OK| H[Approve: Üretime Gönder - IN_PRODUCTION]
+  H --> H1[🔔 WA: order_sent_to_production]
+  H1 --> I[Export: GOVDE/ARKALIK + Renk/Kalınlık Ayrı .xlsx]
+  I --> J[Manuel Kopyala / Paylaşım Yolu]
+  J --> K[İstasyon Okutmaları]
+
+  %% İstasyon Akışı
+  K --> L[✂️ Kesim Başladı - CUT]
+  L --> M[📦 Hazır - READY]
+  M --> M1[🔔 WA: order_ready]
+  M1 --> N[🚚 Teslim - DELIVERED]
+  N --> N1[🔔 WA: order_delivered]
+  N1 --> O[Tamamlananlar - DONE / 6 Ay Sakla]
+  O --> P[📁 Arşiv + Yedek]
+
+  %% Teslim Hatırlatma Döngüsü
+  M1 --> R{Teslim Alındı mı?}
+  R -->|Hayır + 2 gün| R1[🔔 WA: pickup_reminder / max 5]
+  R1 --> R
+  R -->|Evet| N
+
+  %% Bekletme / İptal Akışı
+  B --> HOLD[⏸️ Bekletme - HOLD]
+  HOLD --> HOLD1[🔔 WA: order_on_hold]
+  HOLD1 -->|14 gün sonra| CANCEL[❌ İptal - CANCELLED]
+  CANCEL --> CANCEL1[🔔 WA: order_cancelled]
+  HOLD -->|Devam| F
+
+  %% Yanlış Aşama Okutma
+  K -->|Yanlış Aşama| WARN[⚠️ Uyarı + Log - İşlem yapılmaz]

@@ -1,0 +1,7 @@
+{
+  "varsayilan_plaka_birim_fiyat": 500.0,
+  "varsayilan_bant_metre_fiyat": 15.0,
+  "kdv_orani": 20.0,
+  "para_birimi": "TRY",
+  "aciklama": "Cari karta ozel fiyat tanimlanmamissa bu varsayilanlar kullanilir"
+}

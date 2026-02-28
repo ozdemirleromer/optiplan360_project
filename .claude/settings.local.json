@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python:*)",
+      "Bash(cd:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(npx tsc:*)",
+      "Bash(powershell -NoProfile -Command \"netstat -ano | Select-String '':8000\\\\s|:8080\\\\s'' | Select-String ''LISTENING''\")",
+      "Bash(powershell -NoProfile -Command:*)",
+      "Bash(curl:*)",
+      "Bash(\"c:/PROJE/start_backend.ps1\":*)",
+      "Bash(powershell -NoProfile -File:*)",
+      "Bash(echo:*)",
+      "Bash(cmd /c \"start /B \"\"\"\" \"\"c:\\\\PROJE\\\\optiplan360_project\\\\.venv\\\\Scripts\\\\uvicorn.exe\"\" app.main:app --reload --host 127.0.0.1 --port 8080 > c:\\\\PROJE\\\\optiplan360_project\\\\backend_log.txt 2>&1\")",
+      "Bash(python3:*)",
+      "Bash(test:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx eslint:*)"
+    ]
+  }
+}

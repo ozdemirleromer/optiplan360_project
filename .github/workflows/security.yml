@@ -1,0 +1,138 @@
+name: Security Scan
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *'  # Daily at 2 AM UTC
+
+jobs:
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Run encoding check
+      run: python scripts/check_encoding.py
+    
+    - name: Install security tools
+      run: |
+        pip install safety bandit semgrep
+        npm install -g audit-ci
+    
+    - name: Run Safety check for Python dependencies
+      run: |
+        cd backend
+        safety check --json --output safety-report.json || true
+    
+    - name: Run Bandit security linter
+      run: |
+        cd backend
+        bandit -r app/ -f json -o bandit-report.json || true
+    
+    - name: Run Semgrep security scan
+      run: |
+        cd backend
+        semgrep --config=auto --json --output=semgrep-report.json app/ || true
+    
+    - name: Audit Node.js dependencies
+      run: |
+        cd frontend
+        audit-ci --moderate
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-reports
+        path: |
+          backend/safety-report.json
+          backend/bandit-report.json
+          backend/semgrep-report.json
+          trivy-results.sarif
+    
+    - name: Comment PR with security results
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const fs = require('fs');
+          const path = require('path');
+          
+          let comment = '## 🔒 Security Scan Results\n\n';
+          
+          // Safety results
+          try {
+            const safety = JSON.parse(fs.readFileSync('backend/safety-report.json', 'utf8'));
+            if (safety.vulnerabilities && safety.vulnerabilities.length > 0) {
+              comment += `### 🚨 Python Dependencies (${safety.vulnerabilities.length} vulnerabilities)\n`;
+              safety.vulnerabilities.slice(0, 5).forEach(vuln => {
+                comment += `- **${vuln.package}**: ${vuln.advisory}\n`;
+              });
+            } else {
+              comment += '### ✅ Python Dependencies: No vulnerabilities found\n';
+            }
+          } catch (e) {
+            comment += '### ⚠️ Python Dependencies: Scan failed\n';
+          }
+          
+          // Bandit results
+          try {
+            const bandit = JSON.parse(fs.readFileSync('backend/bandit-report.json', 'utf8'));
+            if (bandit.results && bandit.results.length > 0) {
+              comment += `### 🚨 Code Security Issues (${bandit.results.length} issues)\n`;
+              bandit.results.slice(0, 5).forEach(issue => {
+                comment += `- **${issue.test_name}**: ${issue.issue_text}\n`;
+              });
+            } else {
+              comment += '### ✅ Code Security: No issues found\n';
+            }
+          } catch (e) {
+            comment += '### ⚠️ Code Security: Scan failed\n';
+          }
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+
+  container-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Build Docker images
+      run: |
+        docker build -t optiplan360/backend-test ./backend
+        docker build -t optiplan360/frontend-test ./frontend
+    
+    - name: Run Trivy on Docker images
+      run: |
+        trivy image --format json --output backend-scan.json optiplan360/backend-test
+        trivy image --format json --output frontend-scan.json optiplan360/frontend-test
+    
+    - name: Upload container scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: container-scans
+        path: |
+          backend-scan.json
+          frontend-scan.json

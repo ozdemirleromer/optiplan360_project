@@ -1,0 +1,31 @@
+.PHONY: setup up lint test
+
+# Tek seferlik kurulum
+setup:
+	@echo "📦 Kurulum başlıyor..."
+	@mkdir -p backend frontend .devcontainer .github/workflows .git/hooks
+	@echo "fastapi==0.115.0\nuvicorn[standard]==0.30.0\nsqlalchemy==2.0.34\npsycopg2-binary==2.9.9\npytest==8.3.2\nhttpx==0.27.0\nflake8==7.1.1\nblack==24.8.0\nbandit==1.7.9" > backend/requirements.txt
+	@echo "FROM python:3.9-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\nCOPY . .\nCMD [\"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"8000\"]" > backend/Dockerfile
+	@touch backend/main.py
+	@echo '{ "name": "frontend", "version": "1.0.0", "private": true, "scripts": { "dev": "vite", "build": "vite build", "lint": "eslint . --ext .js,.jsx,.ts,.tsx", "test": "jest" }, "dependencies": { "react": "^18.3.1", "react-dom": "^18.3.1" }, "devDependencies": { "vite": "^5.0.0", "@vitejs/plugin-react": "^4.0.0", "eslint": "^9.0.0", "eslint-plugin-react": "^7.34.0", "eslint-config-prettier": "^9.1.0", "prettier": "^3.2.5", "jest": "^29.7.0", "@testing-library/react": "^14.2.1", "@testing-library/jest-dom": "^6.4.0", "typescript": "^5.4.0" } }' > frontend/package.json
+	@echo "FROM node:18-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm install\nCOPY . .\nCMD [\"npm\", \"run\", \"dev\"]" > frontend/Dockerfile
+	@mkdir -p frontend/src && touch frontend/src/index.jsx
+	@echo '{ "name": "project-dev", "dockerComposeFile": "../docker-compose.yml", "service": "backend", "workspaceFolder": "/app", "extensions": ["ms-python.python","esbenp.prettier-vscode","dbaeumer.vscode-eslint","ms-azuretools.vscode-docker"] }' > .devcontainer/devcontainer.json
+	@echo "name: CI Pipeline\non: [push]\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v3\n      - name: Backend lint & test\n        run: |\n          pip install -r backend/requirements.txt\n          flake8 backend\n          black --check backend\n          bandit -r backend\n          pytest backend\n      - name: Frontend lint & test\n        run: |\n          npm install --prefix frontend\n          npm run lint --prefix frontend\n          npm test --prefix frontend" > .github/workflows/ci.yml
+	@echo "#!/bin/sh\ngit push origin main" > .git/hooks/post-commit && chmod +x .git/hooks/post-commit
+	@echo "version: '3.9'\nservices:\n  backend:\n    build: ./backend\n    ports:\n      - '8000:8000'\n  frontend:\n    build: ./frontend\n    ports:\n      - '3000:3000'\n  db:\n    image: postgres:15\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: appdb\n    ports:\n      - '5432:5432'\n  lint_python:\n    build: ./backend\n    command: flake8 .\n  lint_react:\n    build: ./frontend\n    command: npm run lint" > docker-compose.yml
+	@echo "✅ Kurulum tamamlandı!"
+
+# Günlük çalışma
+up:
+	docker-compose up --build
+
+# Lint kontrolü
+lint:
+	docker-compose run --rm lint_python
+	docker-compose run --rm lint_react
+
+# Test çalıştırma
+test:
+	docker-compose run --rm lint_python pytest
+	docker-compose run --rm lint_react npm test

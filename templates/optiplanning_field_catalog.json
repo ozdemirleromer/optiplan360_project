@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "entities": {
+    "order": [
+      { "name": "order_name", "type": "string", "required": true, "rules": ["same_as_worklist_name", "same_as_xlsx_stem"] },
+      { "name": "worklist_name", "type": "string", "required": true, "rules": ["same_as_order_name"] },
+      { "name": "xlsx_stem", "type": "string", "required": true, "rules": ["same_as_order_name"] }
+    ],
+    "parts": [
+      { "name": "boy", "type": "number_mm", "required": true, "min": 1, "max": 5000 },
+      { "name": "en", "type": "number_mm", "required": true, "min": 1, "max": 5000 },
+      { "name": "adet", "type": "int", "required": true, "min": 1, "max": 9999 },
+      { "name": "grain", "type": "enum", "required": true, "enum": ["0", "1", "2", "3"], "default": "0" },
+      { "name": "u1", "type": "edge_flag", "required": false, "rule": "non_empty_true_except_false_literals" },
+      { "name": "u2", "type": "edge_flag", "required": false, "rule": "non_empty_true_except_false_literals" },
+      { "name": "k1", "type": "edge_flag", "required": false, "rule": "non_empty_true_except_false_literals" },
+      { "name": "k2", "type": "edge_flag", "required": false, "rule": "non_empty_true_except_false_literals" },
+      { "name": "delik1", "type": "string", "required": false },
+      { "name": "delik2", "type": "string", "required": false },
+      { "name": "bilgi", "type": "string", "required": false }
+    ]
+  },
+  "false_literals_for_edge_flags": ["", "0", "0.0", "false", "no", "n", "yok", "hayir"]
+}

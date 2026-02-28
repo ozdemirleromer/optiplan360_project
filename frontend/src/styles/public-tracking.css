@@ -1,0 +1,119 @@
+.public-tracking-container {
+     min-height: 100vh;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     background-color: #f4f7fa;
+     font-family: 'Inter', sans-serif;
+     padding: 20px;
+}
+
+.public-tracking-container.loading {
+     flex-direction: column;
+     gap: 15px;
+}
+
+.tracking-card {
+     background: white;
+     border-radius: 12px;
+     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+     width: 100%;
+     max-width: 500px;
+     padding: 30px;
+}
+
+.tracking-header {
+     text-align: center;
+     margin-bottom: 25px;
+     border-bottom: 1px solid #eee;
+     padding-bottom: 15px;
+}
+
+.tracking-header h2 {
+     margin: 0;
+     color: #333;
+     font-size: 20px;
+}
+
+.order-code {
+     font-family: monospace;
+     font-size: 16px;
+     color: #666;
+     margin-top: 5px;
+}
+
+.customer-info,
+.order-details {
+     margin-bottom: 25px;
+     font-size: 14px;
+}
+
+.order-details {
+     display: flex;
+     justify-content: space-between;
+     background: #f9f9f9;
+     padding: 15px;
+     border-radius: 8px;
+}
+
+.detail-item {
+     display: flex;
+     flex-direction: column;
+     gap: 5px;
+}
+
+.detail-item span {
+     color: #777;
+     font-size: 12px;
+}
+
+.progress-container {
+     margin-top: 30px;
+}
+
+.progress-bar-bg {
+     width: 100%;
+     height: 12px;
+     background: #eee;
+     border-radius: 10px;
+     overflow: hidden;
+}
+
+.progress-bar-fill {
+     height: 100%;
+     background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+     transition: width 0.5s ease-in-out;
+}
+
+.progress-status {
+     text-align: center;
+     margin-top: 15px;
+     font-size: 16px;
+}
+
+.spinner {
+     width: 40px;
+     height: 40px;
+     border: 4px solid #f3f3f3;
+     border-top: 4px solid #3498db;
+     border-radius: 50%;
+     animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+     0% {
+          transform: rotate(0deg);
+     }
+
+     100% {
+          transform: rotate(360deg);
+     }
+}
+
+.error-box {
+     background: #fff0f0;
+     color: #d8000c;
+     padding: 20px;
+     border-radius: 8px;
+     border-left: 5px solid #d8000c;
+}

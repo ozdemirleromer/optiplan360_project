@@ -1,0 +1,830 @@
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-body);
+  position: relative;
+}
+
+.app-main {
+  flex: 1;
+  min-width: 0;
+  margin-top: var(--mobile-header-height, 0);
+  display: flex;
+  flex-direction: column;
+}
+
+.page-content {
+  min-height: 100%;
+  position: relative;
+}
+
+/* Electric Pulse (Final) */
+html[data-ui-theme="electricPulse"] .app-shell {
+  background:
+    radial-gradient(circle at 84% -8%, rgba(var(--primary-rgb), 0.18), transparent 42%),
+    radial-gradient(circle at 18% -5%, rgba(124, 58, 237, 0.2), transparent 35%),
+    linear-gradient(180deg, #0b0b10 0%, #09090b 100%);
+}
+
+html[data-ui-theme="electricPulse"] .sidebar-shell {
+  width: 292px;
+}
+
+html[data-ui-theme="electricPulse"] .sidebar-shell.is-collapsed {
+  width: 80px;
+}
+
+html[data-ui-theme="electricPulse"] .topbar-shell {
+  border-bottom: 1px solid rgba(var(--primary-rgb), 0.26);
+  backdrop-filter: blur(16px);
+}
+
+html[data-ui-theme="electricPulse"] .shared-card {
+  border-radius: var(--radius-lg);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.44), 0 0 0 1px rgba(var(--primary-rgb), 0.12);
+}
+
+/* Deep Space (v1) */
+html[data-ui-theme="deepSpace"] .app-shell {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(99, 102, 241, 0.18), transparent 36%),
+    radial-gradient(circle at 88% 10%, rgba(6, 182, 212, 0.16), transparent 34%),
+    linear-gradient(180deg, #040712, #030712);
+}
+
+html[data-ui-theme="deepSpace"] .sidebar-shell {
+  width: 288px;
+}
+
+html[data-ui-theme="deepSpace"] .topbar-shell {
+  background: linear-gradient(180deg, rgba(12, 18, 32, 0.92), rgba(7, 10, 20, 0.84));
+}
+
+html[data-ui-theme="deepSpace"] .shared-card {
+  background: linear-gradient(160deg, rgba(20, 26, 44, 0.72), rgba(11, 17, 32, 0.8));
+}
+
+/* Clean Professional (v2) — Light Corporate */
+html[data-ui-theme="cleanProfessional"] body {
+  background: linear-gradient(180deg, #edf0f7, #eff2f8);
+}
+
+/* Remove dark noise/grid overlay that's only for dark themes */
+html[data-ui-theme="cleanProfessional"] body::before {
+  display: none;
+}
+
+html[data-ui-theme="cleanProfessional"] .app-shell {
+  color: #1a2233;
+}
+
+/* Sidebar */
+html[data-ui-theme="cleanProfessional"] .sidebar-shell {
+  width: 252px;
+  background: linear-gradient(180deg, #ffffff, #f5f8fd);
+  border-right: 1px solid #c8d4e8;
+  backdrop-filter: none;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn {
+  color: #3a4d6a;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn:hover {
+  color: #1b4f8e;
+  background: rgba(27, 79, 142, 0.08);
+}
+
+/* Topbar */
+html[data-ui-theme="cleanProfessional"] .topbar-shell {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 253, 0.98));
+  border-bottom: 1px solid #c8d4e8;
+  backdrop-filter: blur(10px);
+}
+
+html[data-ui-theme="cleanProfessional"] .topbar-title {
+  color: #0f1a2e;
+}
+
+/* Cards */
+html[data-ui-theme="cleanProfessional"] .shared-card {
+  background: #ffffff;
+  border: 1px solid #c8d4e8;
+  box-shadow: 0 4px 16px rgba(27, 79, 142, 0.08);
+}
+
+html[data-ui-theme="cleanProfessional"] .shared-card-header {
+  background: #f5f8fd;
+  border-bottom: 1px solid #c8d4e8;
+}
+
+/* ─── Fix: inputs/selects look black because index.css hardcodes dark bg ─── */
+html[data-ui-theme="cleanProfessional"] input,
+html[data-ui-theme="cleanProfessional"] select,
+html[data-ui-theme="cleanProfessional"] textarea {
+  background: #ffffff;
+  color: #1a2233;
+  border-color: #c8d4e8;
+  box-shadow: 0 1px 3px rgba(27, 79, 142, 0.06);
+}
+
+html[data-ui-theme="cleanProfessional"] input:focus,
+html[data-ui-theme="cleanProfessional"] select:focus,
+html[data-ui-theme="cleanProfessional"] textarea:focus {
+  background: #f8fafd;
+  border-color: #1b4f8e !important;
+  box-shadow: 0 0 0 3px rgba(27, 79, 142, 0.14) !important;
+}
+
+html[data-ui-theme="cleanProfessional"] input:disabled,
+html[data-ui-theme="cleanProfessional"] select:disabled,
+html[data-ui-theme="cleanProfessional"] textarea:disabled {
+  background: #eff2f7;
+  color: #7188a8;
+  border-color: #dde5f2;
+}
+
+/* Scrollbar */
+html[data-ui-theme="cleanProfessional"] ::-webkit-scrollbar-track {
+  background: #e6ecf5;
+}
+
+html[data-ui-theme="cleanProfessional"] ::-webkit-scrollbar-thumb {
+  background: rgba(27, 79, 142, 0.24);
+}
+
+html[data-ui-theme="cleanProfessional"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 79, 142, 0.40);
+}
+
+/* Loading fallback */
+html[data-ui-theme="cleanProfessional"] .app-loading-fallback-inner {
+  background: linear-gradient(135deg, rgba(27, 79, 142, 0.10), rgba(14, 116, 144, 0.08));
+  box-shadow: 0 8px 24px rgba(27, 79, 142, 0.14);
+}
+
+/* Warning note text in light mode — yellow is unreadable on white */
+html[data-ui-theme="cleanProfessional"] .global-status-note.is-warning {
+  color: #92400e;
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.10), rgba(245, 158, 11, 0.06));
+  border-color: rgba(180, 83, 9, 0.28);
+}
+
+html[data-ui-theme="cleanProfessional"] .global-status-note.is-warning .global-status-dot {
+  background: #b45309;
+  box-shadow: 0 0 0 4px rgba(180, 83, 9, 0.16);
+}
+
+/* Premium chips/tabs in light mode — #fff7ed is unreadable on white */
+html[data-ui-theme="cleanProfessional"] .premium-pill-tab.is-active {
+  color: #ffffff;
+}
+
+html[data-ui-theme="cleanProfessional"] .premium-chip.is-active {
+  color: #ffffff;
+}
+
+/* ───── Sidebar full re-theme for Clean Pro ───── */
+/* sidebar.css has all colors hardcoded for dark themes, override every class here */
+
+html[data-ui-theme="cleanProfessional"] .sidebar-shell::after {
+  display: none;
+  /* remove dark glare overlay */
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-brand {
+  border-bottom-color: #c8d4e8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-brand-title {
+  color: #1a2233;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-brand-title span {
+  color: #1b4f8e;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-brand-sub {
+  color: #7188a8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-collapse-btn {
+  background: rgba(200, 212, 232, 0.40);
+  border-color: #c8d4e8;
+  color: #3a4d6a;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-collapse-btn:hover {
+  border-color: #1b4f8e;
+  color: #1b4f8e;
+  box-shadow: none;
+}
+
+/* ── Search filter wrapper (was rgba(39,39,42,0.45) = nearly black) ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-filter {
+  background: #eef2fa;
+  border-color: #c8d4e8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-filter:focus-within {
+  border-color: #1b4f8e;
+  box-shadow: 0 0 0 2px rgba(27, 79, 142, 0.12);
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-filter-icon {
+  color: #7188a8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-filter-input {
+  color: #1a2233;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-filter-input::placeholder {
+  color: #9bacc8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-filter-clear {
+  background: rgba(90, 106, 138, 0.14);
+  color: #5a6a8a;
+}
+
+/* ── Group headers ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-group-title {
+  color: #7188a8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-group-header:hover .sidebar-group-title {
+  color: #1a2233;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-group-chevron {
+  color: #9bacc8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-group-header:hover .sidebar-group-chevron {
+  color: #5a6a8a;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-group-favorites {
+  border-bottom-color: #c8d4e8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-group-title-fav {
+  color: #b45309;
+}
+
+/* ── Nav buttons ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn {
+  color: #3a4d6a;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn:hover {
+  color: #1b4f8e;
+  background: rgba(27, 79, 142, 0.09);
+  border-color: rgba(27, 79, 142, 0.20);
+  transform: none;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn.is-active {
+  color: #1b4f8e;
+  background: rgba(27, 79, 142, 0.11);
+  border-color: rgba(27, 79, 142, 0.28);
+  box-shadow: 0 0 0 1px rgba(27, 79, 142, 0.10), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-btn.is-active::before {
+  background: #1b4f8e;
+  box-shadow: none;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-badge {
+  color: #ffffff;
+  background: rgba(27, 79, 142, 0.18);
+  border-color: rgba(27, 79, 142, 0.28);
+  box-shadow: none;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-nav-badge-dot {
+  border-color: #f5f8fd;
+}
+
+/* ── Favorites star ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-fav-btn {
+  color: #9bacc8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-fav-btn:hover {
+  color: #b45309;
+  background: rgba(180, 83, 9, 0.09);
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-fav-btn.is-fav {
+  color: #b45309;
+}
+
+/* ── Tooltip ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-tooltip {
+  background: #ffffff;
+  border-color: #c8d4e8;
+  color: #1a2233;
+  box-shadow: 0 4px 12px rgba(27, 79, 142, 0.12);
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-tooltip::before {
+  border-right-color: #ffffff;
+}
+
+/* ── User section ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-user {
+  border-top-color: #c8d4e8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-user-name {
+  color: #1a2233;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-user-role {
+  color: #7188a8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-logout {
+  border-color: rgba(185, 28, 28, 0.26);
+  background: rgba(185, 28, 28, 0.06);
+  color: #b91c1c;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-logout:hover {
+  background: rgba(185, 28, 28, 0.12);
+  border-color: rgba(185, 28, 28, 0.38);
+  box-shadow: none;
+}
+
+/* ── Collapsed popup ── */
+html[data-ui-theme="cleanProfessional"] .sidebar-collapsed-user-popup {
+  background: #ffffff;
+  border-color: #c8d4e8;
+  box-shadow: 0 8px 24px rgba(27, 79, 142, 0.12);
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-collapsed-user-popup::before {
+  border-right-color: #ffffff;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-popup-user-name {
+  color: #1a2233;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-popup-user-role {
+  color: #7188a8;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-popup-logout {
+  border-color: rgba(185, 28, 28, 0.26);
+  background: rgba(185, 28, 28, 0.06);
+  color: #b91c1c;
+}
+
+html[data-ui-theme="cleanProfessional"] .sidebar-popup-logout:hover {
+  background: rgba(185, 28, 28, 0.12);
+  border-color: rgba(185, 28, 28, 0.38);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT NAVY  — Açık Gri + Koyu Lacivert Kurumsal Tema
+═══════════════════════════════════════════════════════════════ */
+
+html[data-ui-theme="lightNavy"] body {
+  background: linear-gradient(180deg, #edf0f5, #e7ecf4);
+}
+
+html[data-ui-theme="lightNavy"] body::before {
+  display: none;
+}
+
+html[data-ui-theme="lightNavy"] .app-shell {
+  color: #111827;
+}
+
+/* ── Sidebar ── */
+html[data-ui-theme="lightNavy"] .sidebar-shell {
+  width: 258px;
+  background: linear-gradient(180deg, #1e3a5f, #172d4a);
+  border-right: 1px solid rgba(30, 58, 95, 0.30);
+  backdrop-filter: none;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-shell::after {
+  display: none;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-brand {
+  border-bottom-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-brand-title {
+  color: #f0f4fb;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-brand-title span {
+  color: #7ab3e0;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-brand-sub {
+  color: rgba(191, 210, 232, 0.75);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-collapse-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+  color: rgba(220, 232, 248, 0.90);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-collapse-btn:hover {
+  border-color: rgba(122, 179, 224, 0.50);
+  color: #c8e1f5;
+  box-shadow: none;
+}
+
+/* ── Sidebar search (was rgba(39,39,42)=black) ── */
+html[data-ui-theme="lightNavy"] .sidebar-filter {
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-filter:focus-within {
+  border-color: rgba(122, 179, 224, 0.55);
+  box-shadow: 0 0 0 2px rgba(47, 128, 181, 0.16);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-filter-icon {
+  color: rgba(191, 210, 232, 0.65);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-filter-input {
+  color: rgba(230, 240, 252, 0.92);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-filter-input::placeholder {
+  color: rgba(191, 210, 232, 0.50);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-filter-clear {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(220, 232, 248, 0.75);
+}
+
+/* ── Group headers ── */
+html[data-ui-theme="lightNavy"] .sidebar-group-title {
+  color: rgba(158, 192, 226, 0.70);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-group-header:hover .sidebar-group-title {
+  color: rgba(220, 235, 252, 0.95);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-group-chevron {
+  color: rgba(158, 192, 226, 0.50);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-group-favorites {
+  border-bottom-color: rgba(255, 255, 255, 0.10);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-group-title-fav {
+  color: rgba(251, 191, 36, 0.80);
+}
+
+/* ── Nav buttons ── */
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn {
+  color: rgba(210, 228, 248, 0.85);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn:hover {
+  color: #f0f7ff;
+  background: rgba(255, 255, 255, 0.09);
+  border-color: rgba(122, 179, 224, 0.28);
+  transform: none;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn.is-active {
+  color: #f0f7ff;
+  background: rgba(47, 128, 181, 0.30);
+  border-color: rgba(122, 179, 224, 0.42);
+  box-shadow: 0 0 0 1px rgba(47, 128, 181, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn.is-active::before {
+  background: #7ab3e0;
+  box-shadow: 0 0 8px rgba(122, 179, 224, 0.50);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-badge {
+  color: #f0f7ff;
+  background: rgba(47, 128, 181, 0.35);
+  border-color: rgba(122, 179, 224, 0.40);
+  box-shadow: none;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-badge-dot {
+  border-color: #172d4a;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-fav-btn {
+  color: rgba(191, 210, 232, 0.45);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-fav-btn:hover {
+  color: rgba(251, 191, 36, 0.90);
+  background: rgba(251, 191, 36, 0.10);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-fav-btn.is-fav {
+  color: rgba(251, 191, 36, 0.85);
+}
+
+/* ── Tooltip (collapsed) ── */
+html[data-ui-theme="lightNavy"] .sidebar-tooltip {
+  background: #1e3a5f;
+  border-color: rgba(122, 179, 224, 0.35);
+  color: #f0f4fb;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-tooltip::before {
+  border-right-color: #1e3a5f;
+}
+
+/* ── User section ── */
+html[data-ui-theme="lightNavy"] .sidebar-user {
+  border-top-color: rgba(255, 255, 255, 0.12);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-user-name {
+  color: #f0f4fb;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-user-role {
+  color: rgba(191, 210, 232, 0.72);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-logout {
+  border-color: rgba(248, 113, 113, 0.30);
+  background: rgba(248, 113, 113, 0.10);
+  color: #fca5a5;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-logout:hover {
+  background: rgba(248, 113, 113, 0.18);
+  border-color: rgba(248, 113, 113, 0.45);
+  box-shadow: none;
+}
+
+/* ── Collapsed popup ── */
+html[data-ui-theme="lightNavy"] .sidebar-collapsed-user-popup {
+  background: #1e3a5f;
+  border-color: rgba(122, 179, 224, 0.30);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.30);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-collapsed-user-popup::before {
+  border-right-color: #1e3a5f;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-popup-user-name {
+  color: #f0f4fb;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-popup-user-role {
+  color: rgba(191, 210, 232, 0.72);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-popup-logout {
+  border-color: rgba(248, 113, 113, 0.30);
+  background: rgba(248, 113, 113, 0.10);
+  color: #fca5a5;
+}
+
+/* ── Topbar ── */
+html[data-ui-theme="lightNavy"] .topbar-shell {
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #c3ccda;
+  backdrop-filter: blur(10px);
+}
+
+html[data-ui-theme="lightNavy"] .topbar-title {
+  color: #111827;
+}
+
+/* ── Cards ── */
+html[data-ui-theme="lightNavy"] .shared-card {
+  background: #ffffff;
+  border: 1px solid #c3ccda;
+  box-shadow: 0 4px 16px rgba(30, 58, 95, 0.08);
+}
+
+html[data-ui-theme="lightNavy"] .shared-card-header {
+  background: #f4f6fb;
+  border-bottom: 1px solid #c3ccda;
+}
+
+/* ── Fix: inputs look black due to index.css hardcoded dark bg ── */
+html[data-ui-theme="lightNavy"] input,
+html[data-ui-theme="lightNavy"] select,
+html[data-ui-theme="lightNavy"] textarea {
+  background: #ffffff;
+  color: #111827;
+  border-color: #c3ccda;
+  box-shadow: 0 1px 3px rgba(30, 58, 95, 0.06);
+}
+
+html[data-ui-theme="lightNavy"] input:focus,
+html[data-ui-theme="lightNavy"] select:focus,
+html[data-ui-theme="lightNavy"] textarea:focus {
+  background: #f8fafd;
+  border-color: #1e3a5f !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.14) !important;
+}
+
+html[data-ui-theme="lightNavy"] input:disabled,
+html[data-ui-theme="lightNavy"] select:disabled,
+html[data-ui-theme="lightNavy"] textarea:disabled {
+  background: #edeef3;
+  color: #6b7a93;
+  border-color: #dde2ee;
+}
+
+/* ── Scrollbar ── */
+html[data-ui-theme="lightNavy"] ::-webkit-scrollbar-track {
+  background: #e4e8f2;
+}
+
+html[data-ui-theme="lightNavy"] ::-webkit-scrollbar-thumb {
+  background: rgba(30, 58, 95, 0.30);
+}
+
+html[data-ui-theme="lightNavy"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(30, 58, 95, 0.48);
+}
+
+/* ── Warning note — sadece lacivert, sarı/turuncu yok ── */
+html[data-ui-theme="lightNavy"] .global-status-note.is-warning {
+  color: #344060;
+  background: linear-gradient(135deg, rgba(52, 64, 96, 0.12), rgba(30, 58, 95, 0.08));
+  border-color: rgba(52, 64, 96, 0.30);
+}
+
+html[data-ui-theme="lightNavy"] .global-status-note.is-warning .global-status-dot {
+  background: #344060;
+  box-shadow: 0 0 0 4px rgba(52, 64, 96, 0.18);
+}
+
+/* ── Premium pills/chips ── */
+html[data-ui-theme="lightNavy"] .premium-pill-tab.is-active,
+html[data-ui-theme="lightNavy"] .premium-chip.is-active {
+  color: #ffffff;
+}
+
+/* ── Premium pill tab arkaplanı — hardcoded purple'ı kaldır ── */
+html[data-ui-theme="lightNavy"] .premium-pill-tabs {
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.13), rgba(30, 58, 95, 0.08));
+  border-color: rgba(30, 58, 95, 0.25);
+  box-shadow: 0 4px 12px rgba(30, 58, 95, 0.10);
+}
+
+html[data-ui-theme="lightNavy"] .premium-pill-tab.is-active {
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.70));
+  border-color: rgba(30, 58, 95, 0.50);
+  box-shadow: 0 0 12px rgba(30, 58, 95, 0.20);
+  color: #ffffff;
+}
+
+html[data-ui-theme="lightNavy"] .premium-chip.is-active {
+  background: linear-gradient(135deg, rgba(30, 58, 95, 0.18), rgba(30, 58, 95, 0.12));
+  border-color: rgba(30, 58, 95, 0.40);
+  color: #1e3a5f;
+}
+
+/* ── Warning note premium-shell — sarıdan lacivert ── */
+html[data-ui-theme="lightNavy"] .global-status-note.is-warning {
+  color: #344060;
+  background: linear-gradient(135deg, rgba(52, 64, 96, 0.12), rgba(30, 58, 95, 0.08));
+  border-color: rgba(52, 64, 96, 0.30);
+}
+
+html[data-ui-theme="lightNavy"] .global-status-note.is-warning .global-status-dot {
+  background: #344060;
+  box-shadow: 0 0 0 4px rgba(52, 64, 96, 0.18);
+}
+
+
+
+@media (max-width: 768px) {
+  html[data-ui-theme="lightNavy"] .app-main {
+    max-width: none;
+  }
+}
+
+/* ═══ lightNavy: SARI→LACİVERT dönüşüm override'ları ═══
+   topbar.css ve sidebar.css'teki tüm hardcoded sarı/amber renkler
+   lacivert spektrumuna alınıyor.
+══════════════════════════════════════════════════════════ */
+
+/* ── Breadcrumb aktif sayfa bağlantısı (topbar.css: #fef3c7) ── */
+html[data-ui-theme="lightNavy"] .topbar-breadcrumbs .is-current {
+  color: #1e3a5f;
+}
+
+/* ── Ctrl+F / Ctrl+K kısayol rozeti (topbar.css: rgba(253,230,138)) ── */
+html[data-ui-theme="lightNavy"] .global-search-hint {
+  color: #4d7ab8;
+  background: rgba(30, 58, 95, 0.08);
+  border-color: rgba(30, 58, 95, 0.28);
+}
+
+/* ── Arama kutusu arka planı (topbar.css: koyu gradient) ── */
+html[data-ui-theme="lightNavy"] .global-search-input {
+  background: #ffffff !important;
+  color: #0d1b2e !important;
+  border-color: #c0cbdb !important;
+}
+
+html[data-ui-theme="lightNavy"] .global-search-input:focus {
+  background: #f4f7fb !important;
+  border-color: #1e3a5f !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12) !important;
+}
+
+/* ── Sidebar collapse btn hover sarısı (sidebar.css: #fef3c7) ── */
+html[data-ui-theme="lightNavy"] .sidebar-collapse-btn:hover {
+  color: #c8dff5;
+}
+
+/* ── Nav btn hover sarısı (sidebar.css: #fff7ed) ── */
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn:hover {
+  color: #dceeff;
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-nav-btn.is-active {
+  color: #e8f2ff;
+}
+
+/* ── Favori yıldız amber renkleri (sidebar.css: rgba(251,191,36)) ── */
+html[data-ui-theme="lightNavy"] .sidebar-group-title-fav {
+  color: rgba(122, 179, 224, 0.85);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-fav-btn.is-fav {
+  color: rgba(122, 179, 224, 0.85);
+}
+
+html[data-ui-theme="lightNavy"] .sidebar-fav-btn:hover {
+  color: #c8dff5;
+  background: rgba(77, 122, 184, 0.14);
+}
+
+/* ── Nav rozetleri (sidebar.css: #fff7ed) ── */
+html[data-ui-theme="lightNavy"] .sidebar-nav-badge {
+  color: #e8f2ff;
+}
+
+
+
+
+/* Legacy themes kept for compatibility */
+html[data-ui-theme="neoCorporate"] .sidebar-shell {
+  width: 296px;
+}
+
+html[data-ui-theme="neoCorporate"] .sidebar-shell.is-collapsed {
+  width: 84px;
+}
+
+html[data-ui-theme="minimalStudio"] .sidebar-shell {
+  width: 236px;
+  border-right: 2px solid var(--border);
+  background: linear-gradient(180deg, #fbfcf8, #f3f7ed);
+  backdrop-filter: none;
+}
+
+html[data-ui-theme="minimalStudio"] .sidebar-shell.is-collapsed {
+  width: 64px;
+}
+
+html[data-ui-theme="industrialGrid"] .sidebar-shell {
+  width: 224px;
+  border-right: 2px solid var(--border);
+  background: #1d1d1d;
+  backdrop-filter: none;
+}
+
+html[data-ui-theme="industrialGrid"] .sidebar-shell.is-collapsed {
+  width: 58px;
+}
+
+@media (max-width: 768px) {
+  html[data-ui-theme="cleanProfessional"] .app-main {
+    max-width: none;
+  }
+}

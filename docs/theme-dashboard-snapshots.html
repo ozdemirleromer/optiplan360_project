@@ -1,0 +1,344 @@
+﻿<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OptiPlan360 Applied Theme Snapshots</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 28px;
+        font-family: "Segoe UI", "Trebuchet MS", system-ui, sans-serif;
+        background:
+          radial-gradient(circle at 15% 0%, #e8eefc 0%, transparent 44%),
+          radial-gradient(circle at 85% 100%, #ede8fa 0%, transparent 35%),
+          #f3f6fb;
+        color: #1f2a44;
+      }
+
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        line-height: 1.1;
+      }
+
+      .subtitle {
+        margin: 0 0 20px;
+        color: #556481;
+        font-size: 14px;
+      }
+
+      .helper {
+        margin: 0 0 22px;
+        padding: 10px 12px;
+        border: 1px solid #dbe4f2;
+        border-radius: 10px;
+        background: #ffffff;
+        font-size: 13px;
+        color: #4d5d7a;
+      }
+
+      .grid {
+        display: grid;
+        gap: 18px;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      }
+
+      .card {
+        background: #ffffff;
+        border: 1px solid #d7e0ef;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 14px 34px rgba(24, 46, 88, 0.08);
+      }
+
+      .head {
+        padding: 12px 14px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #e7edf8;
+      }
+
+      .title {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 700;
+      }
+
+      .pill {
+        border-radius: 999px;
+        padding: 4px 9px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .frame {
+        margin: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+        aspect-ratio: 16 / 10;
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        position: relative;
+      }
+
+      .meta {
+        margin: 0;
+        padding: 0 14px 14px;
+        color: #61708c;
+        font-size: 12px;
+      }
+
+      .meta b {
+        color: #334564;
+      }
+
+      /* 1) Executive Slate */
+      .exec .pill {
+        background: #dce9ff;
+        color: #21497b;
+      }
+      .exec .canvas {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(140deg, #0f1930 0%, #142748 58%, #1d3a67 100%);
+      }
+      .exec .top {
+        height: 15%;
+        background: rgba(7, 14, 28, 0.82);
+        border-bottom: 1px solid rgba(149, 193, 255, 0.33);
+      }
+      .exec .side {
+        position: absolute;
+        top: 15%;
+        left: 0;
+        width: 11%;
+        bottom: 0;
+        background: rgba(6, 12, 24, 0.72);
+        border-right: 1px solid rgba(150, 197, 255, 0.24);
+      }
+      .exec .kpi {
+        position: absolute;
+        top: 21%;
+        left: 14%;
+        right: 4%;
+        height: 17%;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 7px;
+      }
+      .exec .kpi > div {
+        border-radius: 10px;
+        border: 1px solid rgba(147, 188, 255, 0.38);
+        background: rgba(52, 106, 194, 0.3);
+      }
+      .exec .main {
+        position: absolute;
+        top: 42%;
+        left: 14%;
+        width: 54%;
+        bottom: 6%;
+        border-radius: 11px;
+        border: 1px solid rgba(152, 190, 255, 0.38);
+        background: rgba(26, 58, 116, 0.5);
+      }
+      .exec .feed {
+        position: absolute;
+        top: 42%;
+        right: 4%;
+        width: 24%;
+        bottom: 6%;
+        border-radius: 11px;
+        border: 1px solid rgba(155, 197, 255, 0.35);
+        background: rgba(10, 22, 48, 0.76);
+      }
+
+      /* 2) Ledger Pro */
+      .ledger .pill {
+        background: #eaf2df;
+        color: #47602f;
+      }
+      .ledger .canvas {
+        position: absolute;
+        inset: 0;
+        background: #f7faf6;
+      }
+      .ledger .top {
+        height: 14%;
+        background: #ffffff;
+        border-bottom: 1px solid #dce4d6;
+      }
+      .ledger .drawer {
+        position: absolute;
+        top: 14%;
+        right: 0;
+        width: 26%;
+        bottom: 0;
+        background: #ecf2e7;
+        border-left: 1px solid #d5dece;
+      }
+      .ledger .filters {
+        position: absolute;
+        top: 18%;
+        left: 4%;
+        right: 30%;
+        height: 8%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+      }
+      .ledger .filters > div {
+        border: 1px dashed #bbc9b5;
+        background: #f8fbf6;
+      }
+      .ledger .table {
+        position: absolute;
+        top: 29%;
+        left: 4%;
+        right: 30%;
+        bottom: 6%;
+        border: 1px solid #d5dfd0;
+        background: #ffffff;
+      }
+      .ledger .row {
+        height: 12%;
+        border-bottom: 1px solid #ecf1e8;
+      }
+      .ledger .row:first-child {
+        background: #f0f5ed;
+      }
+
+      /* 3) Industrial Matrix */
+      .industrial .pill {
+        background: #ffebb9;
+        color: #684300;
+      }
+      .industrial .canvas {
+        position: absolute;
+        inset: 0;
+        background:
+          linear-gradient(#1d2328, #1d2328),
+          repeating-linear-gradient(
+            0deg,
+            rgba(255, 255, 255, 0.04) 0 1px,
+            transparent 1px 22px
+          ),
+          repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.04) 0 1px,
+            transparent 1px 22px
+          );
+      }
+      .industrial .top {
+        height: 14%;
+        border-bottom: 2px solid #facf66;
+        background: #111518;
+      }
+      .industrial .areas {
+        position: absolute;
+        top: 20%;
+        left: 4%;
+        right: 4%;
+        bottom: 6%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .industrial .areas > div {
+        border: 2px solid #4f5962;
+        background: rgba(19, 24, 29, 0.93);
+      }
+      .industrial .areas > div:nth-child(1),
+      .industrial .areas > div:nth-child(4) {
+        border-color: #ffcf64;
+      }
+      .industrial .areas > div:nth-child(2),
+      .industrial .areas > div:nth-child(5) {
+        border-color: #35d4ff;
+      }
+
+      @media (max-width: 900px) {
+        body {
+          padding: 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Applied Theme Snapshots</h1>
+    <p class="subtitle">Selected and applied: 1) Executive Slate, 2) Ledger Pro, 3) Industrial Matrix.</p>
+    <p class="helper">
+      These are snapshot-style visual references for quick review. If approved, next step can be
+      per-module fine tuning (Dashboard, CRM, Payment, Operations).
+    </p>
+
+    <section class="grid">
+      <article class="card exec">
+        <div class="head">
+          <h2 class="title">1) Executive Slate</h2>
+          <span class="pill">Corporate Command</span>
+        </div>
+        <div class="frame">
+          <div class="canvas"></div>
+          <div class="top"></div>
+          <div class="side"></div>
+          <div class="kpi"><div></div><div></div><div></div><div></div></div>
+          <div class="main"></div>
+          <div class="feed"></div>
+        </div>
+        <p class="meta">
+          <b>Layout:</b> top command bar + slim rail + KPI strip + analytics split.
+        </p>
+      </article>
+
+      <article class="card ledger">
+        <div class="head">
+          <h2 class="title">2) Ledger Pro</h2>
+          <span class="pill">Finance Audit</span>
+        </div>
+        <div class="frame">
+          <div class="canvas"></div>
+          <div class="top"></div>
+          <div class="drawer"></div>
+          <div class="filters"><div></div><div></div><div></div></div>
+          <div class="table">
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+            <div class="row"></div>
+          </div>
+        </div>
+        <p class="meta">
+          <b>Layout:</b> table-first workspace + right-side filter and action drawer.
+        </p>
+      </article>
+
+      <article class="card industrial">
+        <div class="head">
+          <h2 class="title">3) Industrial Matrix</h2>
+          <span class="pill">Operations Floor</span>
+        </div>
+        <div class="frame">
+          <div class="canvas"></div>
+          <div class="top"></div>
+          <div class="areas">
+            <div></div><div></div><div></div>
+            <div></div><div></div><div></div>
+          </div>
+        </div>
+        <p class="meta">
+          <b>Layout:</b> hard-edged module blocks + heavy borders + contrast status zones.
+        </p>
+      </article>
+    </section>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "host": "",
+  "port": 1433,
+  "instance": "",
+  "database": "",
+  "username": "",
+  "password": "",
+  "timeout_seconds": 10,
+  "encrypt": true,
+  "trust_server_certificate": false,
+  "read_only": true
+}
