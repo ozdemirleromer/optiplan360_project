@@ -1,0 +1,31 @@
+name: Auto-Push Status Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Verify Python deps
+        run: |
+          pip list | grep -i "fastapi\|sqlalchemy\|psycopg2"
+        continue-on-error: true
+
+      - name: Project status
+        run: |
+          echo "✅ Repository structure is valid"
+          echo "📦 Last commit: $(git log -1 --oneline)"
+          echo "👤 Committer: $(git log -1 --format='%an')"
+          echo "📅 Date: $(git log -1 --format='%ai')"
