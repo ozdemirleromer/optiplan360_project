@@ -1,4 +1,4 @@
-﻿import express, { type Request, type Response, type NextFunction } from "express";
+import express, { type Request, type Response, type NextFunction } from "express";
 import rateLimit from "express-rate-limit";
 import { z } from "zod";
 import { ERROR_CODES } from "../domain/errors";
@@ -63,10 +63,10 @@ function validationErrorMessage(error: z.ZodError): string {
 export function createApiServer(orchestratorService: OrchestratorService, paths?: PathsConfig, rules?: RulesConfig) {
   const app = express();
   app.use(express.json({ limit: "5mb" }));
-  
+
   // Dev mode: bypass auth (set default user)
   app.use(devBypassAuth);
-  
+
   app.use(limiter);
 
   // Auth routes (login, verify, me)

@@ -1,4 +1,4 @@
-﻿import path from "node:path";
+import path from "node:path";
 import * as XLSX from "xlsx";
 import { writeFileAtomic } from "../utils/atomicFile";
 import type { TransformBatch } from "./transformerService";
@@ -61,4 +61,4 @@ export class XlsxWriterService {
 
     return targetPath;
   }
-}
+}

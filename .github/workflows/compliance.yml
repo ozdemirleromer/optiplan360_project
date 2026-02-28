@@ -1,0 +1,362 @@
+name: Compliance Check & Auto-Fix
+
+# ============================================================
+# AGENT_ONEFILE COMPLIANCE WORKFLOW
+# ============================================================
+# AI agent gerektirmez. Her push/PR'da otomatik calisir.
+#
+# 2 job:
+#   1) compliance-check: Statik kontrol + pytest (TESPIT)
+#   2) compliance-autofix: Format bozuklugu varsa otomatik duzelt (DUZELT)
+#
+# Auto-fix sadece push'ta calisir (PR'da force-push yapmaz).
+# ============================================================
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/compliance.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/compliance.yml'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  # ──────────────────────────────────────────────
+  # JOB 1: TESPIT — compliance_check.py + pytest
+  # ──────────────────────────────────────────────
+  compliance-check:
+    name: "TESPIT: Compliance Kontrol"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install sqlalchemy httpx pydantic python-jose slowapi \
+                      jinja2 email-validator openpyxl python-multipart \
+                      pytz apscheduler pytest
+
+      - name: "C1-C10: Statik compliance kontrol"
+        id: static_check
+        working-directory: backend
+        run: |
+          echo "## Compliance Check Sonuclari" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          python tests/compliance_check.py 2>&1 | tee /tmp/compliance_output.txt
+          exit_code=${PIPESTATUS[0]}
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/compliance_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $exit_code
+
+      - name: "T1-T10: Pytest compliance testleri"
+        id: pytest_check
+        working-directory: backend
+        run: |
+          python -m pytest tests/test_orchestrator_compliance.py -v --tb=short \
+            --junitxml=compliance-results.xml 2>&1 | tee /tmp/pytest_output.txt
+          exit_code=${PIPESTATUS[0]}
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Pytest Compliance Sonuclari" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -5 /tmp/pytest_output.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit $exit_code
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-test-results
+          path: backend/compliance-results.xml
+
+      - name: PR yorum ekle (basarisiz ise)
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            let output = '';
+            try {
+              output = fs.readFileSync('/tmp/compliance_output.txt', 'utf8');
+            } catch(e) {
+              output = 'Compliance check ciktisi okunamadi.';
+            }
+            const body = [
+              '## Compliance Check BASARISIZ',
+              '',
+              'Asagidaki kontroller gecemedi. `DUZELT:` satirlarina bak.',
+              '',
+              '```',
+              output,
+              '```',
+              '',
+              '**Duzeltmek icin:**',
+              '```bash',
+              'cd backend',
+              'python tests/compliance_check.py',
+              'pytest tests/test_orchestrator_compliance.py -v',
+              '```',
+            ].join('\n');
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+
+  # ──────────────────────────────────────────────
+  # JOB 2: DUZELT — Otomatik format duzeltme
+  # ──────────────────────────────────────────────
+  compliance-autofix:
+    name: "DUZELT: Otomatik Duzeltme"
+    runs-on: ubuntu-latest
+    needs: compliance-check
+    if: failure() && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install black
+
+      - name: "DUZELT: enums.py bos satir temizligi"
+        run: |
+          python - <<'PYEOF'
+          import re, os
+
+          enums_path = "backend/app/models/enums.py"
+          if not os.path.exists(enums_path):
+              print(f"SKIP: {enums_path} bulunamadi")
+              exit(0)
+
+          with open(enums_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          original_lines = len(content.splitlines())
+
+          # 3+ ardisik bos satiri 2'ye dusur (class aralari icin)
+          content = re.sub(r'\n{4,}', '\n\n\n', content)
+          # Class icerisindeki ardisik bos satirlari temizle (enum members arasi)
+          content = re.sub(r'(\s*\w+\s*=\s*"[^"]*"[^\n]*)\n{2,}(\s*\w+\s*=)', r'\1\n\2', content)
+
+          new_lines = len(content.splitlines())
+          if new_lines < original_lines:
+              with open(enums_path, "w", encoding="utf-8") as f:
+                  f.write(content)
+              print(f"DUZELT: enums.py {original_lines} -> {new_lines} satir")
+          else:
+              print(f"OK: enums.py zaten temiz ({original_lines} satir)")
+          PYEOF
+
+      - name: "DUZELT: orchestrator_service.py bos satir temizligi"
+        run: |
+          python - <<'PYEOF'
+          import re, os
+
+          orch_path = "backend/app/services/orchestrator_service.py"
+          if not os.path.exists(orch_path):
+              print(f"SKIP: {orch_path} bulunamadi")
+              exit(0)
+
+          with open(orch_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          original_lines = len(content.splitlines())
+
+          # 3+ ardisik bos satiri 2'ye dusur
+          content = re.sub(r'\n{4,}', '\n\n\n', content)
+
+          new_lines = len(content.splitlines())
+          if new_lines < original_lines:
+              with open(orch_path, "w", encoding="utf-8") as f:
+                  f.write(content)
+              print(f"DUZELT: orchestrator_service.py {original_lines} -> {new_lines} satir")
+          else:
+              print(f"OK: orchestrator_service.py zaten temiz ({original_lines} satir)")
+          PYEOF
+
+      - name: "DUZELT: TRIM_BY_THICKNESS duplicate temizligi"
+        run: |
+          python - <<'PYEOF'
+          import os
+
+          orch_path = "backend/app/services/orchestrator_service.py"
+          if not os.path.exists(orch_path):
+              exit(0)
+
+          with open(orch_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          count = content.count("TRIM_BY_THICKNESS =")
+          if count > 1:
+              lines = content.split("\n")
+              first_found = False
+              new_lines = []
+              skip_until_empty = False
+
+              for line in lines:
+                  if "TRIM_BY_THICKNESS =" in line and not first_found:
+                      first_found = True
+                      if "{" in line and "}" in line:
+                          continue
+                      else:
+                          skip_until_empty = True
+                          continue
+                  if skip_until_empty:
+                      if line.strip() == "" or (not line.startswith(" ") and "}" not in line):
+                          skip_until_empty = False
+                          if line.strip() != "":
+                              new_lines.append(line)
+                      elif "}" in line:
+                          skip_until_empty = False
+                      continue
+                  new_lines.append(line)
+
+              with open(orch_path, "w", encoding="utf-8") as f:
+                  f.write("\n".join(new_lines))
+              print(f"DUZELT: TRIM_BY_THICKNESS duplicate kaldirildi ({count} -> 1)")
+          else:
+              print(f"OK: TRIM_BY_THICKNESS tekil ({count})")
+          PYEOF
+
+      - name: "DUZELT: BACKING_THICKNESSES duplicate temizligi"
+        run: |
+          python - <<'PYEOF'
+          import os
+
+          orch_path = "backend/app/services/orchestrator_service.py"
+          if not os.path.exists(orch_path):
+              exit(0)
+
+          with open(orch_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          count = content.count("BACKING_THICKNESSES =")
+          if count > 1:
+              lines = content.split("\n")
+              first_found = False
+              new_lines = []
+
+              for line in lines:
+                  if "BACKING_THICKNESSES =" in line and not first_found:
+                      first_found = True
+                      continue  # Ilk tanimlamayi atla
+                  new_lines.append(line)
+
+              with open(orch_path, "w", encoding="utf-8") as f:
+                  f.write("\n".join(new_lines))
+              print(f"DUZELT: BACKING_THICKNESSES duplicate kaldirildi ({count} -> 1)")
+          else:
+              print(f"OK: BACKING_THICKNESSES tekil ({count})")
+          PYEOF
+
+      - name: "DUZELT: PREPARED state yoksa ekle"
+        run: |
+          python - <<'PYEOF'
+          import re, os
+
+          enums_path = "backend/app/models/enums.py"
+          if not os.path.exists(enums_path):
+              exit(0)
+
+          with open(enums_path, "r", encoding="utf-8") as f:
+              content = f.read()
+
+          if 'PREPARED = "PREPARED"' in content:
+              print("OK: PREPARED zaten mevcut")
+              exit(0)
+
+          # OptiJobStateEnum class'ini bul ve icindeki NEW'den sonra PREPARED ekle
+          pattern = r'(class OptiJobStateEnum\(str,\s*enum\.Enum\):\s*\n\s*NEW\s*=\s*"NEW")'
+          replacement = r'\1\n    PREPARED = "PREPARED"  # AGENT_ONEFILE §G2: parca donusum kurallari uygulandi'
+
+          new_content, count = re.subn(pattern, replacement, content)
+          if count > 0:
+              with open(enums_path, "w", encoding="utf-8") as f:
+                  f.write(new_content)
+              print("DUZELT: PREPARED state eklendi (OptiJobStateEnum icine)")
+          else:
+              print("UYARI: OptiJobStateEnum.NEW bulunamadi, manuel mudahale gerekli")
+              exit(1)
+          PYEOF
+
+      - name: "DUZELT: Black format"
+        run: |
+          black backend/app/models/enums.py \
+               backend/app/services/orchestrator_service.py \
+               --line-length=100 --quiet || true
+
+      - name: Dogrulama — compliance_check tekrar calistir
+        run: |
+          cd backend
+          python tests/compliance_check.py 2>&1 | tee /tmp/fix_verify.txt
+          exit_code=${PIPESTATUS[0]}
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Auto-Fix Dogrulama" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          cat /tmp/fix_verify.txt >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          if [ $exit_code -ne 0 ]; then
+            echo "UYARI: Auto-fix sonrasi hala hatalar var. Manuel mudahale gerekli." >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Degisiklik var mi kontrol
+        id: changes
+        run: |
+          if git diff --quiet; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "Degisiklik yok, commit gerekmez."
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Degisiklikler tespit edildi:"
+            git diff --stat
+          fi
+
+      - name: Commit & push duzeltmeler
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name "compliance-bot"
+          git config user.email "compliance-bot@optiplan360.local"
+          git add backend/app/models/enums.py backend/app/services/orchestrator_service.py
+          git commit -m "$(cat <<'EOF'
+          compliance(auto-fix): format duzeltme + duplicate temizligi
+
+          Otomatik duzeltmeler:
+          - Bos satir sismesi temizlendi
+          - TRIM_BY_THICKNESS / BACKING_THICKNESSES duplicate kaldirildi
+          - PREPARED state eksikse eklendi
+          - Black format uygulandi
+
+          Triggered by: ${{ github.sha }}
+          EOF
+          )"
+          git push
