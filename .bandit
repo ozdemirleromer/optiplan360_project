@@ -1,0 +1,10 @@
+# Bandit konfigurasyonu - Security linting
+# bandit -c pyproject.toml -r backend
+
+[bandit]
+exclude_dirs = ['tests', 'alembic', 'migrations']
+skips = []
+
+# False positive'ları kontrol et
+[bandit-assert_used]
+skips = ['*/test_*.py', '*/tests.py']

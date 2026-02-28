@@ -1,0 +1,41 @@
+# Pylint konfigurasyonu - Advanced linting
+# pylint backend
+
+[MASTER]
+include-naming-hint=yes
+max-attributes=10
+unsafe-load-any-extension=no
+
+[MESSAGES CONTROL]
+disable=
+    missing-docstring,
+    too-few-public-methods,
+    too-many-arguments,
+    too-many-instance-attributes,
+    too-many-branches,
+    fixme,
+    logging-not-lazy,
+
+[FORMAT]
+max-line-length=100
+indent-string='    '
+indent-after-paren=4
+
+[VARIABLES]
+allowed-redefined-builtins=
+
+[DESIGN]
+max-branches=12
+max-locals=15
+max-statements=50
+
+[BASIC]
+good-names=f,i,j,k,ex,Run,_,id,x,y,db
+
+[LOGGING]
+logging-format-style=new
+
+[TYPECHECK]
+generated-members=
+    numpy.*,
+    torch.*,
