@@ -112,4 +112,4 @@ describe("JobRepository state machine constraints", () => {
     const tooSmallLimitJobs = repo.listJobs(0);
     expect(tooSmallLimitJobs.length).toBe(1);
   });
-});
+});

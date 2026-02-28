@@ -34,4 +34,4 @@ export interface AuditEvent {
 export interface JobDetailResponse {
   job: JobSummary;
   audit: AuditEvent[];
-}
+}

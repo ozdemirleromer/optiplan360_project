@@ -74,4 +74,4 @@ export function createDatabase(dbPath?: string): DatabaseContext {
   ensureJobsColumns(db);
 
   return { db };
-}
+}

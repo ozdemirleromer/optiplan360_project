@@ -116,4 +116,4 @@ Etkisi: sureklilik, guvenlik ve yonetilebilirlik artar
 - v1.0 (2026-02-17): ilk resmi birlestirilmis karar seti
 
 ## 10. Not
-Bu dokuman, yeni karar alindiginda v1.x olarak guncellenecek ve onceki surumler korunacaktir.
+Bu dokuman, yeni karar alindiginda v1.x olarak guncellenecek ve onceki surumler korunacaktir.

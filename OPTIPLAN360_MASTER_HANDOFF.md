@@ -543,4 +543,4 @@ Bu ek not, `docs/RESMI_KARAR_DOKUMANI_V1.md` ile uyum amaciyla eklenmistir.
 - UI status etiketleri teknik state'lerin sade gorunumudur; birebir backend state olarak kullanilmaz.
 - Veri katmani standardi:
   - Production: PostgreSQL
-  - Local/Test/edge operasyon: SQLite desteklenebilir
+  - Local/Test/edge operasyon: SQLite desteklenebilir

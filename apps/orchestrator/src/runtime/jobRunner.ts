@@ -51,4 +51,4 @@ export class JobRunner {
     await this.orchestratorService.processClaimedJob(claimed);
     this.schedule(100);
   }
-}
+}

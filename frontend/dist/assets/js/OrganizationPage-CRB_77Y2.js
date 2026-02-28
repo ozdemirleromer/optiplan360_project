@@ -1,1 +1,1 @@
-import"./index-BqsYehSy.js";import"./ui-vendor-X7YeR1nJ.js";import{O as r}from"./OrganizationPage-DgL4Flpk.js";import"./react-vendor-BTlmOg1k.js";import"./export-jspdf-ClKeqeik.js";import"./state-CRAppeNE.js";import"./export-xlsx-C5xT2hrF.js";export{r as OrganizationPage,r as default};
+import"./index-BqsYehSy.js";import"./ui-vendor-X7YeR1nJ.js";import{O as r}from"./OrganizationPage-DgL4Flpk.js";import"./react-vendor-BTlmOg1k.js";import"./export-jspdf-ClKeqeik.js";import"./state-CRAppeNE.js";import"./export-xlsx-C5xT2hrF.js";export{r as OrganizationPage,r as default};

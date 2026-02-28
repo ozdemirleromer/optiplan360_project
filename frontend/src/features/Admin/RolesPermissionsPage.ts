@@ -1,4 +1,4 @@
-import { RolesPermissionsPage } from "../../components/Admin";
-
-export { RolesPermissionsPage };
-export default RolesPermissionsPage;
+import { RolesPermissionsPage } from "../../components/Admin";
+
+export { RolesPermissionsPage };
+export default RolesPermissionsPage;

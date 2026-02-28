@@ -30,4 +30,4 @@ describe("atomicFile", () => {
     const raw = await fs.readFile(target, "utf-8");
     expect(raw).toBe("copy-me");
   });
-});
+});

@@ -45,4 +45,4 @@ export class OsiAdapter {
 
     throw new Error(ERROR_CODES.E_OSI_ACK_TIMEOUT);
   }
-}
+}

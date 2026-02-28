@@ -29,4 +29,4 @@ describe("XmlCollectorAdapter", () => {
     const adapter = new XmlCollectorAdapter();
     await expect(adapter.validateOrThrow(xmlPath)).rejects.toThrow(ERROR_CODES.E_XML_INVALID);
   });
-});
+});

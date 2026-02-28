@@ -1,4 +1,4 @@
-import { UserActivityPage } from "../../components/Admin";
-
-export { UserActivityPage };
-export default UserActivityPage;
+import { UserActivityPage } from "../../components/Admin";
+
+export { UserActivityPage };
+export default UserActivityPage;

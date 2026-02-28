@@ -80,4 +80,4 @@ export function Modal({ open, title, onClose, children }: ModalProps) {
       </div>
     </div>
   );
-}
+}

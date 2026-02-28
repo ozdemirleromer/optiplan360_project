@@ -1,1 +1,1 @@
-// Dosya silinmek üzere işaretlendi.
+// Dosya silinmek üzere işaretlendi.

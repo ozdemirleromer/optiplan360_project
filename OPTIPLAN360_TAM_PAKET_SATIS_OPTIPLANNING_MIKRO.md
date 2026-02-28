@@ -470,4 +470,4 @@ Durum anahtari:
 7. [ ] Mikro read-only sorgulari icin performans limiti koyun.
 8. [ ] Tahsilat reminder cron zamanlarini netlestirin.
 9. [ ] Dashboard KPI ownerlarini atayin.
-10. [ ] Go-live oncesi dry-run NEW -> DONE senaryosunu yapin.
+10. [ ] Go-live oncesi dry-run NEW -> DONE senaryosunu yapin.

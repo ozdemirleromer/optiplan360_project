@@ -33,4 +33,4 @@ interface IconProps extends Omit<LucideProps, "ref"> {
 export function Icon({ name, label, ...props }: IconProps) {
   const Component = ICON_MAP[name];
   return <Component aria-label={label} role="img" {...props} />;
-}
+}

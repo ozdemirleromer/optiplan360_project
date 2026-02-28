@@ -35,4 +35,4 @@ Teslim cikti formati:
 
 Ek kural:
 Ortak dosya ihtiyacinda dogrudan degistirme; oneriyi docs/multi-agent/agent1_status.md dosyasina yaz.
-```
+```

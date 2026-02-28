@@ -1,4 +1,4 @@
-import { AuditRecordsPage } from "../../components/Admin";
-
-export { AuditRecordsPage };
-export default AuditRecordsPage;
+import { AuditRecordsPage } from "../../components/Admin";
+
+export { AuditRecordsPage };
+export default AuditRecordsPage;

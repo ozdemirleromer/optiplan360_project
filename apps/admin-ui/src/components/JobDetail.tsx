@@ -43,4 +43,4 @@ export function JobDetail({ detail }: JobDetailProps) {
       </ul>
     </section>
   );
-}
+}
