@@ -1,0 +1,84 @@
+name: Code Quality & Security
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        cache: 'pip'
+    
+    # Bağımlılıkları yükle
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+        pip install black flake8 mypy pylint bandit bandit[toml] pre-commit
+    
+    # 1. Code Format (Black)
+    - name: Check code formatting
+      run: |
+        black --check backend --line-length=100 --quiet
+      continue-on-error: true
+    
+    # 2. Linting (Flake8)
+    - name: Lint with flake8
+      run: |
+        flake8 backend \
+          --max-line-length=100 \
+          --extend-ignore=E203,W503 \
+          --count \
+          --statistics \
+          --show-source
+      continue-on-error: true
+    
+    # 3. Type Checking (MyPy)
+    - name: Type check with mypy
+      run: |
+        mypy backend --ignore-missing-imports --no-error-summary
+      continue-on-error: true
+    
+    # 4. Security Scanning (Bandit)
+    - name: Security scan with bandit
+      run: |
+        bandit -r backend -ll --quiet
+      continue-on-error: true
+    
+    # 5. Code Complexity (Pylint)
+    - name: Code analysis with pylint
+      run: |
+        pylint backend --disable=all --enable=E,F,W --max-line-length=100 --fail-under=8.0
+      continue-on-error: true
+    
+    # 6. Tests
+    - name: Run pytest
+      run: |
+        pytest backend --tb=short -q
+      continue-on-error: true
+    
+    # 7. Summary Report
+    - name: Build Summary
+      if: always()
+      run: |
+        echo "## Code Quality Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "✅ Quality checks completed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Checks" >> $GITHUB_STEP_SUMMARY
+        echo "- Format: Black" >> $GITHUB_STEP_SUMMARY
+        echo "- Lint: Flake8" >> $GITHUB_STEP_SUMMARY
+        echo "- Types: MyPy" >> $GITHUB_STEP_SUMMARY
+        echo "- Security: Bandit" >> $GITHUB_STEP_SUMMARY
+        echo "- Analysis: Pylint" >> $GITHUB_STEP_SUMMARY
+        echo "- Tests: Pytest" >> $GITHUB_STEP_SUMMARY
