@@ -1,0 +1,34 @@
+{
+  "started_at": "2026-02-25T21:45:11",
+  "ended_at": "2026-02-25T21:46:15",
+  "status": "FAIL",
+  "exit_code": 1,
+  "xlsx": "C:\\Biesse\\OptiPlanning\\ImpFile\\TestOrder01_20260225_184504_18.0mmBeyaz_GOVDE.xlsx",
+  "options": {
+    "timeout": 60.0,
+    "skip_preflight": true,
+    "skip_ui_map": true,
+    "run_optimize": false,
+    "optimize_timeout": 8.0,
+    "optimize_trigger": "button"
+  },
+  "steps": [
+    {
+      "name": "stage1_new_save_worklist",
+      "status": "FAIL",
+      "started_at": "2026-02-25T21:45:11",
+      "ended_at": "2026-02-25T21:46:15",
+      "duration_sec": 64.575,
+      "command": [
+        "C:\\Users\\Ömer ÖZDEMİR\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+        "scripts/optiplan_stage1_automation.py",
+        "--xlsx",
+        "C:\\Biesse\\OptiPlanning\\ImpFile\\TestOrder01_20260225_184504_18.0mmBeyaz_GOVDE.xlsx",
+        "--timeout",
+        "60.0"
+      ],
+      "error": "Komut basarisiz (1): C:\\Users\\Ömer ÖZDEMİR\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe scripts/optiplan_stage1_automation.py --xlsx C:\\Biesse\\OptiPlanning\\ImpFile\\TestOrder01_20260225_184504_18.0mmBeyaz_GOVDE.xlsx --timeout 60.0"
+    }
+  ],
+  "error": "Komut basarisiz (1): C:\\Users\\Ömer ÖZDEMİR\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe scripts/optiplan_stage1_automation.py --xlsx C:\\Biesse\\OptiPlanning\\ImpFile\\TestOrder01_20260225_184504_18.0mmBeyaz_GOVDE.xlsx --timeout 60.0"
+}

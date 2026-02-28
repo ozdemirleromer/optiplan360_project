@@ -1,0 +1,6 @@
+{
+  "work_start_hour": 9,
+  "work_end_hour": 18,
+  "saturday_work_end_hour": 13,
+  "sunday_work": false
+}

@@ -1,0 +1,162 @@
+// KRİTİK 4 SAYFA - AdminPages.tsx'in sonuna eklenecek
+
+// ============ 1. KULLANICI AKTİVİTESİ SAYFASI ============
+export function UserActivityPage() {
+  const [activities, setActivities] = useState<AuditLog[]>([]);
+  const [filter, setFilter] = useState({ user: "", action: "", dateFrom: "", dateTo: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const { execute: loadActivities } = useAsyncOperation(
+    () => adminService.listLogs(1, 200),
+    (data) => setActivities(data),
+    (err) => {
+      setError("Aktiviteler yüklenemedi");
+      console.error(err);
+    }
+  );
+
+  useEffect(() => {
+    loadActivities();
+  }, [loadActivities]);
+
+  const filteredActivities = useMemo(() => {
+    return activities.filter(activity => {
+      const userMatch = activity.username.toLowerCase().includes(filter.user.toLowerCase());
+      const actionMatch = activity.action.toLowerCase().includes(filter.action.toLowerCase());
+      return userMatch && actionMatch;
+    });
+  }, [activities, filter]);
+
+  const stats = useMemo(() => ({
+    total: activities.length,
+    creates: activities.filter(a => a.action.includes("CREATE")).length,
+    updates: activities.filter(a => a.action.includes("UPDATE")).length,
+    users: new Set(activities.map(a => a.user_id)).size,
+  }), [activities]);
+
+  return (
+    <div>
+      <TopBar title="Kullanıcı Aktivitesi" subtitle="Sistem üzerindeki tüm kullanıcı eylemlerini izle" breadcrumbs={["Yönetim", "Aktivite"]} />
+      
+      <div style={{ padding: 24, maxWidth: 1320, margin: "0 auto", display: "grid", gap: 16 }}>
+        {error && <Card style={{ background: "rgba(239, 68, 68, 0.1)" }}><div style={{ color: COLORS.error.DEFAULT }}>{error}</div></Card>}
+
+        {/* İstatistikler */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+          <Card><div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary[500] }}>{stats.total}</div><div style={{ fontSize: 12, color: COLORS.muted }}>Toplam Aktiviteler</div></div></Card>
+          <Card><div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success.DEFAULT }}>{stats.creates}</div><div style={{ fontSize: 12, color: COLORS.muted }}>Oluşturmalar</div></div></Card>
+          <Card><div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 700, color: COLORS.accent[400] }}>{stats.updates}</div><div style={{ fontSize: 12, color: COLORS.muted }}>Güncellemeler</div></div></Card>
+          <Card><div style={{ textAlign: "center" }}><div style={{ fontSize: 24, fontWeight: 700, color: COLORS.info[500] }}>{stats.users}</div><div style={{ fontSize: 12, color: COLORS.muted }}>Aktif Kullanıcılar</div></div></Card>
+        </div>
+
+        {/* Filtreler */}
+        <Card title="Filtreleme">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+            <div><label style={{ fontSize: 12, color: COLORS.muted }}>Kullanıcı</label><input placeholder="Ara..." value={filter.user} onChange={(e) => setFilter(p => ({ ...p, user: e.target.value }))} /></div>
+            <div><label style={{ fontSize: 12, color: COLORS.muted }}>İşlem Türü</label><select value={filter.action} onChange={(e) => setFilter(p => ({ ...p, action: e.target.value }))}><option value="">Tümü</option><option value="CREATE">Oluştur</option><option value="UPDATE">Güncelle</option><option value="DELETE">Sil</option></select></div>
+          </div>
+        </Card>
+
+        {/* Aktivite Listesi */}
+        <Card title={`Aktivite Günlüğü (${filteredActivities.length})`}>
+          {filteredActivities.map(a => (
+            <div key={a.id} style={{ padding: 12, borderBottom: `1px solid ${COLORS.border}`, display: "flex", justifyContent: "space-between" }}>
+              <div><div style={{ fontWeight: 600 }}>{a.username} • {a.action}</div><div style={{ fontSize: 12, color: COLORS.muted, marginTop: 2 }}>{a.detail}</div></div>
+              <div style={{ fontSize: 11, color: COLORS.gray[400] }}>{new Date(a.created_at).toLocaleString("tr-TR")}</div>
+            </div>
+          ))}
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// ============ 2. ROLLER VE YETKİLER SAYFASI ============
+export function RolesPermissionsPage() {
+  const [selectedRole, setSelectedRole] = useState<number | null>(null);
+  const roles = [
+    { id: 1, name: "Admin", desc: "Sistem administatörü", perms: ["READ", "WRITE", "DELETE", "ADMIN"], users: 2 },
+    { id: 2, name: "Operatör", desc: "Üretim operatörü", perms: ["READ", "WRITE"], users: 8 },
+    { id: 3, name: "Muhasebe", desc: "Muhasebe departmanı", perms: ["READ", "REPORTS"], users: 1 },
+  ];
+  const allPerms = ["CREATE_USER", "DELETE_USER", "VIEW_LOGS", "EDIT_CONFIG", "VIEW_ORDERS", "CREATE_ORDER", "SCAN_STATION"];
+
+  return (
+    <div>
+      <TopBar title="Roller ve Yetkiler" subtitle="Kullanıcı rolleri ve izinleri yönet" breadcrumbs={["Yönetim", "Roller"]} />
+      <div style={{ padding: 24, maxWidth: 1320, margin: "0 auto", display: "grid", gap: 16 }}>
+        <Card title={`Sistemdeki Roller (${roles.length})`}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: 12 }}>
+            {roles.map(r => (
+              <div key={r.id} onClick={() => setSelectedRole(r.id)} style={{ padding: 14, border: `1px solid ${selectedRole === r.id ? COLORS.primary[500] : COLORS.border}`, borderRadius: RADIUS.md, background: selectedRole === r.id ? `${COLORS.primary[500]}08` : "transparent", cursor: "pointer" }}>
+                <div style={{ fontWeight: 600, marginBottom: 4 }}>{r.name}</div>
+                <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 8 }}>{r.desc}</div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, color: COLORS.muted }}><span>{r.perms.length} izin</span><span>{r.users} user</span></div>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        {selectedRole && (
+          <Card title={`${roles.find(r => r.id === selectedRole)?.name} İzinleri`} style={{ background: `${COLORS.primary[500]}08` }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 12 }}>
+              {allPerms.map(p => <label key={p} style={{ display: "flex", gap: 8, cursor: "pointer" }}><input type="checkbox" /><span style={{ fontSize: 12 }}>{p}</span></label>)}
+            </div>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ============ 3. DENETİM KAYITLARI SAYFASI ============
+export function AuditRecordsPage() {
+  const [records, setRecords] = useState<AuditLog[]>([]);
+  const [filter, setFilter] = useState({ targetId: "", action: "" });
+
+  const { execute: loadRecords } = useAsyncOperation(
+    () => adminService.listLogs(1, 200),
+    (data) => setRecords(data),
+    () => {}
+  );
+
+  useEffect(() => {
+    loadRecords();
+  }, [loadRecords]);
+
+  const filteredRecords = records.filter(r => 
+    (r.target_id || "").includes(filter.targetId) && r.action.includes(filter.action)
+  );
+
+  return (
+    <div>
+      <TopBar title="Denetim Kayıtları" subtitle="Sistem değişiklikleri" breadcrumbs={["Yönetim", "Denetim"]} />
+      <div style={{ padding: 24, maxWidth: 1320, margin: "0 auto", display: "grid", gap: 16 }}>
+        <Card title="Filtreler">
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
+            <div><label style={{ fontSize: 12, color: COLORS.muted }}>Hedef ID</label><input placeholder="Ara..." value={filter.targetId} onChange={(e) => setFilter(p => ({ ...p, targetId: e.target.value }))} /></div>
+            <div><label style={{ fontSize: 12, color: COLORS.muted }}>İşlem</label><select value={filter.action} onChange={(e) => setFilter(p => ({ ...p, action: e.target.value }))}><option>Tümü</option><option>CREATE</option><option>UPDATE</option><option>DELETE</option></select></div>
+          </div>
+        </Card>
+
+        <Card title={`Kayıtlar (${filteredRecords.length})`}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", fontSize: 13 }}>
+              <thead><tr style={{ borderBottom: `2px solid ${COLORS.border}` }}><th style={{ padding: 10, textAlign: "left" }}>Kullanıcı</th><th style={{ padding: 10, textAlign: "left" }}>İşlem</th><th style={{ padding: 10, textAlign: "left" }}>Hedef</th><th style={{ padding: 10, textAlign: "left" }}>Detay</th><th style={{ padding: 10, textAlign: "left" }}>Tarih</th></tr></thead>
+              <tbody>{filteredRecords.map(r => (
+                <tr key={r.id} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
+                  <td style={{ padding: 10 }}>{r.username}</td>
+                  <td style={{ padding: 10 }}><span style={{ background: `${r.action.includes("CREATE") ? COLORS.success.DEFAULT : COLORS.error.DEFAULT}20`, padding: "2px 6px", borderRadius: 3, fontSize: 11 }}>{r.action}</span></td>
+                  <td style={{ padding: 10, color: COLORS.muted }}>{r.target_id || "—"}</td>
+                  <td style={{ padding: 10, color: COLORS.muted }}>{r.detail || "—"}</td>
+                  <td style={{ padding: 10, color: COLORS.gray[400], fontSize: 11 }}>{new Date(r.created_at).toLocaleDateString("tr-TR")}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+}

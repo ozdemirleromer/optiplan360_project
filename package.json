@@ -1,0 +1,14 @@
+{
+  "name": "optiplan360-project",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev -- --host 127.0.0.1 --strictPort --port 3001",
+    "build": "npm --prefix frontend run build",
+    "check:encoding": ".\\backend\\.venv\\Scripts\\python.exe scripts/check_encoding.py || py -3 scripts/check_encoding.py || python scripts/check_encoding.py || python3 scripts/check_encoding.py",
+    "frontend:dev": "npm --prefix frontend run dev -- --host 127.0.0.1 --strictPort --port 3001",
+    "frontend:build": "npm --prefix frontend run build",
+    "smoke:docker": "powershell -ExecutionPolicy Bypass -File scripts/smoke_docker.ps1",
+    "smoke:docker:full": "powershell -ExecutionPolicy Bypass -File scripts/smoke_docker.ps1 -CheckDocs"
+  }
+}

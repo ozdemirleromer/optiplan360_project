@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(netstat:*)",
+      "Bash(cmd /c \"wmic process where processid=31128 get name,commandline 2>&1\")",
+      "Bash(powershell -Command \"Stop-Process -Id 31128 -Force 2>&1; Write-Output ''Done''\")",
+      "Bash(powershell -Command:*)",
+      "Bash(export:*)",
+      "Bash(npm run lint:*)"
+    ]
+  }
+}

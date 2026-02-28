@@ -1,0 +1,29 @@
+app:
+  name: "AI-Powered Multi-Format Price Tracking System"
+  version: "1.0.0"
+  debug: false
+
+ocr:
+  tesseract_path: ""  # Sistemde PATH'teyse boş bırak
+  preprocess:
+    grayscale: true
+    threshold: true
+    blur: false
+
+ai:
+  provider: "openai"
+  model: "gpt-4o"
+  temperature: 0.0
+  max_tokens: 4000
+
+openai:
+  api_key: ""  # .env dosyasından okunacak
+  timeout: 30
+
+currency:
+  default: "TRY"
+  cache_ttl: 3600  # 1 saat
+
+logging:
+  level: "INFO"
+  file: "process_log.csv"

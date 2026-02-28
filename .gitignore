@@ -1,0 +1,21 @@
+# Python virtual environments
+.venv/
+.venv-*/
+backend/.venv/
+
+# Python cache artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+pytest-cache-files-*/
+
+# Local runtime artifacts
+*.log
+backend/logs/
+*.db
+
+# Node dependencies
+node_modules/
+frontend/node_modules/
+apps/orchestrator/node_modules/

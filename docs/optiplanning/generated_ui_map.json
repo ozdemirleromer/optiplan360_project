@@ -1,0 +1,701 @@
+{
+  "generated_at_utc": "2026-02-22T22:06:06.112204+00:00",
+  "process_id": 9896,
+  "main_window": {
+    "title": "Optiplanning - [BEYAZ18]",
+    "class_name": "WWindow000026a868000000",
+    "handle": 3016996,
+    "rect": {
+      "left": -8,
+      "top": -8,
+      "right": 1928,
+      "bottom": 1040,
+      "width": 1936,
+      "height": 1048
+    }
+  },
+  "menu_tree": [
+    {
+      "text": "Dosya",
+      "id": 264709,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Yeni",
+          "id": 1001,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Aç\tCtrl+O",
+          "id": 1002,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Kaydet\tCtrl+S",
+          "id": 1003,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Farklı Kaydet…",
+          "id": 1004,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Yazdır\tF10",
+          "id": 1005,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Kapat\tCtrl+K",
+          "id": 1006,
+          "type": null,
+          "state": 4096
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "İş Emri ...",
+          "id": 723443,
+          "type": null,
+          "state": 0,
+          "children": [
+            {
+              "text": "ZIP dosyalarını dışa aktar",
+              "id": 1009,
+              "type": null,
+              "state": 0
+            },
+            {
+              "text": "ZIP dosyalarını içe aktar",
+              "id": 1010,
+              "type": null,
+              "state": 0
+            }
+          ]
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "1 ..\\BEYAZ18.opjx",
+          "id": 1013,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "2 ..\\123.opjx",
+          "id": 1014,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "3 ..\\Test.opjx",
+          "id": 1015,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Çık",
+          "id": 1017,
+          "type": null,
+          "state": 0
+        }
+      ]
+    },
+    {
+      "text": "Düzenle",
+      "id": 7539181,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Değişiklikleri iptal et\tCtrl+Z",
+          "id": 1019,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Yeni Çalışma Listesi/Çalışma\t+",
+          "id": 1020,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Uyarıları / Hataları Göster",
+          "id": 1022,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Çözümleri sil",
+          "id": 1024,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Eksik alt listeleri yarat",
+          "id": 1025,
+          "type": null,
+          "state": 0
+        }
+      ]
+    },
+    {
+      "text": "Parametreler",
+      "id": 3869109,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Karşılaştır …",
+          "id": 1027,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Listelere uygula",
+          "id": 1028,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Varsayılan olarak kaydet ...",
+          "id": 1030,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Varsayılan dosyaları sil ...",
+          "id": 1031,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "İçe Aktar ...",
+          "id": 1033,
+          "type": null,
+          "state": 0
+        }
+      ]
+    },
+    {
+      "text": "Stok",
+      "id": 2296293,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Malzemeyi içe aktar",
+          "id": 1035,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "OSI data deposu",
+          "id": 1037,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Master Veri tabanini kullan",
+          "id": 1038,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Veritabanını İçe Aktar/Dışa Aktar",
+          "id": 2230699,
+          "type": null,
+          "state": 0,
+          "children": [
+            {
+              "text": "Malzeme dışa aktarılıyor",
+              "id": 1040,
+              "type": null,
+              "state": 3
+            },
+            {
+              "text": "Malzeme içe aktarılıyor",
+              "id": 1041,
+              "type": null,
+              "state": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Yürüt",
+      "id": 3541453,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Optimize Et / Devam et\tF5",
+          "id": 1043,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Levhaları Ayırın",
+          "id": 4131229,
+          "type": null,
+          "state": 0,
+          "children": [
+            {
+              "text": "Uygula",
+              "id": 1046,
+              "type": null,
+              "state": 0
+            },
+            {
+              "text": "Kaldir",
+              "id": 1047,
+              "type": null,
+              "state": 0
+            }
+          ]
+        },
+        {
+          "text": "İşlendi",
+          "id": 41945465,
+          "type": null,
+          "state": 0,
+          "children": [
+            {
+              "text": "Uygula",
+              "id": 1049,
+              "type": null,
+              "state": 0
+            },
+            {
+              "text": "Kaldir",
+              "id": 1050,
+              "type": null,
+              "state": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "Pencere",
+      "id": 15075703,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Basamakla",
+          "id": 1052,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Yatay görünüm",
+          "id": 1053,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Dikey görünüm",
+          "id": 1054,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Simgeleri Düzenle",
+          "id": 1055,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "İleri",
+          "id": 1057,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "Önceki",
+          "id": 1058,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "&1 BEYAZ18",
+          "id": 5000,
+          "type": null,
+          "state": 8
+        }
+      ]
+    },
+    {
+      "text": "&?",
+      "id": 1116529,
+      "type": null,
+      "state": 0,
+      "children": [
+        {
+          "text": "Kayıt formu",
+          "id": 1060,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "Anahtar güncelleniyor",
+          "id": 1061,
+          "type": null,
+          "state": 0
+        },
+        {
+          "text": "",
+          "id": 0,
+          "type": null,
+          "state": 3
+        },
+        {
+          "text": "İlgili bilgiler…",
+          "id": 1063,
+          "type": null,
+          "state": 0
+        }
+      ]
+    }
+  ],
+  "visible_windows": [
+    {
+      "title": "Optiplanning - [BEYAZ18]",
+      "class_name": "WWindow000026a868000000",
+      "handle": 3016996,
+      "enabled": true,
+      "rect": {
+        "left": -8,
+        "top": -8,
+        "right": 1928,
+        "bottom": 1040,
+        "width": 1936,
+        "height": 1048
+      },
+      "controls": [
+        {
+          "text": "",
+          "class_name": "MDIClient",
+          "handle": 2361074,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 80,
+            "right": 1920,
+            "bottom": 1012,
+            "width": 1920,
+            "height": 932
+          }
+        },
+        {
+          "text": "BEYAZ18",
+          "class_name": "WWindow000026a868000000",
+          "handle": 723014,
+          "enabled": true,
+          "rect": {
+            "left": -8,
+            "top": 49,
+            "right": 1928,
+            "bottom": 1020,
+            "width": 1936,
+            "height": 971
+          }
+        },
+        {
+          "text": "",
+          "class_name": "#32770",
+          "handle": 657472,
+          "enabled": true,
+          "rect": {
+            "left": 4,
+            "top": 124,
+            "right": 1916,
+            "bottom": 1008,
+            "width": 1912,
+            "height": 884
+          }
+        },
+        {
+          "text": "",
+          "class_name": "#32770",
+          "handle": 657492,
+          "enabled": true,
+          "rect": {
+            "left": 8,
+            "top": 146,
+            "right": 1908,
+            "bottom": 999,
+            "width": 1900,
+            "height": 853
+          }
+        },
+        {
+          "text": "",
+          "class_name": "SysListView32",
+          "handle": 657422,
+          "enabled": true,
+          "rect": {
+            "left": 8,
+            "top": 146,
+            "right": 1908,
+            "bottom": 952,
+            "width": 1900,
+            "height": 806
+          }
+        },
+        {
+          "text": "",
+          "class_name": "SysHeader32",
+          "handle": 657252,
+          "enabled": true,
+          "rect": {
+            "left": 9,
+            "top": 147,
+            "right": 1905,
+            "bottom": 164,
+            "width": 1896,
+            "height": 17
+          }
+        },
+        {
+          "text": "Ayarlanan bölümler",
+          "class_name": "Button",
+          "handle": 591904,
+          "enabled": true,
+          "rect": {
+            "left": 121,
+            "top": 960,
+            "right": 196,
+            "bottom": 993,
+            "width": 75,
+            "height": 33
+          }
+        },
+        {
+          "text": "",
+          "class_name": "Button",
+          "handle": 2098920,
+          "enabled": true,
+          "rect": {
+            "left": 1799,
+            "top": 960,
+            "right": 1832,
+            "bottom": 996,
+            "width": 33,
+            "height": 36
+          }
+        },
+        {
+          "text": "",
+          "class_name": "Button",
+          "handle": 657322,
+          "enabled": true,
+          "rect": {
+            "left": 1872,
+            "top": 960,
+            "right": 1905,
+            "bottom": 996,
+            "width": 33,
+            "height": 36
+          }
+        },
+        {
+          "text": "",
+          "class_name": "Button",
+          "handle": 657316,
+          "enabled": true,
+          "rect": {
+            "left": 1835,
+            "top": 960,
+            "right": 1868,
+            "bottom": 996,
+            "width": 33,
+            "height": 36
+          }
+        },
+        {
+          "text": "",
+          "class_name": "Button",
+          "handle": 657318,
+          "enabled": true,
+          "rect": {
+            "left": 1761,
+            "top": 960,
+            "right": 1794,
+            "bottom": 996,
+            "width": 33,
+            "height": 36
+          }
+        },
+        {
+          "text": "Parametreleri ayarla",
+          "class_name": "Button",
+          "handle": 657314,
+          "enabled": true,
+          "rect": {
+            "left": 8,
+            "top": 960,
+            "right": 113,
+            "bottom": 993,
+            "width": 105,
+            "height": 33
+          }
+        },
+        {
+          "text": "",
+          "class_name": "SysTabControl32",
+          "handle": 657636,
+          "enabled": true,
+          "rect": {
+            "left": 4,
+            "top": 124,
+            "right": 1912,
+            "bottom": 1003,
+            "width": 1908,
+            "height": 879
+          }
+        },
+        {
+          "text": "",
+          "class_name": "SysTabControl32",
+          "handle": 591888,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 80,
+            "right": 1920,
+            "bottom": 1012,
+            "width": 1920,
+            "height": 932
+          }
+        },
+        {
+          "text": "BEYAZ18",
+          "class_name": "msctls_statusbar32",
+          "handle": 1115828,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 1012,
+            "right": 1920,
+            "bottom": 1032,
+            "width": 1920,
+            "height": 20
+          }
+        },
+        {
+          "text": "",
+          "class_name": "WWindow000026a868000000",
+          "handle": 591884,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 43,
+            "right": 1920,
+            "bottom": 80,
+            "width": 1920,
+            "height": 37
+          }
+        },
+        {
+          "text": "",
+          "class_name": "WWindow000026a868000000",
+          "handle": 657304,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 45,
+            "right": 800,
+            "bottom": 78,
+            "width": 800,
+            "height": 33
+          }
+        },
+        {
+          "text": "",
+          "class_name": "ToolbarWindow32",
+          "handle": 788384,
+          "enabled": true,
+          "rect": {
+            "left": 0,
+            "top": 45,
+            "right": 800,
+            "bottom": 79,
+            "width": 800,
+            "height": 34
+          }
+        }
+      ]
+    }
+  ]
+}

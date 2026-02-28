@@ -1,0 +1,231 @@
+2026-02-21 16:45:36 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-21 16:45:36 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:45:36 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:45:36 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-21 16:45:36 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-21 16:45:36 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-21 16:45:36 - root - INFO - Kanonik istasyonlar oluşturuldu: 5 adet
+2026-02-21 16:46:14 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-21 16:46:14 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:46:14 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:46:14 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-21 16:46:14 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-21 16:46:14 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-21 16:49:59 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-21 16:49:59 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:49:59 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-21 16:49:59 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-21 16:49:59 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-21 16:49:59 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-21 17:19:13 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:19:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-21 17:19:14 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:19:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-21 17:19:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:19:15 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/bb1d3d01-7e72-45da-8c2e-3286875e06d1 "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/1e9d5c02-44a4-451c-9b6d-f4814ca642aa "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/1e9d5c02-44a4-451c-9b6d-f4814ca642aa/transition "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/fa8fe966-e4da-423f-b1bb-165f734f6081 "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/6d1e2cbf-c32a-46fa-b86b-f59686c51fa3 "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:16 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260221_141917 (user=2)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-21 17:19:17 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:19:17 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-21 17:19:18 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/de3dce7b-a1d7-40cd-9ed5-fb30bf76ca0a/cancel "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:18 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:19:19 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:23:58 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:23:59 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-21 17:23:59 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 200 OK"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/auth/login "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts/90729d8d-8c8d-405c-91ce-a2616159b568 "HTTP/1.1 200 OK"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/crm/accounts "HTTP/1.1 200 OK"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:00 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/crm/opportunities/f4a717f6-e4d6-482f-968a-af22eadf3de7 "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/opportunities/f4a717f6-e4d6-482f-968a-af22eadf3de7/transition "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/ccbe2e48-a0c0-4d8e-a665-f3d82d998e1f "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices/16125f72-5831-40c8-9adf-742bb9d6d578 "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/crm/accounts "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 404 Not Found"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 422 Unprocessable Entity"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Parçalar güncellendi: order=1, count=1 (user=2)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1/parts "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş güncellendi: 1 (user=2, fields=['color'])
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: PUT http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş silindi: 1 / 20260221_142401 (user=2)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/1 "HTTP/1.1 200 OK"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/orders/99999 "HTTP/1.1 404 Not Found"
+2026-02-21 17:24:01 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:01 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders/1/transitions "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=DONE "HTTP/1.1 400 Bad Request"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Durum değişti: order=1 OrderStatusEnum.NEW→HOLD (user=2)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: PATCH http://testserver/api/v1/orders/1/status?new_status=HOLD "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - app.services.order_service - INFO - Sipariş oluşturuldu: 1 (user=2, parts=1)
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders "HTTP/1.1 201 Created"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/orders "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/import/xlsx "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - app.permissions - WARNING - Bilinmeyen rol: 'GHOST' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-21 17:24:02 - app.permissions - WARNING - Bilinmeyen rol: 'UNKNOWN_ROLE_XYZ' — boş yetki listesi döndürülüyor. KNOWN_ROLES: ['ADMIN', 'KIOSK', 'OPERATOR', 'SALES', 'STATION', 'VIEWER']
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/payments/45dad55c-a102-451a-bff0-cd8979a88943/cancel "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/payments/invoices "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/invoices "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/payments/promises "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 200 OK"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/stock/stock-cards "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/stock/stock-cards/sync "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:02 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 200 OK"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/integration/maps "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/portal/dashboard "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 204 No Content"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 200 OK"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: DELETE http://testserver/api/v1/price-tracking/jobs/job-1 "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 201 Created"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 200 OK"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/export "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 403 Forbidden"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/price-tracking/upload "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: GET http://testserver/api/v1/price-tracking/jobs "HTTP/1.1 401 Unauthorized"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"
+2026-02-21 17:24:03 - httpx - INFO - HTTP Request: POST http://testserver/api/v1/orders/1/validate "HTTP/1.1 200 OK"

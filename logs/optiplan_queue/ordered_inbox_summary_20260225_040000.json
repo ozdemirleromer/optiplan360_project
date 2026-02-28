@@ -1,0 +1,59 @@
+{
+  "started_at": "2026-02-25T03:59:42",
+  "rule_file": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\1_GELEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+  "inbox_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\1_GELEN_SIPARISLER",
+  "pattern_prefix": "EXCEL_TEST_",
+  "pattern_suffix": ".xlsx",
+  "processing_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\0_ISLENIYOR",
+  "processed_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER",
+  "failed_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\3_HATALI_VERILER",
+  "dry_run": false,
+  "quick_mode": true,
+  "options": {
+    "poll_sec": 5.0,
+    "max_files": 1,
+    "stable_seconds": 0.5,
+    "timeout": 60.0,
+    "optimize_timeout": 12.0,
+    "skip_preflight": true,
+    "preflight_once": true,
+    "skip_ui_map": true,
+    "skip_optimize": false
+  },
+  "items": [
+    {
+      "file": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\1_GELEN_SIPARISLER\\EXCEL_TEST_2.xlsx",
+      "queued_name": "EXCEL_TEST_2.xlsx",
+      "queue_index": 1,
+      "queue_total": 1,
+      "started_at": "2026-02-25T03:59:43",
+      "claimed_to": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\0_ISLENIYOR\\EXCEL_TEST_2.xlsx",
+      "ended_at": "2026-02-25T04:00:00",
+      "exit_code": 0,
+      "command": [
+        "C:\\PROJE\\optiplan360_project\\backend\\.venv\\Scripts\\python.exe",
+        "C:\\PROJE\\optiplan360_project\\scripts\\optiplan_professional_run.py",
+        "--xlsx",
+        "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\0_ISLENIYOR\\EXCEL_TEST_2.xlsx",
+        "--timeout",
+        "60.0",
+        "--optimize-timeout",
+        "12.0",
+        "--report-json",
+        "logs\\optiplan_queue\\EXCEL_TEST_2_20260225_035943.json",
+        "--skip-preflight",
+        "--skip-ui-map",
+        "--run-optimize"
+      ],
+      "run_report": "logs\\optiplan_queue\\EXCEL_TEST_2_20260225_035943.json",
+      "run_log": "logs\\optiplan_queue\\EXCEL_TEST_2_20260225_035943.log",
+      "result": "PASS",
+      "moved_to": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_2.xlsx"
+    }
+  ],
+  "ended_at": "2026-02-25T04:00:00",
+  "processed_count": 1,
+  "fail_count": 0,
+  "skipped_count": 0,
+  "status": "PASS"
+}

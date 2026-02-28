@@ -1,0 +1,9 @@
+{
+  "optiplanningExePath": "C:/Biesse/OptiPlanning/System/OptiPlanning.exe",
+  "optiplanningImportFolder": "C:/Biesse/OptiPlanning/ImpFile",
+  "optiplanningExportFolder": "C:/Biesse/OptiPlanning/Tmp/Sol",
+  "optiplanningRulesFolder": "C:/Biesse/OptiPlanning/Opf",
+  "machineDropFolder": "C:/Biesse/OptiPlanning/Tx",
+  "tempFolder": "C:/Biesse/OptiPlanning/Tmp",
+  "xlsxTemplatePath": "./templates/Excel_sablon.xlsx"
+}

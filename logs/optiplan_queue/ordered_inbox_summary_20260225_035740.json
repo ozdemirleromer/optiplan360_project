@@ -1,0 +1,29 @@
+{
+  "started_at": "2026-02-25T03:57:40",
+  "rule_file": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\1_GELEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+  "inbox_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\1_GELEN_SIPARISLER",
+  "pattern_prefix": "EXCEL_TEST_",
+  "pattern_suffix": ".xlsx",
+  "processing_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\0_ISLENIYOR",
+  "processed_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER",
+  "failed_dir": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\3_HATALI_VERILER",
+  "dry_run": false,
+  "quick_mode": true,
+  "options": {
+    "poll_sec": 5.0,
+    "max_files": 0,
+    "stable_seconds": 0.5,
+    "timeout": 60.0,
+    "optimize_timeout": 12.0,
+    "skip_preflight": true,
+    "preflight_once": true,
+    "skip_ui_map": true,
+    "skip_optimize": false
+  },
+  "items": [],
+  "ended_at": "2026-02-25T03:57:40",
+  "processed_count": 0,
+  "fail_count": 0,
+  "skipped_count": 0,
+  "status": "PASS"
+}

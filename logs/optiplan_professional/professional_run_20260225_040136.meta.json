@@ -1,0 +1,29 @@
+﻿{
+    "started_at":  "2026-02-25T04:01:36",
+    "ended_at":  "2026-02-25T04:01:56",
+    "duration_sec":  19.772,
+    "exit_code":  0,
+    "python":  "C:\\PROJE\\optiplan360_project\\backend\\\\.venv\\\\Scripts\\\\python.exe",
+    "xlsx":  "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+    "command":  [
+                    "C:\\PROJE\\optiplan360_project\\backend\\\\.venv\\\\Scripts\\\\python.exe",
+                    "-W",
+                    "ignore",
+                    "scripts/optiplan_professional_run.py",
+                    "--xlsx",
+                    "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+                    "--timeout",
+                    "60",
+                    "--optimize-timeout",
+                    "12",
+                    "--optimize-trigger",
+                    "button",
+                    "--report-json",
+                    "C:\\PROJE\\optiplan360_project\\logs\\\\optiplan_professional\\professional_run_20260225_040136.json",
+                    "--skip-preflight",
+                    "--skip-ui-map",
+                    "--run-optimize"
+                ],
+    "report_json":  "C:\\PROJE\\optiplan360_project\\logs\\\\optiplan_professional\\professional_run_20260225_040136.json",
+    "console_log":  "C:\\PROJE\\optiplan360_project\\logs\\\\optiplan_professional\\professional_run_20260225_040136.log"
+}

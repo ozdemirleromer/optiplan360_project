@@ -1,0 +1,44 @@
+{
+  "_comment_v2": "share_path_machine Türkçe İ karakteri kaldırıldı (encoding sorunu riski)",
+  "share_path_machine": "C:\\Biesse\\OptiPlanning\\Tx",
+  "share_path_notes": "Makine transfer klasoru. Backend export edilen XML dosyalarini bu yola kopyalar. Production'da UNC ag yolu olabilir (orn: \\\\DESKTOP-OPTIMIZE).",
+  "database": {
+    "engine": "PostgreSQL",
+    "setup_strategy": "EXTERNAL_INSTALL_WITH_ALEMBIC",
+    "setup_notes": "PostgreSQL sistem ekibi tarafından önceden kurulur. Backend ilk çalışmada Alembic migration ile tabloları otomatik oluşturur. Sonraki güncellemelerde yeni migration'lar otomatik uygulanır, mevcut veri korunur.",
+    "migration_tool": "alembic",
+    "auto_migrate_on_startup": true,
+    "connection_config_source": "Admin Panel (SQL Board benzeri ekran)"
+  },
+  "backup": {
+    "primary": "NAS",
+    "secondary": "Google (güvenli alan)"
+  },
+  "retention": {
+    "completed_keep_months": 6,
+    "hold_keep_days": 14,
+    "archive_after_done": true
+  },
+  "stations": [
+    "CUT",
+    "BAND",
+    "DELIVERY"
+  ],
+  "security": {
+    "jwt_expiry_hours": 8,
+    "password_min_length": 8,
+    "max_login_attempts": 5,
+    "lockout_minutes": 15
+  },
+  "whatsapp": {
+    "provider": "META_WABA",
+    "provider_notes": "Meta WhatsApp Business API (resmi). Template mesajlar Meta onayından geçmeli.",
+    "api_version": "v21.0",
+    "base_url": "https://graph.facebook.com",
+    "phone_number_id": "",
+    "business_account_id": "",
+    "access_token_ref": "VAULT:whatsapp_access_token",
+    "webhook_verify_token_ref": "VAULT:whatsapp_webhook_verify",
+    "template_namespace": ""
+  }
+}

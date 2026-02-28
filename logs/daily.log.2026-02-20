@@ -1,0 +1,379 @@
+2026-02-20 21:20:40 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:20:40 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:20:40 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:20:40 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:20:40 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:20:40 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:20:40 - root - WARNING - Kanonik istasyon seed hatası (atlanıyor): (sqlite3.OperationalError) no such column: stations.active
+[SQL: SELECT stations.id AS stations_id, stations.name AS stations_name, stations.description AS stations_description, stations.active AS stations_active, stations.last_scan_at AS stations_last_scan_at, stations.scan_count_today AS stations_scan_count_today, stations.istasyon_durumu AS stations_istasyon_durumu, stations.device_type AS stations_device_type, stations.device_model AS stations_device_model, stations.device_serial_number AS stations_device_serial_number, stations.ip_address AS stations_ip_address, stations.connection_type AS stations_connection_type, stations.installation_date AS stations_installation_date, stations.last_maintenance_date AS stations_last_maintenance_date 
+FROM stations 
+WHERE stations.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Hazırlık', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-02-20 21:21:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:21:40 +03)" (scheduled at 2026-02-20 21:21:10.202132+03:00)
+2026-02-20 21:21:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:21:40 +03)" executed successfully
+2026-02-20 21:21:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:22:10 +03)" (scheduled at 2026-02-20 21:21:40.202132+03:00)
+2026-02-20 21:21:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:22:10 +03)" executed successfully
+2026-02-20 21:22:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:22:40 +03)" (scheduled at 2026-02-20 21:22:10.202132+03:00)
+2026-02-20 21:22:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:22:40 +03)" executed successfully
+2026-02-20 21:22:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:23:10 +03)" (scheduled at 2026-02-20 21:22:40.202132+03:00)
+2026-02-20 21:22:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:23:10 +03)" executed successfully
+2026-02-20 21:23:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:23:40 +03)" (scheduled at 2026-02-20 21:23:10.202132+03:00)
+2026-02-20 21:23:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:23:40 +03)" executed successfully
+2026-02-20 21:23:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:24:10 +03)" (scheduled at 2026-02-20 21:23:40.202132+03:00)
+2026-02-20 21:23:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:24:10 +03)" executed successfully
+2026-02-20 21:24:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:24:40 +03)" (scheduled at 2026-02-20 21:24:10.202132+03:00)
+2026-02-20 21:24:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:24:40 +03)" executed successfully
+2026-02-20 21:24:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:25:10 +03)" (scheduled at 2026-02-20 21:24:40.202132+03:00)
+2026-02-20 21:24:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:25:10 +03)" executed successfully
+2026-02-20 21:25:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:25:40 +03)" (scheduled at 2026-02-20 21:25:10.202132+03:00)
+2026-02-20 21:25:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:25:40 +03)" executed successfully
+2026-02-20 21:25:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:26:10 +03)" (scheduled at 2026-02-20 21:25:40.202132+03:00)
+2026-02-20 21:25:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:26:10 +03)" executed successfully
+2026-02-20 21:26:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:26:40 +03)" (scheduled at 2026-02-20 21:26:10.202132+03:00)
+2026-02-20 21:26:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:26:40 +03)" executed successfully
+2026-02-20 21:26:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:27:10 +03)" (scheduled at 2026-02-20 21:26:40.202132+03:00)
+2026-02-20 21:26:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:27:10 +03)" executed successfully
+2026-02-20 21:27:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:27:40 +03)" (scheduled at 2026-02-20 21:27:10.202132+03:00)
+2026-02-20 21:27:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:27:40 +03)" executed successfully
+2026-02-20 21:27:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:28:10 +03)" (scheduled at 2026-02-20 21:27:40.202132+03:00)
+2026-02-20 21:27:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:28:10 +03)" executed successfully
+2026-02-20 21:28:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:28:40 +03)" (scheduled at 2026-02-20 21:28:10.202132+03:00)
+2026-02-20 21:28:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:28:40 +03)" executed successfully
+2026-02-20 21:28:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:29:10 +03)" (scheduled at 2026-02-20 21:28:40.202132+03:00)
+2026-02-20 21:28:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:29:10 +03)" executed successfully
+2026-02-20 21:29:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:29:40 +03)" (scheduled at 2026-02-20 21:29:10.202132+03:00)
+2026-02-20 21:29:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:29:40 +03)" executed successfully
+2026-02-20 21:29:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:30:10 +03)" (scheduled at 2026-02-20 21:29:40.202132+03:00)
+2026-02-20 21:29:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:30:10 +03)" executed successfully
+2026-02-20 21:30:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:30:40 +03)" (scheduled at 2026-02-20 21:30:10.202132+03:00)
+2026-02-20 21:30:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:30:40 +03)" executed successfully
+2026-02-20 21:30:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:31:10 +03)" (scheduled at 2026-02-20 21:30:40.202132+03:00)
+2026-02-20 21:30:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:31:10 +03)" executed successfully
+2026-02-20 21:31:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:31:40 +03)" (scheduled at 2026-02-20 21:31:10.202132+03:00)
+2026-02-20 21:31:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:31:40 +03)" executed successfully
+2026-02-20 21:31:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:32:10 +03)" (scheduled at 2026-02-20 21:31:40.202132+03:00)
+2026-02-20 21:31:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:32:10 +03)" executed successfully
+2026-02-20 21:32:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:32:40 +03)" (scheduled at 2026-02-20 21:32:10.202132+03:00)
+2026-02-20 21:32:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:32:40 +03)" executed successfully
+2026-02-20 21:32:21 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:32:21 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:32:21 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:32:21 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:32:21 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:32:21 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:32:21 - root - WARNING - Kanonik istasyon seed hatası (atlanıyor): (sqlite3.OperationalError) no such column: stations.active
+[SQL: SELECT stations.id AS stations_id, stations.name AS stations_name, stations.description AS stations_description, stations.active AS stations_active, stations.last_scan_at AS stations_last_scan_at, stations.scan_count_today AS stations_scan_count_today, stations.istasyon_durumu AS stations_istasyon_durumu, stations.device_type AS stations_device_type, stations.device_model AS stations_device_model, stations.device_serial_number AS stations_device_serial_number, stations.ip_address AS stations_ip_address, stations.connection_type AS stations_connection_type, stations.installation_date AS stations_installation_date, stations.last_maintenance_date AS stations_last_maintenance_date 
+FROM stations 
+WHERE stations.name = ?
+ LIMIT ? OFFSET ?]
+[parameters: ('Hazırlık', 1, 0)]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-02-20 21:32:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:10 +03)" (scheduled at 2026-02-20 21:32:40.202132+03:00)
+2026-02-20 21:32:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:10 +03)" executed successfully
+2026-02-20 21:32:51 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:21 +03)" (scheduled at 2026-02-20 21:32:51.151874+03:00)
+2026-02-20 21:32:51 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:21 +03)" executed successfully
+2026-02-20 21:33:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:40 +03)" (scheduled at 2026-02-20 21:33:10.202132+03:00)
+2026-02-20 21:33:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:40 +03)" executed successfully
+2026-02-20 21:33:21 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:51 +03)" (scheduled at 2026-02-20 21:33:21.151874+03:00)
+2026-02-20 21:33:21 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:33:51 +03)" executed successfully
+2026-02-20 21:33:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:10 +03)" (scheduled at 2026-02-20 21:33:40.202132+03:00)
+2026-02-20 21:33:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:10 +03)" executed successfully
+2026-02-20 21:33:51 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:21 +03)" (scheduled at 2026-02-20 21:33:51.151874+03:00)
+2026-02-20 21:33:51 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:21 +03)" executed successfully
+2026-02-20 21:33:52 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:33:52 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:33:52 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:33:52 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:33:52 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:33:52 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:33:52 - root - INFO - Kanonik istasyonlar oluşturuldu: 5 adet
+2026-02-20 21:34:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:40 +03)" (scheduled at 2026-02-20 21:34:10.202132+03:00)
+2026-02-20 21:34:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:40 +03)" executed successfully
+2026-02-20 21:34:21 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:51 +03)" (scheduled at 2026-02-20 21:34:21.151874+03:00)
+2026-02-20 21:34:21 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:51 +03)" executed successfully
+2026-02-20 21:34:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:52 +03)" (scheduled at 2026-02-20 21:34:22.605066+03:00)
+2026-02-20 21:34:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:34:52 +03)" executed successfully
+2026-02-20 21:34:27 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:34:27 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:34:27 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:34:27 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:34:27 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:34:27 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:34:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:10 +03)" (scheduled at 2026-02-20 21:34:40.202132+03:00)
+2026-02-20 21:34:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:10 +03)" executed successfully
+2026-02-20 21:34:51 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:21 +03)" (scheduled at 2026-02-20 21:34:51.151874+03:00)
+2026-02-20 21:34:51 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:21 +03)" executed successfully
+2026-02-20 21:34:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:22 +03)" (scheduled at 2026-02-20 21:34:52.605066+03:00)
+2026-02-20 21:34:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:22 +03)" executed successfully
+2026-02-20 21:34:57 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:34:57 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:34:57 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:34:57 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:34:57 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:34:57 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:34:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:27 +03)" (scheduled at 2026-02-20 21:34:57.430068+03:00)
+2026-02-20 21:34:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:27 +03)" executed successfully
+2026-02-20 21:35:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:40 +03)" (scheduled at 2026-02-20 21:35:10.202132+03:00)
+2026-02-20 21:35:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:40 +03)" executed successfully
+2026-02-20 21:35:21 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:51 +03)" (scheduled at 2026-02-20 21:35:21.151874+03:00)
+2026-02-20 21:35:21 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:51 +03)" executed successfully
+2026-02-20 21:35:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:52 +03)" (scheduled at 2026-02-20 21:35:22.605066+03:00)
+2026-02-20 21:35:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:52 +03)" executed successfully
+2026-02-20 21:35:27 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:57 +03)" (scheduled at 2026-02-20 21:35:27.169063+03:00)
+2026-02-20 21:35:27 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:57 +03)" executed successfully
+2026-02-20 21:35:27 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:57 +03)" (scheduled at 2026-02-20 21:35:27.430068+03:00)
+2026-02-20 21:35:27 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:35:57 +03)" executed successfully
+2026-02-20 21:35:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:10 +03)" (scheduled at 2026-02-20 21:35:40.202132+03:00)
+2026-02-20 21:35:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:10 +03)" executed successfully
+2026-02-20 21:35:51 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:21 +03)" (scheduled at 2026-02-20 21:35:51.151874+03:00)
+2026-02-20 21:35:51 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:21 +03)" executed successfully
+2026-02-20 21:35:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:22 +03)" (scheduled at 2026-02-20 21:35:52.605066+03:00)
+2026-02-20 21:35:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:22 +03)" executed successfully
+2026-02-20 21:35:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:27 +03)" (scheduled at 2026-02-20 21:35:57.169063+03:00)
+2026-02-20 21:35:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:27 +03)" executed successfully
+2026-02-20 21:35:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:27 +03)" (scheduled at 2026-02-20 21:35:57.430068+03:00)
+2026-02-20 21:35:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:27 +03)" executed successfully
+2026-02-20 21:36:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:40 +03)" (scheduled at 2026-02-20 21:36:10.202132+03:00)
+2026-02-20 21:36:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:40 +03)" executed successfully
+2026-02-20 21:36:21 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:51 +03)" (scheduled at 2026-02-20 21:36:21.151874+03:00)
+2026-02-20 21:36:21 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:51 +03)" executed successfully
+2026-02-20 21:36:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:52 +03)" (scheduled at 2026-02-20 21:36:22.605066+03:00)
+2026-02-20 21:36:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:52 +03)" executed successfully
+2026-02-20 21:36:27 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:57 +03)" (scheduled at 2026-02-20 21:36:27.169063+03:00)
+2026-02-20 21:36:27 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:57 +03)" executed successfully
+2026-02-20 21:36:27 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:57 +03)" (scheduled at 2026-02-20 21:36:27.430068+03:00)
+2026-02-20 21:36:27 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:36:57 +03)" executed successfully
+2026-02-20 21:36:40 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:10 +03)" (scheduled at 2026-02-20 21:36:40.202132+03:00)
+2026-02-20 21:36:40 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:10 +03)" executed successfully
+2026-02-20 21:36:51 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:21 +03)" (scheduled at 2026-02-20 21:36:51.151874+03:00)
+2026-02-20 21:36:51 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:21 +03)" executed successfully
+2026-02-20 21:36:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:22 +03)" (scheduled at 2026-02-20 21:36:52.605066+03:00)
+2026-02-20 21:36:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:22 +03)" executed successfully
+2026-02-20 21:36:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:27 +03)" (scheduled at 2026-02-20 21:36:57.169063+03:00)
+2026-02-20 21:36:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:27 +03)" executed successfully
+2026-02-20 21:36:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:27 +03)" (scheduled at 2026-02-20 21:36:57.430068+03:00)
+2026-02-20 21:36:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:27 +03)" executed successfully
+2026-02-20 21:37:10 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:40 +03)" (scheduled at 2026-02-20 21:37:10.202132+03:00)
+2026-02-20 21:37:10 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:40 +03)" executed successfully
+2026-02-20 21:37:22 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:22 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:22 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:22 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:23 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:23 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:23 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:27 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:37:27 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:27 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:37:27 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:37:27 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:37:27 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:22 +03)" (scheduled at 2026-02-20 21:37:52.286685+03:00)
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:22 +03)" executed successfully
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:52 +03)" (scheduled at 2026-02-20 21:37:52.679092+03:00)
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:22 +03)" executed successfully
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:22 +03)" (scheduled at 2026-02-20 21:37:52.768809+03:00)
+2026-02-20 21:37:52 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:22 +03)" executed successfully
+2026-02-20 21:37:53 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:23 +03)" (scheduled at 2026-02-20 21:37:53.546548+03:00)
+2026-02-20 21:37:53 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:23 +03)" executed successfully
+2026-02-20 21:37:53 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:37:53 +03)" (scheduled at 2026-02-20 21:37:53.565020+03:00)
+2026-02-20 21:37:53 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:23 +03)" executed successfully
+2026-02-20 21:37:57 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:27 +03)" (scheduled at 2026-02-20 21:37:57.665695+03:00)
+2026-02-20 21:37:57 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:27 +03)" executed successfully
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" (scheduled at 2026-02-20 21:38:22.286685+03:00)
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" executed successfully
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" (scheduled at 2026-02-20 21:38:22.679092+03:00)
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" executed successfully
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" (scheduled at 2026-02-20 21:38:22.768809+03:00)
+2026-02-20 21:38:22 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:52 +03)" executed successfully
+2026-02-20 21:38:23 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:53 +03)" (scheduled at 2026-02-20 21:38:23.546548+03:00)
+2026-02-20 21:38:23 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:53 +03)" executed successfully
+2026-02-20 21:38:23 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:53 +03)" (scheduled at 2026-02-20 21:38:23.565020+03:00)
+2026-02-20 21:38:23 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:53 +03)" executed successfully
+2026-02-20 21:38:27 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:57 +03)" (scheduled at 2026-02-20 21:38:27.665695+03:00)
+2026-02-20 21:38:27 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:38:57 +03)" executed successfully
+2026-02-20 21:38:35 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:35 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:35 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:35 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:35 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:35 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:37 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:37 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:37 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:37 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:37 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:37 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:55 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:55 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:55 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:56 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:56 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:56 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:38:56 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:38:56 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:39:25 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:55 +03)" (scheduled at 2026-02-20 21:39:25.532589+03:00)
+2026-02-20 21:39:25 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:55 +03)" executed successfully
+2026-02-20 21:39:25 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:55 +03)" (scheduled at 2026-02-20 21:39:25.562432+03:00)
+2026-02-20 21:39:25 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:55 +03)" executed successfully
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" (scheduled at 2026-02-20 21:39:26.446344+03:00)
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" executed successfully
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" (scheduled at 2026-02-20 21:39:26.499381+03:00)
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" executed successfully
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" (scheduled at 2026-02-20 21:39:26.537491+03:00)
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" executed successfully
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" (scheduled at 2026-02-20 21:39:26.555289+03:00)
+2026-02-20 21:39:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:39:56 +03)" executed successfully
+2026-02-20 21:39:55 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:25 +03)" (scheduled at 2026-02-20 21:39:55.532589+03:00)
+2026-02-20 21:39:55 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:25 +03)" executed successfully
+2026-02-20 21:39:55 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:25 +03)" (scheduled at 2026-02-20 21:39:55.562432+03:00)
+2026-02-20 21:39:55 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:25 +03)" executed successfully
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" (scheduled at 2026-02-20 21:39:56.446344+03:00)
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" executed successfully
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" (scheduled at 2026-02-20 21:39:56.499381+03:00)
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" executed successfully
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" (scheduled at 2026-02-20 21:39:56.537491+03:00)
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" executed successfully
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" (scheduled at 2026-02-20 21:39:56.555289+03:00)
+2026-02-20 21:39:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:26 +03)" executed successfully
+2026-02-20 21:40:25 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:55 +03)" (scheduled at 2026-02-20 21:40:25.532589+03:00)
+2026-02-20 21:40:25 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:55 +03)" executed successfully
+2026-02-20 21:40:25 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:55 +03)" (scheduled at 2026-02-20 21:40:25.562432+03:00)
+2026-02-20 21:40:25 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:55 +03)" executed successfully
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" (scheduled at 2026-02-20 21:40:26.446344+03:00)
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" executed successfully
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" (scheduled at 2026-02-20 21:40:26.499381+03:00)
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" executed successfully
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" (scheduled at 2026-02-20 21:40:26.537491+03:00)
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" executed successfully
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" (scheduled at 2026-02-20 21:40:26.555289+03:00)
+2026-02-20 21:40:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:40:56 +03)" executed successfully
+2026-02-20 21:40:55 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:25 +03)" (scheduled at 2026-02-20 21:40:55.532589+03:00)
+2026-02-20 21:40:55 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:25 +03)" executed successfully
+2026-02-20 21:40:55 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:25 +03)" (scheduled at 2026-02-20 21:40:55.562432+03:00)
+2026-02-20 21:40:55 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:25 +03)" executed successfully
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" (scheduled at 2026-02-20 21:40:56.446344+03:00)
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" executed successfully
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" (scheduled at 2026-02-20 21:40:56.499381+03:00)
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" executed successfully
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" (scheduled at 2026-02-20 21:40:56.537491+03:00)
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" executed successfully
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" (scheduled at 2026-02-20 21:40:56.555289+03:00)
+2026-02-20 21:40:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:26 +03)" executed successfully
+2026-02-20 21:41:13 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:41:13 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:13 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:13 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:41:13 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:41:13 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:41:14 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:41:14 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:14 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:14 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:41:14 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:41:14 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:41:15 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:41:15 - root - INFO - DB tabloları kontrol edildi / oluşturuldu.
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Added job "check_ready_orders" to job store "default"
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Added job "_run_xml_collector" to job store "default"
+2026-02-20 21:41:15 - apscheduler.scheduler - INFO - Scheduler started
+2026-02-20 21:41:25 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:55 +03)" (scheduled at 2026-02-20 21:41:25.562432+03:00)
+2026-02-20 21:41:25 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:55 +03)" executed successfully
+2026-02-20 21:41:26 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:56 +03)" (scheduled at 2026-02-20 21:41:26.499381+03:00)
+2026-02-20 21:41:26 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:56 +03)" executed successfully
+2026-02-20 21:41:43 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:13 +03)" (scheduled at 2026-02-20 21:41:43.325694+03:00)
+2026-02-20 21:41:43 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:13 +03)" executed successfully
+2026-02-20 21:41:44 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:41:44 +03)" (scheduled at 2026-02-20 21:41:44.067621+03:00)
+2026-02-20 21:41:44 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:14 +03)" executed successfully
+2026-02-20 21:41:45 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:15 +03)" (scheduled at 2026-02-20 21:41:45.098198+03:00)
+2026-02-20 21:41:45 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:15 +03)" (scheduled at 2026-02-20 21:41:45.102938+03:00)
+2026-02-20 21:41:45 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:15 +03)" executed successfully
+2026-02-20 21:41:45 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:15 +03)" executed successfully
+2026-02-20 21:41:55 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:25 +03)" (scheduled at 2026-02-20 21:41:55.562432+03:00)
+2026-02-20 21:41:55 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:25 +03)" executed successfully
+2026-02-20 21:41:56 - apscheduler.executors.default - INFO - Running job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:26 +03)" (scheduled at 2026-02-20 21:41:56.499381+03:00)
+2026-02-20 21:41:56 - apscheduler.executors.default - INFO - Job "_run_xml_collector (trigger: interval[0:00:30], next run at: 2026-02-20 21:42:26 +03)" executed successfully

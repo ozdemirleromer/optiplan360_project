@@ -1,0 +1,176 @@
+version: "1.0.0"
+template_name: "optiplanning_professional_full"
+owner: "optiplan360"
+purpose: "Deneme-yanilmasiz profesyonel operator calisma sablonu"
+
+runtime:
+  platform: "windows"
+  requires_desktop_session: true
+  app:
+    exe_path: "C:\\Biesse\\OptiPlanning\\System\\OptiPlan.exe"
+    job_root: "C:\\Biesse\\OptiPlanning\\Job"
+  tools:
+    python_min: "3.11"
+    pywinauto: "required"
+    openpyxl: "required"
+
+naming_rules:
+  strict_same_name: true
+  expected:
+    - order_name
+    - worklist_name
+    - xlsx_stem
+  invalid_chars_regex: "[<>:\"/\\\\|?*]"
+  normalize:
+    trim: true
+    collapse_spaces: true
+
+ui_map:
+  menus:
+    file:
+      - "Dosya->Yeni"
+      - "Dosya->Kaydet\tCtrl+S"
+      - "Dosya->Kapat\tCtrl+K"
+    edit:
+      - "Düzenle->Yeni Çalışma Listesi/Çalışma\t+"
+    params:
+      - "Parametreler->İçe Aktar ..."
+    run:
+      - "Yürüt->Optimize Et / Devam et\tF5"
+  dialogs:
+    save_opjx:
+      title_contains: ".opjx"
+      fields:
+        file_name_edit:
+          class_name: "Edit"
+          required: true
+      actions:
+        save_button: ["Kaydet", "Save"]
+        cancel_button: ["İptal", "Cancel"]
+    new_worklist_opdx:
+      title_contains: ".opdx"
+      fields:
+        worklist_name_edit:
+          class_name: "Edit"
+          required: true
+      actions:
+        new_button: ["Yeni", "New"]
+        cancel_button: ["İptal", "Cancel"]
+    warnings:
+      title_any: ["Uyarılar / Hatalar", "Dikkat!", "Warning", "Error"]
+      strategy:
+        default: "fail_fast_with_message"
+        close_file_cancel: "click_no_or_hayir"
+
+data_contract:
+  order:
+    fields:
+      order_name:
+        type: "string"
+        required: true
+        min_len: 1
+      worklist_name:
+        type: "string"
+        required: true
+        must_equal: "order_name"
+      xlsx_stem:
+        type: "string"
+        required: true
+        must_equal: "order_name"
+  parts:
+    columns:
+      - name: "boy"
+        type: "number_mm"
+        required: true
+        min: 1
+        max: 5000
+      - name: "en"
+        type: "number_mm"
+        required: true
+        min: 1
+        max: 5000
+      - name: "adet"
+        type: "int"
+        required: true
+        min: 1
+        max: 9999
+      - name: "grain"
+        type: "enum"
+        required: true
+        values: ["0", "1", "2", "3"]
+        default: "0"
+      - name: "u1"
+        type: "edge_flag"
+        required: false
+      - name: "u2"
+        type: "edge_flag"
+        required: false
+      - name: "k1"
+        type: "edge_flag"
+        required: false
+      - name: "k2"
+        type: "edge_flag"
+        required: false
+      - name: "delik1"
+        type: "string"
+        required: false
+      - name: "delik2"
+        type: "string"
+        required: false
+      - name: "bilgi"
+        type: "string"
+        required: false
+  edge_flag_rule:
+    description: "Hucre doluysa secili kabul edilir (icerikten bagimsiz)"
+    false_literals: ["", "0", "0.0", "false", "no", "n", "yok", "hayir"]
+
+pipeline:
+  orchestrator:
+    script: "scripts/optiplan_professional_run.py"
+    entrypoint_example: "python scripts/optiplan_professional_run.py --xlsx C:\\path\\LISTE.xlsx"
+  stages:
+    - id: "stage1_new_and_worklist"
+      description: "Yeni OPJX + ayni isimli OPDX olustur"
+      script: "scripts/optiplan_stage1_automation.py"
+      inputs: ["xlsx_path OR list_name"]
+      outputs: ["open_order", "open_worklist"]
+    - id: "stage2_select_paste"
+      description: "Sec ekrani -> sag tik -> yapistir"
+      script: "scripts/optiplan_stage2_select_paste.py"
+      inputs: ["xlsx_path"]
+      outputs: ["rows_pasted"]
+    - id: "stage3_optimize"
+      description: "Optimize et/devam et"
+      action: "menu: Yürüt->Optimize Et / Devam et"
+
+retry_policy:
+  max_attempts: 3
+  backoff_seconds: [1, 3, 9]
+  fail_fast_conditions:
+    - "name_mismatch"
+    - "file_in_use_warning"
+    - "required_screen_not_open"
+
+logging:
+  run_log:
+    enabled: true
+    include:
+      - timestamp
+      - active_window
+      - stage
+      - action
+      - result
+  ui_map_snapshot:
+    enabled: true
+    script: "scripts/optiplan_ui_mapper.py"
+    output: "docs/optiplanning/generated_ui_map.json"
+
+operator_checklist:
+  pre_run:
+    - "OptiPlanning acik ve aktif desktop session'da"
+    - "order/worklist/xlsx isimleri birebir ayni"
+    - "XLSX satirlari numeric kurallara uygun"
+  post_run:
+    - "paste sonrasi satir sayisi dogrulandi"
+    - "uyari/hata diyalogu yok"
+    - "optimizasyon baslatma adimi hazir"

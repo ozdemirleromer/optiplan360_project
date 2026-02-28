@@ -1,0 +1,750 @@
+openapi: 3.0.3
+info:
+  title: OptiPlan 360 API
+  version: 1.0.0
+  description: |
+    OptiPlan 360 — Üretim Planlama ve Sipariş Yönetim Sistemi API.
+    Düzeltmeler v2:
+      - [KRİTİK] 4 eksik endpoint eklendi (import, validate, approve, export)
+      - [KRİTİK] Tüm request/response şemaları tanımlandı
+      - [YÜKSEK] JWT authentication eklendi
+      - [YÜKSEK] Hata response'ları tanımlandı
+      - [YÜKSEK] Parametre eksiklikleri giderildi
+
+servers:
+  - url: /api/v1
+
+# ─────────────────────────────────────────
+# GÜVENLİK
+# ─────────────────────────────────────────
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: "JWT token. Login endpoint'inden alınır."
+
+  # ─── ŞEMALAR ───
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          example: "VALIDATION_ERROR"
+        message:
+          type: string
+          example: "Zorunlu alan eksik: customer_id"
+        details:
+          type: object
+
+    Customer:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        phone_norm:
+          type: string
+          example: "5321234567"
+        name:
+          type: string
+          example: "ABC Mobilya"
+        address:
+          type: string
+          nullable: true
+        mikro_ref:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    CustomerCreate:
+      type: object
+      required: [phone_norm, name]
+      properties:
+        phone_norm:
+          type: string
+          example: "5321234567"
+        name:
+          type: string
+          example: "ABC Mobilya"
+        address:
+          type: string
+
+    OrderPart:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        part_group:
+          type: string
+          enum: [GOVDE, ARKALIK]
+        boy_mm:
+          type: number
+          example: 700.00
+        en_mm:
+          type: number
+          example: 400.00
+        adet:
+          type: integer
+          example: 2
+        grain_code:
+          type: string
+          enum: ["0-Material", "1-Material", "2-Material", "3-Material"]
+          description: |
+            OptiPlanning @437 eşleşme:
+            0-Material = Otomatik: damar/desen yok, her iki yön serbest
+            1-Material = Uzunluk: damar kısa kenar, parça genişliği=panel genişliği
+            2-Material = Genişlik: damar uzun kenar, parça uzunluğu=panel uzunluğu
+            3-Material = Karışık: desen yönü var ama önemsiz
+        u1:
+          type: boolean
+        u2:
+          type: boolean
+        k1:
+          type: boolean
+        k2:
+          type: boolean
+        part_desc:
+          type: string
+          nullable: true
+        drill_code_1:
+          type: string
+          nullable: true
+        drill_code_2:
+          type: string
+          nullable: true
+
+    Order:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        customer_id:
+          type: string
+          format: uuid
+        phone_norm:
+          type: string
+        status:
+          type: string
+          enum: [NEW, HOLD, CANCELLED, IN_PRODUCTION, READY, DELIVERED, DONE]
+        thickness_mm:
+          type: integer
+          enum: [4, 5, 8, 18]
+        plate_w_mm:
+          type: integer
+          example: 2100
+        plate_h_mm:
+          type: integer
+          example: 2800
+        color:
+          type: string
+        material_name:
+          type: string
+        band_mm:
+          type: number
+          nullable: true
+        grain_default:
+          type: string
+          enum: ["0-Material", "1-Material", "2-Material", "3-Material"]
+          description: "OptiPlanning @437: 0=Otomatik(desensiz), 1=Kisa kenar damar, 2=Uzun kenar damar, 3=Karisik"
+        crm_name_snapshot:
+          type: string
+        ts_code:
+          type: string
+          description: "Otomatik üretilen zaman damgası kodu (YYYYMMDD_HHMMSS)"
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderPart'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    OrderCreate:
+      type: object
+      required: [customer_id, phone_norm, thickness_mm, plate_w_mm, plate_h_mm, color, material_name]
+      properties:
+        customer_id:
+          type: string
+          format: uuid
+        phone_norm:
+          type: string
+        thickness_mm:
+          type: integer
+          enum: [4, 5, 8, 18]
+        plate_w_mm:
+          type: integer
+        plate_h_mm:
+          type: integer
+        color:
+          type: string
+        material_name:
+          type: string
+        band_mm:
+          type: number
+          nullable: true
+        grain_default:
+          type: string
+          enum: ["0-Material", "1-Material", "2-Material", "3-Material"]
+          default: "0-Material"
+        parts:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderPart'
+
+    ValidationResult:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+              row:
+                type: integer
+                nullable: true
+        merge_suggestions:
+          type: array
+          items:
+            type: object
+            properties:
+              rows:
+                type: array
+                items:
+                  type: integer
+              reason:
+                type: string
+              band_match:
+                type: boolean
+                description: "Bant tikleri aynı mı (birleştirme önerisinde)"
+
+    MaterialSuggestion:
+      type: object
+      properties:
+        stok_adi:
+          type: string
+        kalinlik:
+          type: integer
+        renk:
+          type: string
+        ebat:
+          type: string
+        match_score:
+          type: number
+
+    StationScan:
+      type: object
+      required: [station_id, code]
+      properties:
+        station_id:
+          type: string
+          format: uuid
+        code:
+          type: string
+          description: "Barkod değeri"
+        scanned_by:
+          type: string
+          format: uuid
+
+    StationScanResult:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [OK, WARN, ERROR]
+        message:
+          type: string
+        order_id:
+          type: string
+          format: uuid
+          nullable: true
+        new_order_status:
+          type: string
+          nullable: true
+
+    MessageSend:
+      type: object
+      required: [customer_id, template_key]
+      properties:
+        customer_id:
+          type: string
+          format: uuid
+        order_id:
+          type: string
+          format: uuid
+        template_key:
+          type: string
+        params:
+          type: object
+          description: "Template parametreleri (customer_name, order_no, vb.)"
+
+    ExportResult:
+      type: object
+      properties:
+        files:
+          type: array
+          items:
+            type: object
+            properties:
+              filename:
+                type: string
+                example: "ABCMOBILYA_20260210_143022_18mmBeyaz_GOVDE.xlsx"
+              part_group:
+                type: string
+                enum: [GOVDE, ARKALIK]
+              path:
+                type: string
+
+  # ─── ORTAK RESPONSE'LAR ───
+  responses:
+    BadRequest:
+      description: Geçersiz istek
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Kimlik doğrulama başarısız
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Kayıt bulunamadı
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    InternalError:
+      description: Sunucu hatası
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+# ─────────────────────────────────────────
+# ENDPOINT'LER
+# ─────────────────────────────────────────
+paths:
+
+  # ── Sağlık Kontrolü ──
+  /health:
+    get:
+      summary: Sistem sağlık kontrolü
+      security: []
+      responses:
+        '200':
+          description: Sistem çalışıyor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "ok"
+                  version:
+                    type: string
+                    example: "1.0.0"
+                  db:
+                    type: string
+                    enum: [connected, disconnected]
+
+  # ── Auth ──
+  /auth/login:
+    post:
+      summary: Kullanıcı girişi (JWT token al)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, password]
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Başarılı giriş
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      username:
+                        type: string
+                      role:
+                        type: string
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # ── Müşteriler ──
+  /customers/lookup:
+    get:
+      summary: Telefon numarasıyla müşteri arama (CRM eşleşme)
+      parameters:
+        - in: query
+          name: phone
+          required: true
+          schema:
+            type: string
+          description: "Normalize edilmiş telefon numarası"
+      responses:
+        '200':
+          description: Eşleşme bulundu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '404':
+          description: Eşleşme yok — yeni kayıt gerekli
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /customers:
+    post:
+      summary: Yeni müşteri kaydı oluştur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CustomerCreate'
+      responses:
+        '201':
+          description: Müşteri oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Bu telefon numarası zaten kayıtlı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Malzemeler (Mikro SQL read-only) ──
+  /materials/suggest:
+    get:
+      summary: Mikro stok adı önerisi (read-only)
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema:
+            type: string
+          description: "Arama terimi (stok adı parçası)"
+        - in: query
+          name: thickness
+          schema:
+            type: integer
+            enum: [4, 5, 8, 18]
+        - in: query
+          name: color
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Öneri listesi
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MaterialSuggestion'
+        '503':
+          description: Mikro SQL bağlantısı kurulamadı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ── Siparişler ──
+  /orders:
+    post:
+      summary: Yeni sipariş oluştur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderCreate'
+      responses:
+        '201':
+          description: Sipariş oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      summary: Sipariş listesi (filtrelenebilir)
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [NEW, HOLD, CANCELLED, IN_PRODUCTION, READY, DELIVERED, DONE]
+        - in: query
+          name: customer_id
+          schema:
+            type: string
+            format: uuid
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: per_page
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Sipariş listesi
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Order'
+                  total:
+                    type: integer
+                  page:
+                    type: integer
+
+  # ── [KRİTİK FIX] Eksik Endpoint'ler ──
+  /orders/{id}/import/xlsx:
+    post:
+      summary: Excel dosyasından ölçü satırlarını içeri al
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                part_group:
+                  type: string
+                  enum: [GOVDE, ARKALIK]
+                  default: GOVDE
+      responses:
+        '200':
+          description: Import başarılı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  imported_rows:
+                    type: integer
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+                  parts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderPart'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{id}/validate:
+    post:
+      summary: Sipariş validasyonu (header + satır kontrolleri, merge önerisi)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Validasyon sonucu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationResult'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{id}/approve:
+    post:
+      summary: Siparişi onayla ve üretime gönder
+      description: |
+        Sipariş önce validate edilmiş olmalı.
+        Onay sonrası status IN_PRODUCTION olur ve WhatsApp bildirimi tetiklenir.
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                merge_accepted:
+                  type: array
+                  items:
+                    type: array
+                    items:
+                      type: string
+                      format: uuid
+                  description: "Kabul edilen birleştirme grupları (part_id dizileri)"
+      responses:
+        '200':
+          description: Sipariş onaylandı
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Order'
+        '400':
+          description: Validasyon geçmemiş veya durum uyumsuz
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /orders/{id}/export/opti:
+    post:
+      summary: OptiPlanning için xlsx dosyası üret (GOVDE/ARKALIK ayrı)
+      description: |
+        Renk ve kalınlık farklıysa ayrı dosya üretilir.
+        Dosya adı formatı: CRMISIM_TIMESTAMP_KALINLIKmmRENK_GRUP.xlsx
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Export dosyaları oluşturuldu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ExportResult'
+        '400':
+          description: Sipariş henüz onaylanmamış
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ── İstasyonlar ──
+  /stations/scan:
+    post:
+      summary: İstasyon barkod okutma
+      description: |
+        Yanlış aşamada okutma yapılırsa işlem yapılmaz, uyarı+log döner (Handoff §0.6).
+        İstasyonlar: Ürün Hazırlık, Ebatlama, Bantlama, Kontrol, Teslimat.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StationScan'
+      responses:
+        '200':
+          description: Okutma sonucu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StationScanResult'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  # ── Mesajlar ──
+  /messages/send:
+    post:
+      summary: WhatsApp mesaj gönderimi tetikle (Meta WABA)
+      description: |
+        Meta WhatsApp Business API üzerinden mesaj gönderir.
+        Template mesajlar Meta onaylı olmalıdır.
+        Mesajlar mesai saatleri içinde gönderilir (config/shift_hours.json).
+        Mesai dışı mesajlar kuyruğa alınır, sonraki iş günü başında gönderilir.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MessageSend'
+      responses:
+        '200':
+          description: Mesaj kuyruğa alındı
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message_id:
+                    type: string
+                    format: uuid
+                  status:
+                    type: string
+                    example: "QUEUED"
+        '400':
+          $ref: '#/components/responses/BadRequest'

@@ -1,0 +1,70 @@
+{
+  "started_at": "2026-02-25T04:12:58",
+  "ended_at": "2026-02-25T04:13:16",
+  "status": "PASS",
+  "exit_code": 0,
+  "xlsx": "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+  "options": {
+    "timeout": 60.0,
+    "skip_preflight": true,
+    "skip_ui_map": true,
+    "run_optimize": true,
+    "optimize_timeout": 12.0,
+    "optimize_trigger": "button"
+  },
+  "steps": [
+    {
+      "name": "stage1_new_save_worklist",
+      "status": "PASS",
+      "started_at": "2026-02-25T04:12:58",
+      "ended_at": "2026-02-25T04:13:05",
+      "duration_sec": 7.023,
+      "command": [
+        "C:\\PROJE\\optiplan360_project\\backend\\.venv\\Scripts\\python.exe",
+        "scripts/optiplan_stage1_automation.py",
+        "--xlsx",
+        "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+        "--timeout",
+        "60.0"
+      ]
+    },
+    {
+      "name": "stage2_select_paste",
+      "status": "PASS",
+      "started_at": "2026-02-25T04:13:05",
+      "ended_at": "2026-02-25T04:13:13",
+      "duration_sec": 7.845,
+      "command": [
+        "C:\\PROJE\\optiplan360_project\\backend\\.venv\\Scripts\\python.exe",
+        "scripts/optiplan_stage2_select_paste.py",
+        "--xlsx",
+        "C:\\Optiplan360_Entegrasyon\\OPTİPLAN\\2_ISLENEN_SIPARISLER\\EXCEL_TEST_1.xlsx",
+        "--timeout",
+        "60.0"
+      ]
+    },
+    {
+      "name": "save_active_optiplan",
+      "status": "PASS",
+      "started_at": "2026-02-25T04:13:13",
+      "ended_at": "2026-02-25T04:13:14",
+      "duration_sec": 1.144
+    },
+    {
+      "name": "stage3_optimize",
+      "status": "PASS",
+      "started_at": "2026-02-25T04:13:14",
+      "ended_at": "2026-02-25T04:13:16",
+      "duration_sec": 1.659,
+      "command": [
+        "C:\\PROJE\\optiplan360_project\\backend\\.venv\\Scripts\\python.exe",
+        "scripts/optiplan_stage3_optimize.py",
+        "--timeout",
+        "12.0",
+        "--trigger",
+        "button"
+      ]
+    }
+  ],
+  "error": null
+}

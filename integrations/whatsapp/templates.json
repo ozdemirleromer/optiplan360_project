@@ -1,0 +1,62 @@
+{
+  "meta": {
+    "language": "tr",
+    "timezone": "+03:00",
+    "version": "2.0",
+    "provider": "META_WABA",
+    "provider_notes": "Tüm template'ler Meta Business Manager'dan onaylatılmalıdır. Template adları Meta tarafına küçük harf ve alt çizgi formatında gönderilir (ör: ocr_unreadable_global).",
+    "notes": [
+      "Mesajlar mesai saatleri içinde gönderilir (config/shift_hours.json).",
+      "İletiler kurumsal, kısa, net olmalı. Müşteri satır numarası zorunlu istenebilir.",
+      "Parametreler {{...}} şeklinde yer tutucu olarak bırakılır.",
+      "[v2] order_on_hold ve order_cancelled şablonları eklendi.",
+      "[v2] Tüm şablonlara {{company_name}} firma imzası eklendi."
+    ]
+  },
+  "templates": {
+    "ocr_unreadable_global": {
+      "purpose": "Form genel olarak okunamadı (ışık/yamuk/blur/karışık). Yeniden gönderim talebi.",
+      "text": "Merhaba {{customer_name}}, sipariş formunuz ulaştı ancak görüntü kalitesi nedeniyle okunamadı ({{reason}}). Rica etsek formu daha aydınlık ortamda, düz ve net olacak şekilde yeniden fotoğraflayıp gönderebilir misiniz? Teşekkürler. — {{company_name}}"
+    },
+    "ocr_unreadable_row": {
+      "purpose": "Satır bazlı bilgi talebi (satır numarası zorunlu).",
+      "text": "Merhaba {{customer_name}}, sipariş formunuz işleme alındı. Ancak {{row_no}} numaralı satırdaki bilgi net okunamadı. Lütfen bu satır için Boy x En (mm) ve Adet bilgisini tekrar yazarak yanıtlayabilir misiniz? Örn: {{row_no}}: 700x400 - 2 adet. Teşekkürler. — {{company_name}}"
+    },
+    "phone_not_found": {
+      "purpose": "Telefon normalize edildi ama CRM eşleşmesi yok; yeni kayıt gerekli.",
+      "text": "Merhaba, siparişiniz alındı. Kayıtlarımızda bu telefon numarasıyla eşleşen cari bulunamadı. Lütfen firma/isim bilgisini yazar mısınız? (Örn: ABC Mobilya). Teşekkürler. — {{company_name}}"
+    },
+    "order_sent_to_production": {
+      "purpose": "Sipariş onaylandı ve üretime gönderildi.",
+      "text": "Merhaba {{customer_name}}, siparişiniz onaylandı ve üretime aktarılmıştır. Sipariş No: {{order_no}}. Hazır olduğunda ayrıca bilgilendirme yapılacaktır. — {{company_name}}"
+    },
+    "order_on_hold": {
+      "purpose": "[v2 EKLENDİ] Sipariş bekletmeye alındı bilgisi.",
+      "text": "Merhaba {{customer_name}}, {{order_no}} numaralı siparişiniz {{hold_reason}} nedeniyle bekletmeye alınmıştır. En kısa sürede sizinle iletişime geçilecektir. — {{company_name}}"
+    },
+    "order_cancelled": {
+      "purpose": "[v2 EKLENDİ] Sipariş iptal edildi bilgisi.",
+      "text": "Merhaba {{customer_name}}, {{order_no}} numaralı siparişiniz iptal edilmiştir. Sorularınız için bizimle iletişime geçebilirsiniz. — {{company_name}}"
+    },
+    "order_ready": {
+      "purpose": "Hazır bilgisi (istasyon okutma ile).",
+      "text": "Merhaba {{customer_name}}, siparişiniz hazırlanmıştır. Sipariş No: {{order_no}}. Teslim almak için uygun olduğunuzda bizimle iletişime geçebilirsiniz. — {{company_name}}"
+    },
+    "order_delivered": {
+      "purpose": "Teslim edildi bilgisi (istasyon okutma ile).",
+      "text": "Merhaba {{customer_name}}, siparişiniz teslim edilmiştir. Sipariş No: {{order_no}}. İyi günlerde kullanmanızı dileriz. — {{company_name}}"
+    },
+    "pickup_reminder": {
+      "purpose": "Teslim alınmadı hatırlatma (2 gün periyot, max 5, mesai içinde).",
+      "text": "Merhaba {{customer_name}}, {{ready_date}} tarihinde hazır olan siparişiniz henüz teslim alınmamış görünüyor. Uygun olduğunuzda teslim alabilir misiniz? Sipariş No: {{order_no}}. — {{company_name}}"
+    }
+  },
+  "routing_rules": {
+    "send_only_in_business_hours": true,
+    "max_pickup_reminders": 5,
+    "pickup_reminder_period_days": 2,
+    "row_number_required_for_row_requests": true,
+    "auto_hold_notification": true,
+    "auto_cancel_notification": true
+  }
+}
