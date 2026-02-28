@@ -140,4 +140,4 @@ describe("TransformerService", () => {
       ),
     ).toThrow(ERROR_CODES.E_TRIM_RULE_MISSING);
   });
-});
+});

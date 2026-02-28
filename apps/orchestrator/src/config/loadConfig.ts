@@ -66,4 +66,4 @@ export function loadRulesConfig(): RulesConfig {
   const file = resolveConfigPath("rules.json");
   const raw = fs.readFileSync(file, "utf-8");
   return rulesConfigSchema.parse(JSON.parse(raw));
-}
+}

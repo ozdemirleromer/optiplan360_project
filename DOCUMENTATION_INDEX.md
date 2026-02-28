@@ -41,4 +41,4 @@ Bu dosya, proje için hızlı doküman erişim noktalarını listeler.
 - `docs/multi-agent/TODO_MASTER_EXECUTION_V1.md` - Tum proje icin sirali TODO
 - `docs/multi-agent/TODO_AGENT1_ORCH_V1.md` - Agent-1 TODO
 - `docs/multi-agent/TODO_AGENT2_UI_V1.md` - Agent-2 TODO
-- `docs/multi-agent/TODO_AGENT3_INTEG_OPS_V1.md` - Agent-3 TODO
+- `docs/multi-agent/TODO_AGENT3_INTEG_OPS_V1.md` - Agent-3 TODO

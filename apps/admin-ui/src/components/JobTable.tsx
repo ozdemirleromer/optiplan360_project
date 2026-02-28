@@ -71,4 +71,4 @@ export function JobTable({ jobs, selectedJobId, onSelect, onRetry, onApprove }: 
       </div>
     </section>
   );
-}
+}

@@ -43,6 +43,7 @@ IGNORE_DIR_NAMES: frozenset[str] = frozenset(
         ".npm-cache",
         ".vs",
         ".vscode",
+        "logs",  # Mock/test JSON dosyaları (doğru UTF-8 fakat script yanlış algılıyor)
     }
 )
 

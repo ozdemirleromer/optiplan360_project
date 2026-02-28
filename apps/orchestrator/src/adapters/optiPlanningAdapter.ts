@@ -41,4 +41,4 @@ export class OptiPlanningAdapter {
 
     return { operatorActionRequired: false };
   }
-}
+}

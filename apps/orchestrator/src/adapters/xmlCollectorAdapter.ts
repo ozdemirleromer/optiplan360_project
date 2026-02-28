@@ -51,4 +51,4 @@ export class XmlCollectorAdapter {
       throw new Error(ERROR_CODES.E_XML_INVALID);
     }
   }
-}
+}

@@ -214,4 +214,4 @@ export class JobRepository {
 
     return row;
   }
-}
+}

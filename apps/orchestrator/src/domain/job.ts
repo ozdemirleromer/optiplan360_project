@@ -78,4 +78,4 @@ export interface CustomerRecord {
   name: string;
   phone_normalized: string;
   created_at: string;
-}
+}

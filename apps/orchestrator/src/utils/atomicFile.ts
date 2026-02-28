@@ -17,4 +17,4 @@ export async function writeFileAtomic(targetPath: string, content: Buffer | stri
 export async function copyFileAtomic(sourcePath: string, targetPath: string): Promise<void> {
   const content = await fs.readFile(sourcePath);
   await writeFileAtomic(targetPath, content);
-}
+}
