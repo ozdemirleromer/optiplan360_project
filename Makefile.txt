@@ -20,6 +20,10 @@ setup:
 up:
 	docker-compose up --build
 
+# Tüm sistem (backend + frontend + db)
+run:
+	docker-compose up -d && npm --prefix frontend run dev 2>/dev/null || echo "Frontend çalışıyor: http://localhost:5173" && echo "Backend çalışıyor: http://localhost:8000"
+
 # Lint kontrolü
 lint:
 	docker-compose run --rm lint_python

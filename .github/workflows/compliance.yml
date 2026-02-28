@@ -52,6 +52,8 @@ jobs:
           pip install sqlalchemy httpx pydantic python-jose slowapi \
                       jinja2 email-validator openpyxl python-multipart \
                       pytz apscheduler pytest
+        env:
+          PYTHONUTF8: '1'
 
       - name: "C1-C10: Statik compliance kontrol"
         id: static_check
