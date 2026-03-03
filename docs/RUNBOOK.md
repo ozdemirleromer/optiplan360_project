@@ -5,11 +5,11 @@ Kapsam: backend/*, integrations/*, config/*
 
 ---
 
-## 1. Hızlı Kontrol (On-Call)
+## 1. Hızlı Kontrol (On-Call)
 
 1. Backend saglik kontrolu:
    - `GET /health` cevabi: `overall=healthy`
-   - `database=healthy` olmalı
+   - `database=healthy` olmalı
 2. DB baglantisi:
    - Production: PostgreSQL
    - Local/Test: SQLite (yalnizca gecici)

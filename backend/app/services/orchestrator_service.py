@@ -33,6 +33,7 @@ from ..models import (
     Order,
     OrderPart,
 )
+from ..models.enums import JobErrorCode
 
 # ---------- AGENT_ONEFILE §G4 + §THICKNESS POLICY ----------
 # Trim mapping (mm) for each panel thickness
@@ -244,7 +245,7 @@ class OrchestratorService:
                     customer = self.db.query(Customer).filter(Customer.phone == phone).first()
             if not customer:
                 job.state = OptiJobStateEnum.HOLD
-                job.error_code = "E_CRM_NO_MATCH"
+                job.error_code = JobErrorCode.CRM_NO_MATCH
                 job.error_message = "CRM musteri eslesmesi bulunamadi. Musteri kaydi olusturulmali."
                 _add_audit(self.db, job.id, "STATE_HOLD", "CRM gate: musteri bulunamadi - HOLD")
                 self.db.commit()
@@ -259,7 +260,7 @@ class OrchestratorService:
                     has_plate = True
             if not has_plate:
                 job.state = OptiJobStateEnum.HOLD
-                job.error_code = "E_PLATE_SIZE_MISSING"
+                job.error_code = JobErrorCode.PLATE_SIZE_MISSING
                 job.error_message = (
                     "Plaka ebati belirtilmemis ve varsayilan yapilandirma bulunamadi."
                 )
@@ -271,7 +272,7 @@ class OrchestratorService:
             parts = self.db.query(OrderPart).filter(OrderPart.order_id == order.id).all()
             if not parts:
                 job.state = OptiJobStateEnum.HOLD
-                job.error_code = "E_NO_PARTS"
+                job.error_code = JobErrorCode.NO_PARTS
                 job.error_message = "Sipariste parca bulunamadi"
                 _add_audit(self.db, job.id, "STATE_HOLD", "Parca yok - HOLD")
                 self.db.commit()
@@ -285,7 +286,7 @@ class OrchestratorService:
 
                 if part_group == "ARKALIK" and int(thickness) not in BACKING_THICKNESSES:
                     job.state = OptiJobStateEnum.HOLD
-                    job.error_code = "E_BACKING_THICKNESS_UNKNOWN"
+                    job.error_code = JobErrorCode.BACKING_THICKNESS_UNKNOWN
                     job.error_message = f"Bilinmeyen arkalik kalinligi: {thickness}mm (gecerli: {sorted(BACKING_THICKNESSES)})"
                     _add_audit(
                         self.db,
@@ -298,7 +299,7 @@ class OrchestratorService:
 
                 if thickness_key not in TRIM_BY_THICKNESS:
                     job.state = OptiJobStateEnum.HOLD
-                    job.error_code = "E_TRIM_RULE_MISSING"
+                    job.error_code = JobErrorCode.TRIM_RULE_MISSING
                     job.error_message = f"Trim kurali bulunamadi: {thickness_key}mm"
                     _add_audit(
                         self.db,
@@ -339,7 +340,7 @@ class OrchestratorService:
         except Exception as exc:
             logger.error("Yerel isleme hatasi (job=%s): %s", job.id, exc, exc_info=True)
             job.state = OptiJobStateEnum.FAILED
-            job.error_code = "E_LOCAL_PROCESSING"
+            job.error_code = JobErrorCode.LOCAL_PROCESSING
             job.error_message = str(exc)[:500]
             _add_audit(self.db, job.id, "STATE_FAILED", f"Yerel isleme hatasi: {exc}")
             self.db.commit()
@@ -409,6 +410,15 @@ class OrchestratorService:
 
     def _trigger_optiplan_exe(self, job: OptiJob, xlsx_files: list[str]) -> None:
         """Mode A: OptiPlanning.exe'yi CLI uzerinden tetikle."""
+        # 2-A: Tek OPTI_RUNNING kilidi — esit zamanli calismayi engelle
+        running_count = self.db.query(OptiJob).filter(
+            OptiJob.state == OptiJobStateEnum.OPTI_RUNNING,
+            OptiJob.id != job.id,
+        ).count()
+        if running_count > 0:
+            raise ValidationError(
+                "Zaten aktif bir OPTI_RUNNING job var. Esit zamanli calisma engellendi."
+            )
         try:
             cmd = [OPTIPLAN_EXE_PATH] + xlsx_files
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -464,10 +474,10 @@ class OrchestratorService:
     RETRY_COUNT_MAX = 3
     PERMANENT_ERROR_CODES = frozenset(
         [
-            "E_TEMPLATE_INVALID",
-            "E_CRM_NO_MATCH",
-            "E_PLATE_SIZE_MISSING",
-            "E_XML_INVALID",
+            JobErrorCode.TEMPLATE_INVALID,
+            JobErrorCode.CRM_NO_MATCH,
+            JobErrorCode.PLATE_SIZE_MISSING,
+            JobErrorCode.XML_INVALID,
         ]
     )
 

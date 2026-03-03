@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-import subprocess
+import subprocess
+import csv
 import os
 from pathlib import Path
 import sys
@@ -16,7 +17,8 @@ if str(BACKEND_DIR) not in sys.path:
 import app.services.optiplan_csv_otomasyon as csv_module
 
 LOCAL_TMP_ROOT = BACKEND_DIR.parent / "tmp" / "pytest_local"
-LOCAL_TMP_ROOT.mkdir(parents=True, exist_ok=True)
+LOCAL_TMP_ROOT.mkdir(parents=True, exist_ok=True)
+FIXTURE_DIR = BACKEND_DIR / "tests" / "fixtures" / "optiplan"
 
 
 def _make_workdir() -> Path:
@@ -193,5 +195,56 @@ def test_queue_processes_files_in_fifo_order(monkeypatch: pytest.MonkeyPatch) ->
         assert len(results) == 2
         assert imports == ["QUEUE_0002.csv", "QUEUE_0001.csv"]
         assert all(Path(item["output"]).parent.name == csv_module.DEFAULT_ISLENEN_KLASORU for item in results)
-    finally:
-        shutil.rmtree(tmp_path, ignore_errors=True)
+    finally:
+        shutil.rmtree(tmp_path, ignore_errors=True)
+
+
+@pytest.mark.parametrize(
+    ("fixture_name", "expected_rows"),
+    [
+        ("orders.csv", 5),
+        ("orders_1.csv", 5),
+        ("orders_case4_dense.csv", 5),
+        ("orders_edge_cases.csv", 5),
+        ("orders_large_benchmark.csv", 10),
+        ("orders_mixed_materials.csv", 5),
+    ],
+)
+def test_recovered_order_fixtures_have_expected_shape(fixture_name: str, expected_rows: int) -> None:
+    fixture_path = FIXTURE_DIR / fixture_name
+    assert fixture_path.exists(), fixture_name
+
+    with fixture_path.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+
+    assert len(rows) == expected_rows
+    assert rows, fixture_name
+    assert set(rows[0].keys()) == {
+        "id",
+        "width",
+        "length",
+        "quantity",
+        "material",
+        "thickness",
+        "band_left",
+        "band_right",
+        "band_top",
+        "band_bottom",
+        "grain",
+    }
+
+
+def test_recovered_order_fixture_values_are_parseable() -> None:
+    fixture_path = FIXTURE_DIR / "orders_mixed_materials.csv"
+
+    with fixture_path.open("r", encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+
+    assert rows
+    for row in rows:
+        assert row["id"]
+        assert int(row["width"]) > 0
+        assert int(row["length"]) > 0
+        assert int(row["quantity"]) > 0
+        assert float(row["thickness"]) > 0
+        assert row["grain"] in {"true", "false"}

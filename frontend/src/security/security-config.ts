@@ -2,7 +2,7 @@
 
 // Content Security Policy
 // Add to index.html or configure in server
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const _CSP_HEADER = {
   'Content-Security-Policy': (
     "default-src 'self'; " +

@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Settings, Play, Eye, Download, FileJson, RefreshCw, BarChart2 } from 'lucide-react';
-import NestingVisualizer from '../../components/Optimization/NestingVisualizer';
+import NestingVisualizer from '../../components/Optimization/NestingVisualizer';
+import RoomSettingsPanel, { RoomDimensions } from '../../components/Optimization/RoomSettingsPanel';
 import { NestingData } from '../../types';
 
 const OptimizationWorkbench: React.FC = () => {
      const { orderId } = useParams<{ orderId: string }>();
      const [nestingData, setNestingData] = useState<NestingData | null>(null);
      const [loading, setLoading] = useState(false);
-     const [activeTab, setActiveTab] = useState<'visualizer' | 'params'>('visualizer');
+     const [activeTab, setActiveTab] = useState<'visualizer' | 'params'>('visualizer');
+     const [roomDimensions, setRoomDimensions] = useState<RoomDimensions>({
+          wallN: 3000,
+          wallE: 2500,
+          wallS: 3000,
+          wallW: 2500,
+          layoutType: 'line',
+     });
 
      // Load preview data
      const loadPreview = async () => {
@@ -57,7 +65,7 @@ const OptimizationWorkbench: React.FC = () => {
                                    Optimizasyonu Başlat
                               </button>
                          </div>
-                    </div>
+                    </div>
                </div>
 
                <div className="max-w-7xl mx-auto p-6 grid grid-cols-12 gap-6">
@@ -108,7 +116,11 @@ const OptimizationWorkbench: React.FC = () => {
                                    </div>
                               </div>
                          </div>
-                    </div>
+                         <RoomSettingsPanel
+                              roomDimensions={roomDimensions}
+                              onRoomDimensionsChange={setRoomDimensions}
+                         />
+                    </div>
 
                     {/* Main Workspace */}
                     <div className="col-span-12 lg:col-span-9">

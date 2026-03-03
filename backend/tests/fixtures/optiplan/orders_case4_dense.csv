@@ -1,0 +1,6 @@
+id,width,length,quantity,material,thickness,band_left,band_right,band_top,band_bottom,grain
+PANEL_D1,300,240,24,18MM_MDF_WHITE,18,0,0,0,0,false
+PANEL_D2,360,180,20,18MM_MDF_WHITE,18,0,0,0,0,false
+PANEL_D3,420,220,16,18MM_MDF_WHITE,18,0,0,0,0,false
+PANEL_D4,280,280,18,18MM_MDF_WHITE,18,0,0,0,0,false
+PANEL_D5,500,260,10,18MM_MDF_WHITE,18,0,0,0,0,false

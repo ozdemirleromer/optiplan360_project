@@ -1,4 +1,4 @@
-from app.database import Base
+﻿from app.database import Base
 from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -77,9 +77,26 @@ class Order(Base):
     customer = relationship("Customer", back_populates="orders")
     parts = relationship("OrderPart", back_populates="order", cascade="all, delete-orphan")
     parts_legacy = relationship("Part", back_populates="order", cascade="all, delete-orphan")
-    audit_logs = relationship("AuditLog", back_populates="order")
+    audit_logs = relationship("AuditLog", back_populates="order")
+    notes = relationship("OrderNote", back_populates="order", cascade="all, delete-orphan", order_by="OrderNote.created_at.desc()")
 
 
+
+
+class OrderNote(Base):
+    """Sipariş üzerine eklenen operatör notları."""
+
+    __tablename__ = "order_notes"
+
+    id = Column(Integer, primary_key=True, index=True)
+    order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    note_text = Column(Text, nullable=False)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), onupdate=func.now(), nullable=True)
+
+    order = relationship("Order", back_populates="notes")
+    user = relationship("User")
 class Part(Base):
     __tablename__ = "parts"
     id = Column(Integer, primary_key=True, index=True)

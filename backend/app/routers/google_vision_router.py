@@ -16,7 +16,7 @@ from app.services.google_vision_service import (
     GoogleVisionOCRResult,
     GoogleVisionService,
 )
-from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -147,7 +147,7 @@ async def process_with_google_vision(
     ocr_result = await service.process_ocr(contents)
 
     if not ocr_result.success:
-        raise HTTPException(500, f"Google Vision OCR hatası: {ocr_result.error}")
+        raise BusinessRuleError( f"Google Vision OCR hatası: {ocr_result.error}")
 
     job_id = None
 

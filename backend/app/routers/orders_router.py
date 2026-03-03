@@ -947,3 +947,253 @@ def update_order_header(
 ):
     order = OrderService.update_order_header(db, order_id, body, current_user)
     return OrderService.order_to_out(order)
+
+
+#  Sipariş Notları 
+from app.schemas import OrderNoteCreate, OrderNoteOut, OrderNoteUpdate
+from app.models.order import OrderNote
+
+
+@router.get("/{order_id}/notes", response_model=list[OrderNoteOut])
+def get_order_notes(
+    order_id: str,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    """Siparişe ait tüm notları getir."""
+    try:
+        order_id_int = int(order_id)
+    except ValueError:
+        raise NotFoundError("Sipariş")
+    order = db.query(Order).filter(Order.id == order_id_int).first()
+    if not order:
+        raise NotFoundError("Sipariş")
+    notes = (
+        db.query(OrderNote)
+        .filter(OrderNote.order_id == order_id_int)
+        .order_by(OrderNote.created_at.desc())
+        .all()
+    )
+    from app.models import User as UserModel
+    result = []
+    for note in notes:
+        u = db.query(UserModel).filter(UserModel.id == note.user_id).first()
+        result.append(
+            OrderNoteOut(
+                id=note.id,
+                order_id=note.order_id,
+                user_id=note.user_id,
+                note_text=note.note_text,
+                created_by_username=u.username if u else None,
+                created_at=note.created_at,
+                updated_at=note.updated_at,
+            )
+        )
+    return result
+
+
+@router.post("/{order_id}/notes", response_model=OrderNoteOut, status_code=201)
+def add_order_note(
+    order_id: str,
+    body: OrderNoteCreate,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Siparişe not ekle."""
+    try:
+        order_id_int = int(order_id)
+    except ValueError:
+        raise NotFoundError("Sipariş")
+    order = db.query(Order).filter(Order.id == order_id_int).first()
+    if not order:
+        raise NotFoundError("Sipariş")
+    note = OrderNote(
+        order_id=order_id_int,
+        user_id=user.id,
+        note_text=body.note_text.strip(),
+    )
+    db.add(note)
+    db.commit()
+    db.refresh(note)
+    create_audit_log(db, user.id, "ORDER_NOTE_ADDED", None, order_id_int)
+    return OrderNoteOut(
+        id=note.id,
+        order_id=note.order_id,
+        user_id=note.user_id,
+        note_text=note.note_text,
+        created_by_username=user.username,
+        created_at=note.created_at,
+        updated_at=note.updated_at,
+    )
+
+
+@router.delete("/{order_id}/notes/{note_id}", status_code=200)
+def delete_order_note(
+    order_id: str,
+    note_id: int,
+    db: Session = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    """Sipariş notunu sil (sadece sahibi veya admin)."""
+    try:
+        order_id_int = int(order_id)
+    except ValueError:
+        raise NotFoundError("Sipariş")
+    note = (
+        db.query(OrderNote)
+        .filter(OrderNote.id == note_id, OrderNote.order_id == order_id_int)
+        .first()
+    )
+    if not note:
+        raise NotFoundError("Not")
+    role = (user.role or "").upper()
+    if role != "ADMIN" and note.user_id != user.id:
+        raise BusinessRuleError("Yalnızca kendi notunuzu silebilirsiniz")
+    db.delete(note)
+    db.commit()
+    create_audit_log(db, user.id, "ORDER_NOTE_DELETED", None, order_id_int)
+    return {"ok": True}
+
+
+#  Sipariş Kopyalama 
+@router.post("/{order_id}/clone", response_model=OrderOut, status_code=201)
+def clone_order(
+    order_id: str,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    """Mevcut siparişi kopyalar  başlık ve parçalar dahil, durum DRAFT olarak başlar."""
+    try:
+        order_id_int = int(order_id)
+    except ValueError:
+        raise NotFoundError("Sipariş")
+    src = (
+        db.query(Order)
+        .options(joinedload(Order.parts))
+        .filter(Order.id == order_id_int)
+        .first()
+    )
+    if not src:
+        raise NotFoundError("Sipariş")
+
+    from datetime import timezone as _tz
+    from uuid import uuid4 as _uuid4
+    now = datetime.now(_tz.utc)
+    ts_code = now.strftime("%Y%m%d_%H%M%S") + f"_{now.microsecond // 1000:03d}_KLON"
+    max_no = db.query(Order.order_no).order_by(Order.order_no.desc()).first()
+    next_order_no = (max_no[0] or 0) + 1
+
+    clone = Order(
+        order_no=next_order_no,
+        customer_id=src.customer_id,
+        phone_norm=src.phone_norm,
+        thickness_mm=src.thickness_mm,
+        plate_w_mm=src.plate_w_mm,
+        plate_h_mm=src.plate_h_mm,
+        color=src.color,
+        material_name=src.material_name,
+        band_mm=src.band_mm,
+        grain_default=src.grain_default,
+        crm_name_snapshot=src.crm_name_snapshot,
+        ts_code=ts_code,
+        tracking_token=str(_uuid4()),
+        created_by=user.id,
+    )
+    db.add(clone)
+    db.flush()
+
+    for p in src.parts:
+        from app.models import OrderPart
+        part_clone = OrderPart(
+            order_id=clone.id,
+            part_group=p.part_group,
+            boy_mm=p.boy_mm,
+            en_mm=p.en_mm,
+            adet=p.adet,
+            grain_code=p.grain_code,
+            u1=p.u1,
+            u2=p.u2,
+            k1=p.k1,
+            k2=p.k2,
+            part_desc=p.part_desc,
+            drill_code_1=p.drill_code_1,
+            drill_code_2=p.drill_code_2,
+        )
+        db.add(part_clone)
+
+    db.commit()
+    db.refresh(clone)
+    create_audit_log(db, user.id, "ORDER_CLONED", None, clone.id)
+    logger.info("Sipariş kopyalandı: %s  %s (user=%s)", src.id, clone.id, user.id)
+    return OrderService.order_to_out(clone)
+
+
+#  Toplu İşlemler 
+from pydantic import BaseModel as _BaseModel
+
+
+class BulkStatusUpdate(_BaseModel):
+    order_ids: list[str]
+    new_status: str
+
+
+class BulkDeleteRequest(_BaseModel):
+    order_ids: list[str]
+
+
+@router.post("/bulk/status", status_code=200)
+def bulk_update_status(
+    body: BulkStatusUpdate,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    """Seçili siparişleri toplu durum güncelle."""
+    if not body.order_ids:
+        raise BusinessRuleError("Hiç sipariş seçilmedi")
+    if len(body.order_ids) > 100:
+        raise BusinessRuleError("Tek istekte en fazla 100 sipariş güncellenebilir")
+    updated = []
+    failed = []
+    for oid in body.order_ids:
+        try:
+            OrderService.update_status(db, oid, body.new_status, user)
+            updated.append(oid)
+        except Exception as e:
+            failed.append({"id": oid, "error": str(e)})
+    return {"updated": len(updated), "failed": failed}
+
+
+@router.post("/bulk/delete", status_code=200)
+def bulk_delete_orders(
+    body: BulkDeleteRequest,
+    db: Session = Depends(get_db),
+    user: User = Depends(require_operator),
+):
+    """Seçili siparişleri toplu soft-delete."""
+    if not body.order_ids:
+        raise BusinessRuleError("Hiç sipariş seçilmedi")
+    if len(body.order_ids) > 100:
+        raise BusinessRuleError("Tek istekte en fazla 100 sipariş silinebilir")
+    from datetime import timezone as _tz
+    now = datetime.now(_tz.utc)
+    deleted = []
+    failed = []
+    for oid in body.order_ids:
+        try:
+            try:
+                oid_int = int(oid)
+            except ValueError:
+                failed.append({"id": oid, "error": "Geçersiz ID"})
+                continue
+            order = db.query(Order).filter(Order.id == oid_int, Order.deleted_at.is_(None)).first()
+            if not order:
+                failed.append({"id": oid, "error": "Bulunamadı"})
+                continue
+            OrderService._assert_can_modify(order, user)
+            order.deleted_at = now
+            create_audit_log(db, user.id, "ORDER_BULK_DELETED", None, oid_int)
+            deleted.append(oid)
+        except Exception as e:
+            failed.append({"id": oid, "error": str(e)})
+    db.commit()
+    return {"deleted": len(deleted), "failed": failed}

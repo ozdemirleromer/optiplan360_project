@@ -8,7 +8,7 @@ export { PriorityBadge } from "./PriorityBadge";
 export { Badge } from "./Badge";
 export { Modal } from "./Modal";
 export { Icon, IconWithLabel } from "./Icon";
-export { Input, Select } from "./FormComponents";
+export { Input, NumberInput, Select } from "./FormComponents";
 export { ThemeToggle } from "./ThemeToggle";
 export { SkeletonCard, SkeletonText, SkeletonCircle, SkeletonRow, SkeletonKPICard, SkeletonPage } from "./Skeleton";
 export { EmptyState, EmptySearchResults, EmptyData, EmptyList, ErrorState } from "./EmptyState";

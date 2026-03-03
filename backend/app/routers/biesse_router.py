@@ -20,7 +20,7 @@ from app.database import get_db
 from app.exceptions import BusinessRuleError, ValidationError
 from app.models import User
 from app.services.biesse_integration_service import biesse_service
-from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends
 from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
@@ -127,7 +127,7 @@ async def get_biesse_status(
 
         logger.error(f"Biesse durum kontrolü hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Biesse durum kontrolü hatası: {str(e)}")
 
 
 @router.post("/biesse/export/materials", response_model=MaterialExportResponse, tags=["biesse"])
@@ -168,7 +168,7 @@ async def export_materials_to_biesse(
 
         logger.error(f"Malzeme export hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Malzeme export hatası: {str(e)}")
 
 
 @router.post("/biesse/import/cutting-plan", response_model=Dict[str, Any], tags=["biesse"])
@@ -208,7 +208,7 @@ async def import_cutting_plan_from_biesse(
 
         logger.error(f"Kesim planı import hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Kesim planı import hatası: {str(e)}")
 
 
 @router.post("/biesse/create-cutting-job", response_model=CuttingJobResponse, tags=["biesse"])
@@ -254,7 +254,7 @@ async def create_cutting_job(
 
         logger.error(f"Kesim işi oluşturma hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Kesim işi oluşturma hatası: {str(e)}")
 
 
 @router.post("/biesse/sync/bidirectional", response_model=Dict[str, Any], tags=["biesse"])
@@ -295,7 +295,7 @@ async def sync_materials_bidirectional(
 
         logger.error(f"Senkronizasyon başlatma hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Senkronizasyon başlatma hatası: {str(e)}")
 
 
 @router.get("/biesse/jobs", response_model=Dict[str, Any], tags=["biesse"])
@@ -335,7 +335,7 @@ async def get_biesse_jobs(
 
         logger.error(f"İş listesi hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"İş listesi hatası: {str(e)}")
 
 
 @router.get("/biesse/materials", response_model=Dict[str, Any], tags=["biesse"])
@@ -375,7 +375,7 @@ async def get_biesse_materials(
 
         logger.error(f"Malzeme listesi hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Malzeme listesi hatası: {str(e)}")
 
 
 @router.post("/biesse/test-connection", response_model=Dict[str, Any], tags=["biesse"])
@@ -434,7 +434,7 @@ async def test_biesse_connection(
 
         logger.error(f"Bağlantı testi hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Bağlantı testi hatası: {str(e)}")
 
 
 @router.delete("/biesse/cleanup", response_model=Dict[str, Any], tags=["biesse"])
@@ -475,4 +475,4 @@ async def cleanup_biesse_files(
 
         logger.error(f"Dosya temizleme hatası: {str(e)}")
 
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessRuleError(f"Dosya temizleme hatası: {str(e)}")
