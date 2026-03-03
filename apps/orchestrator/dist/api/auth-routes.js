@@ -9,7 +9,9 @@ const auth_1 = require("../middleware/auth");
 function createAuthRoutes() {
     const router = express_1.default.Router();
     /**
+  
      * Login endpoint (mock for demo - replace with real auth logic)
+  
      */
     router.post("/login", (req, res) => {
         const { email, password } = req.body;
@@ -36,7 +38,9 @@ function createAuthRoutes() {
         }
     });
     /**
+  
      * Verify token endpoint
+  
      */
     router.post("/verify", (req, res) => {
         const { token } = req.body;
@@ -53,7 +57,9 @@ function createAuthRoutes() {
         res.json({ success: true, message: "Token geçerli" });
     });
     /**
+  
      * Get current user endpoint
+  
      */
     router.get("/me", (req, res) => {
         const authReq = req;

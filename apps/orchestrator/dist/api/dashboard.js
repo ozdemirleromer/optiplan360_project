@@ -1,7 +1,10 @@
 "use strict";
 /**
+
  * Orchestrator Dashboard — Tam panelli HTML dashboard
+
  * Sidebar menü + tüm bölümler (Jobs, Config, State Machine, Müşteri Arama, API Docs)
+
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renderDashboard = renderDashboard;
