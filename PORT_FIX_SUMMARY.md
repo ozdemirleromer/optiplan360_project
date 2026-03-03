@@ -1,75 +1,40 @@
-# 🚨 PORT BAĞLANTI ÇAKIŞMALARI DÜZELTMELERİ
+# Port Fix Summary
 
-## 📋 **Tespit Edilen Sorunlar:**
+Tarih: 2026-03-03
+Durum: Current normalized baseline
 
-### ❌ **Eski Hatalı Konfigürasyon:**
-- **Frontend Port**: 3000 (dokümanlarda) → 3008 (doğru)
-- **Backend Port**: 8000 (dokümanlarda) → 8080 (doğru)
-- **API URL**: http://127.0.0.1:8000 → http://127.0.0.1:8080
-- **CORS**: localhost:3000 → localhost:3008, localhost:3001
+Bu belge, repo icindeki daginik port bilgisini tek standarda indirger.
 
-### ✅ **Doğru Konfigürasyon:**
-- **Docker Frontend**: Port 3001 ✅
-- **Docker Backend**: Port 8080 ✅
-- **Local Frontend**: Port 3008 ✅
-- **Local Backend**: Port 8080 ✅
+## Guncel Standart
 
-## 🔧 **Yapılan Düzeltmeler:**
+- Ana backend: `8080`
+- Ana frontend dev: `3001`
+- Orchestrator: `8090`
+- Admin UI: deploy sekline gore degisir
 
-### 1. **Frontend Vite Config**
-```typescript
-// ÖNCE: const apiProxyTarget = env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
-// SONRA: const apiProxyTarget = env.VITE_API_BASE_URL || "http://127.0.0.1:8080";
-```
+## Duzeltilen Catisma Noktalari
 
-### 2. **API Client Default**
-```typescript
-// ÖNCE: const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
-// SONRA: const DEFAULT_API_BASE_URL = "http://127.0.0.1:8080";
-```
+- `8000` referanslari tarihi/deprecated kabul edildi
+- `3008` referanslari tarihi/deprecated kabul edildi
+- Ana repo kullanimi icin `npm run dev` -> `3001` standardi esas alindi
+- Backend API standardi `http://127.0.0.1:8080`
 
-### 3. **Deployment Guide**
-```bash
-# ÖNCE: CORS_ORIGINS=http://localhost:3000,http://localhost:3001
-# SONRA: CORS_ORIGINS=http://localhost:3008,http://localhost:3001,http://127.0.0.1:3008,http://127.0.0.1:3001
+## Teknik Notlar
 
-# ÖNCE: curl http://localhost:8000/health
-# SONRA: curl http://localhost:8080/health
-```
+- `frontend/src/services/apiClient.ts` fallback backend portunu `8080` kabul eder
+- `frontend/vite.config.ts` backend proxy hedefini `8080` kabul eder
+- Kok `package.json` frontend dev komutunu `3001` portunda calistirir
 
-## 🌐 **Güncel Erişim Adresleri:**
+## Beklenen Erisim Adresleri
 
-### **🐳 Docker Ortamı (Production):**
-- **Frontend**: http://localhost:3001 ✅
-- **Backend**: http://localhost:8080 ✅
-- **API Docs**: http://localhost:8080/docs ✅
+### Ana uygulama
+- Frontend: `http://127.0.0.1:3001`
+- Backend: `http://127.0.0.1:8080`
+- API docs: `http://127.0.0.1:8080/docs`
 
-### **💻 Local Development:**
-- **Frontend**: http://localhost:3008 ✅
-- **Backend**: http://localhost:8080 ✅
-- **API Docs**: http://localhost:8080/docs ✅
+### Orchestrator
+- Service/API: `http://127.0.0.1:8090`
 
-## 🔄 **Test Senaryoları:**
+## Not
 
-### **Docker Test:**
-```bash
-docker compose up -d
-curl http://localhost:3001/  # Frontend
-curl http://localhost:8080/health  # Backend
-```
-
-### **Local Test:**
-```bash
-cd backend && python main.py  # Port 8080
-cd frontend && npm run dev  # Port 3008
-curl http://localhost:3008/  # Frontend
-curl http://localhost:8080/health  # Backend
-```
-
-## 📝 **Not:**
-- Docker frontend port 3001'de çalışır
-- Local development frontend port 3008'de çalışır
-- Backend her zaman port 8080'de çalışır
-- CORS ayarları her iki port için yapılandırıldı
-
-**Tüm bağlantı çakışmaları düzeltildi! ✅**
+Eski raporlarda 3000, 3008 ve 8000 gorulebilir. Bunlar tarihsel izdir; guncel calisma standardi olarak yorumlanmamalidir.

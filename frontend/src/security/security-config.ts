@@ -10,7 +10,7 @@ const _CSP_HEADER = {
     "style-src 'self' 'unsafe-inline'; " +
     "img-src 'self' data: https:; " +
     "font-src 'self'; " +
-    "connect-src 'self' http://127.0.0.1:8000 http://127.0.0.1:8080 https://api.optiplan360.com; " +
+    "connect-src 'self' http://127.0.0.1:8080 http://127.0.0.1:8090 https://api.optiplan360.com; " +
     "frame-ancestors 'none'; " +
     "base-uri 'self'; " +
     "form-action 'self'"

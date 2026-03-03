@@ -1,44 +1,61 @@
 # Auto-commit ve push yapan PowerShell scripti
-# Kullanım: .\auto-push.ps1
+# Kullanim: .\auto-push.ps1
+# Kullanim (mesaj ile): .\auto-push.ps1 "fix: bug duzeltmesi"
 
 param(
-    [string]$message = "chore: auto-commit"
+    [string]$message = "chore: auto-commit $(Get-Date -Format 'yyyy-MM-dd HH:mm')"
 )
 
-Write-Host "🔄 Otomatik commit + push başlanıyor..." -ForegroundColor Cyan
+Write-Host "Otomatik commit + push baslaniyor..." -ForegroundColor Cyan
 Write-Host ""
 
-# Değişiklikleri kontrol et
+# Degisiklikleri kontrol et
 $status = git status --short
 if ([string]::IsNullOrWhiteSpace($status)) {
-    Write-Host "✅ Commit yapılacak değişiklik yok" -ForegroundColor Green
+    Write-Host "Commit yapilacak degisiklik yok" -ForegroundColor Green
     exit 0
 }
 
-Write-Host "📝 Değişiklikler algılandı:" -ForegroundColor Yellow
+Write-Host "Degisiklikler algilandi:" -ForegroundColor Yellow
 $status | ForEach-Object { Write-Host "  $_" }
 Write-Host ""
 
 # Stage ve commit
-Write-Host "➕ Tüm dosyalar stage ediliyor..." -ForegroundColor Cyan
+Write-Host "Tum dosyalar stage ediliyor..." -ForegroundColor Cyan
 git add .
 
-Write-Host "💾 Commit yapılıyor: $message" -ForegroundColor Cyan
+Write-Host "Commit yapiliyor: $message" -ForegroundColor Cyan
 git commit -m $message
 
 if ($LASTEXITCODE -eq 0) {
-    Write-Host "✅ Commit başarılı!" -ForegroundColor Green
+    Write-Host "Commit basarili!" -ForegroundColor Green
     Write-Host ""
     
-    Write-Host "📤 GitHub'a push yapılıyor..." -ForegroundColor Cyan
-    git push origin main
+    Write-Host "GitHub'a push yapiliyor..." -ForegroundColor Cyan
+    
+    # SSH test et
+    ssh -T git@github.com 2>&1 | Out-Null
+    if ($LASTEXITCODE -ne 1) {
+        Write-Host "SSH baglantisi kurulamadi. HTTPS kullaniliyor..." -ForegroundColor Yellow
+    }
+    
+    git push origin main 2>&1
     
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "✅ Push başarılı!" -ForegroundColor Green
+        Write-Host "Push basarili!" -ForegroundColor Green
+        Write-Host ""
+        Write-Host "Son commit:" -ForegroundColor Cyan
         git log --oneline -1
+        Write-Host ""
+        Write-Host "GitHub: https://github.com/ozdemirleromer/optiplan360_project" -ForegroundColor Blue
     } else {
-        Write-Host "❌ Push başarısız - network veya auth kontrol et" -ForegroundColor Red
+        Write-Host "Push basarisiz!" -ForegroundColor Red
+        Write-Host ""
+        Write-Host "Cozum onerileri:" -ForegroundColor Yellow
+        Write-Host "  1. SSH key GitHub eklendigini kontrol et" -ForegroundColor Gray
+        Write-Host "  2. Internet baglantisini kontrol et" -ForegroundColor Gray
+        Write-Host "  3. Manuel push: git push origin main" -ForegroundColor Gray
     }
 } else {
-    Write-Host "❌ Commit başarısız" -ForegroundColor Red
+    Write-Host "Commit basarisiz" -ForegroundColor Red
 }
