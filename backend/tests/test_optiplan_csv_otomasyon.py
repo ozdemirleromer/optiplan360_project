@@ -117,7 +117,7 @@ def test_cli_failure_moves_file_to_error_folder(monkeypatch: pytest.MonkeyPatch)
         fake_exe = tmp_path / "OptiPlanning.exe"
         fake_exe.write_text("", encoding="ascii")
         monkeypatch.setattr(csv_module, "_resolve_optiplan_exe", lambda: fake_exe)
-        monkeypatch.setattr(csv_module, "_find_rule_source", lambda _base_dir: None)
+        monkeypatch.setattr(csv_module, "_find_rule_source", lambda: None)
 
         def _failing_run(
             command: list[str],
@@ -150,7 +150,7 @@ def test_queue_processes_files_in_fifo_order(monkeypatch: pytest.MonkeyPatch) ->
         fake_exe = tmp_path / "OptiPlanning.exe"
         fake_exe.write_text("", encoding="ascii")
         monkeypatch.setattr(csv_module, "_resolve_optiplan_exe", lambda: fake_exe)
-        monkeypatch.setattr(csv_module, "_find_rule_source", lambda _base_dir: None)
+        monkeypatch.setattr(csv_module, "_find_rule_source", lambda: None)
 
         imports: list[str] = []
 

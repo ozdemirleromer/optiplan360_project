@@ -626,9 +626,9 @@ class OptiJobListResponse(BaseModel):
     total: int
 
 
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ===================================================
 # WHATSAPP ŞEMALARI
-# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# ===================================================
 
 
 class WhatsAppConfigUpdate(BaseModel):
@@ -774,7 +774,7 @@ class PriceExportRequest(BaseModel):
     job_ids: list[str]
 
 
-# â”€â”€ Customer Portal Schemas â”€â”€
+# -- Customer Portal Schemas --
 
 
 class PortalDashboardStats(BaseModel):
@@ -843,7 +843,7 @@ class PortalTicketReply(BaseModel):
     message: str
 
 
-# â”€â”€ OptiPlanning Advanced Schemas â”€â”€
+# -- OptiPlanning Advanced Schemas --
 
 
 class MachineConfigBase(BaseModel):
