@@ -86,9 +86,9 @@ class TestOptiPlanningService(unittest.TestCase):
         self.assertEqual(len(df_ark), 1)
         
         # Arkalikta bant kolonlari her zaman bos olmali
-        self.assertTrue(pd.isna(df_ark.iloc[0]['P_EDGE_MAT_UP']))
-        self.assertTrue(pd.isna(df_ark.iloc[0]['P_EGDE_MAT_LO']))
+        self.assertTrue(pd.isna(df_ark.iloc[0]['[P_EDGE_MAT_UP]']))
+        self.assertTrue(pd.isna(df_ark.iloc[0]['[P_EGDE_MAT_LO]']))
         
         df_govde = pd.read_excel(govde_file, header=0, skiprows=[1])
         self.assertEqual(len(df_govde), 2)
-        self.assertEqual(float(df_govde.iloc[0]['P_EDGE_MAT_UP']), 1.0)
+        self.assertEqual(float(df_govde.iloc[0]['[P_EDGE_MAT_UP]']), 1.0)
