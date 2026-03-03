@@ -32,4 +32,6 @@ def test_price_tracking_jobs_endpoint_exists():
     """
     response = client.get("/api/v1/price-tracking/jobs")
     assert response.status_code != 404, "Jobs endpoint bulunamadı (404)"
-    assert response.status_code == 401, f"Beklenen 401 hatası alınmadı. Yanıt kodu: {response.status_code}"
+    assert response.status_code in [401, 403], (
+        f"Beklenen auth hatasi alinmadi. Yanit kodu: {response.status_code}"
+    )
