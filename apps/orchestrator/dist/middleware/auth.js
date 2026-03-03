@@ -10,13 +10,17 @@ exports.devBypassAuth = devBypassAuth;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-key-change-in-production";
 /**
+
  * Generate JWT token for user
+
  */
 function generateToken(userId, email, role) {
     return jsonwebtoken_1.default.sign({ id: userId, email, role }, JWT_SECRET, { expiresIn: process.env.NODE_ENV === "production" ? "24h" : "7d" });
 }
 /**
+
  * Verify JWT token middleware
+
  */
 function authenticateToken(req, res, next) {
     const authHeader = req.headers["authorization"];
@@ -45,7 +49,9 @@ function authenticateToken(req, res, next) {
     });
 }
 /**
+
  * Require specific role middleware
+
  */
 function requireRole(...roles) {
     return (req, res, next) => {
@@ -71,7 +77,9 @@ function requireRole(...roles) {
     };
 }
 /**
+
  * Development mode: Bypass auth (for testing)
+
  */
 function devBypassAuth(req, res, next) {
     if (process.env.NODE_ENV !== "production") {
