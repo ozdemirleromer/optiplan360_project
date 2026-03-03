@@ -68,7 +68,8 @@ REG_KEY = r"HKCU\Software\Selco S.p.A.\OptiPlanning\1.0"
 
 def _read_registry_value(value_name: str) -> str | None:
     proc = subprocess.run(
-        ["reg", "query", REG_KEY, "/v", value_name],
+        ["reg", "query", REG_KEY, "/v", value_name],
+        check=False,
         capture_output=True,
         text=True,
     )
