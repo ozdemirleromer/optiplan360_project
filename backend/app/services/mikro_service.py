@@ -215,3 +215,49 @@ def suggest_materials(query: str, thickness: Optional[float] = None) -> List[Dic
     suggestions.sort(key=lambda x: abs(len(x["name"]) - len(query)))
 
     return suggestions[:20]  # Çok fazla sonuç dönmemek için limit
+
+
+def test_connection() -> Dict[str, Any]:
+    """
+    Mikro SQL Server baglantiyi test eder (SELECT 1).
+    Returns: {"status": "ok", "latency_ms": float} veya {"status": "error", "detail": str}
+    """
+    import time
+    start = time.monotonic()
+    try:
+        conn = _get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT 1")
+        cursor.close()
+        conn.close()
+        elapsed_ms = (time.monotonic() - start) * 1000
+        return {"status": "ok", "latency_ms": round(elapsed_ms, 2)}
+    except Exception as e:
+        return {"status": "error", "detail": str(e)}
+
+
+def validate_cari_kodu(kodu: str) -> bool:
+    """Mikro'da verilen cari kodu mevcut mu kontrol eder."""
+    try:
+        conn = _get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT COUNT(1) FROM CARI_HESAPLAR WHERE cari_kod = ?", (kodu,)
+        )
+        row = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        return bool(row and row[0] > 0)
+    except Exception:
+        return False
+
+
+def validate_stok_kodu(kodu: str) -> bool:
+    """Mikro'da verilen stok kodu mevcut mu kontrol eder. Onbellekli malzeme listesi kullanilir."""
+    try:
+        # Onbellekli listeden ara (SQL hit azaltmak icin)
+        materials = get_all_materials()
+        kodu_upper = kodu.upper()
+        return any(m.get("raw_name", "").upper() == kodu_upper for m in materials)
+    except Exception:
+        return False

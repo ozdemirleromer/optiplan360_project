@@ -343,6 +343,30 @@ class OrderListResponse(BaseModel):
     page: int
 
 
+
+
+#  Sipariş Notları 
+
+
+class OrderNoteCreate(BaseModel):
+    note_text: str = Field(..., min_length=1, max_length=2000, description="Not metni")
+
+
+class OrderNoteUpdate(BaseModel):
+    note_text: str = Field(..., min_length=1, max_length=2000)
+
+
+class OrderNoteOut(BaseModel):
+    id: int
+    order_id: int
+    user_id: int
+    note_text: str
+    created_by_username: Optional[str] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 class ValidationError(BaseModel):
     field: str
     message: str

@@ -54,3 +54,7 @@ Detayli kural ve islem adimlari:
 
 1. `docs/optiplanning/ORDERED_INBOX_RULE_TR.md`
 2. `docs/optiplanning/LIVE_UI_TEST_CONTROL_TR.md`
+
+## Recovery Dahil Edilenler
+
+- `Eng.optiplanning.pdf`: recovery taramasinda projeye aitligi kesinlesen ek referans dokumani.

@@ -1,0 +1,6 @@
+﻿id,width,length,quantity,material,thickness,band_left,band_right,band_top,band_bottom,grain
+PANEL_A,600,450,8,18MM_MDF_WHITE,18,0.5,0.5,0.5,0.5,false
+PANEL_B,720,300,6,18MM_MDF_WHITE,18,1.0,1.0,0.5,0.5,false
+PANEL_C,500,500,4,18MM_MDF_WHITE,18,0.0,0.0,0.0,0.0,true
+DOOR_X,720,1960,2,18MM_MDF_OAK,18,1.0,1.0,1.0,1.0,true
+SHELF_X,400,800,6,18MM_MDF_OAK,18,0.5,0.5,0.5,0.5,false

@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // OPTIPLAN360 - MERKEZI TYPE TANIMLARI
 // ============================================================================
 
@@ -496,4 +496,35 @@ export type DeepPartial<T> = {
 
 export type {
   // Re-export all types for convenience
-};
+};
+
+//  Sipariş Notları 
+export interface OrderNote {
+  id: number;
+  orderId: number;
+  userId: number;
+  noteText: string;
+  createdByUsername?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface OrderNoteCreate {
+  noteText: string;
+}
+
+//  Bulk İşlemler 
+export interface BulkStatusUpdate {
+  orderIds: string[];
+  newStatus: OrderStatus;
+}
+
+export interface BulkDeleteRequest {
+  orderIds: string[];
+}
+
+export interface BulkOperationResult {
+  updated?: number;
+  deleted?: number;
+  failed: { id: string; error: string }[];
+}
