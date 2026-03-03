@@ -1,7 +1,7 @@
 import requests
 
 # Test machine config params
-url = 'http://localhost:8000/api/v1/optiplanning/optimization/params'
+url = 'http://localhost:8080/api/v1/optiplanning/optimization/params'
 headers = {'Authorization': 'Bearer test_token'} # Requires valid token if we actually try to hit auth routers, but we will see if we get a 401 at least.
 
 response = requests.get(url)

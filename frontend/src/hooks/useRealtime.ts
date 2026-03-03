@@ -11,7 +11,7 @@ export function useRealtime(onEvent: (event: WebSocketEvent) => void) {
 
      useEffect(() => {
           const rawBaseUrl = getApiBaseUrl();
-          // http://localhost:8000/api/v1 -> ws://localhost:8000/ws
+          // http://localhost:8080/api/v1 -> ws://localhost:8080/ws
 
           // Basit bir regex ile base domain'i alıp /ws endpoint'ine bağlıyoruz.
           const wsUrl = rawBaseUrl

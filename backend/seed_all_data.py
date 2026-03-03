@@ -4,7 +4,7 @@ OptiPlan360 - Kapsamli Veri Yukleme Script'i
 40 musteri, 100 siparis, CRM, Payment, Stock ve tum modüller icin test verisi uretir.
 
 Kullanim:
-  1. Backend calistir: uvicorn app.main:app --port 8000
+  1. Backend calistir: uvicorn app.main:app --port 8080
   2. Script'i calistir: python seed_all_data.py
 """
 
