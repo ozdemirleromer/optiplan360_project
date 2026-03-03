@@ -54,7 +54,13 @@ class BiesseIntegrationService:
 
         for path in [self.xml_job_path, self.xml_mat_path, self.job_path]:
 
-            path.mkdir(parents=True, exist_ok=True)
+            try:
+                path.mkdir(parents=True, exist_ok=True)
+            except PermissionError:
+                logger.warning(
+                    "Biesse dizini olusturulamadi, import-safe modda devam ediliyor: %s",
+                    path,
+                )
 
     def export_materials_to_biesse(
         self, material_ids: Optional[List[str]] = None
