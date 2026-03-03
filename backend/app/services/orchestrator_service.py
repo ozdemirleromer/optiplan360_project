@@ -55,7 +55,13 @@ OPTIPLAN_IMPORT_DIR = os.environ.get(
 OPTIPLAN_EXE_PATH = os.environ.get(
     "OPTIPLAN_EXE_PATH", r"C:\Biesse\OptiPlanning\System\OptiPlanning.exe"
 )
-os.makedirs(OPTIPLAN_IMPORT_DIR, exist_ok=True)
+try:
+    os.makedirs(OPTIPLAN_IMPORT_DIR, exist_ok=True)
+except PermissionError:
+    logging.getLogger(__name__).warning(
+        "OPTIPLAN_IMPORT_DIR olusturulamadi, import-safe modda devam ediliyor: %s",
+        OPTIPLAN_IMPORT_DIR,
+    )
 
 logger = logging.getLogger(__name__)
 
