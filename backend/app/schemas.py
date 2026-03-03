@@ -1,11 +1,11 @@
-import re
+﻿import re
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from .models import GrainDirectionEnum, PartGroupEnum
+from .models import GrainDirectionEnum, PartGroupEnum, OrderStatusEnum
 
 
 # --- Legacy/Shared Schemas ---
@@ -71,8 +71,8 @@ class Station(StationBase):
     active: bool = True
     last_scan_at: Optional[datetime] = None
     scan_count_today: int = 0
-    istasyon_durumu: str = "Hazır"
-    # Cihaz alanları
+    istasyon_durumu: str = "HazÄ±r"
+    # Cihaz alanlarÄ±
     device_type: Optional[str] = None
     device_model: Optional[str] = None
     device_serial_number: Optional[str] = None
@@ -151,7 +151,7 @@ class OrderPartCreate(BaseModel):
         v = v.strip().upper()
         if v not in VALID_PART_GROUPS:
             raise ValueError(
-                f"part_group '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_PART_GROUPS))}"
+                f"part_group '{v}' geÃ§ersiz. Ä°zin verilen: {', '.join(sorted(VALID_PART_GROUPS))}"
             )
         return v
 
@@ -159,27 +159,27 @@ class OrderPartCreate(BaseModel):
     @classmethod
     def validate_boy_mm(cls, v: float) -> float:
         if v <= 0:
-            raise ValueError("boy_mm 0'dan büyük olmalı")
+            raise ValueError("boy_mm 0'dan bÃ¼yÃ¼k olmalÄ±")
         if v > 5000:
-            raise ValueError("boy_mm 5000 mm'den büyük olamaz")
+            raise ValueError("boy_mm 5000 mm'den bÃ¼yÃ¼k olamaz")
         return v
 
     @field_validator("en_mm")
     @classmethod
     def validate_en_mm(cls, v: float) -> float:
         if v <= 0:
-            raise ValueError("en_mm 0'dan büyük olmalı")
+            raise ValueError("en_mm 0'dan bÃ¼yÃ¼k olmalÄ±")
         if v > 5000:
-            raise ValueError("en_mm 5000 mm'den büyük olamaz")
+            raise ValueError("en_mm 5000 mm'den bÃ¼yÃ¼k olamaz")
         return v
 
     @field_validator("adet")
     @classmethod
     def validate_adet(cls, v: int) -> int:
         if v <= 0:
-            raise ValueError("adet 0'dan büyük olmalı")
+            raise ValueError("adet 0'dan bÃ¼yÃ¼k olmalÄ±")
         if v > 9999:
-            raise ValueError("adet 9999'dan büyük olamaz")
+            raise ValueError("adet 9999'dan bÃ¼yÃ¼k olamaz")
         return v
 
     @field_validator("grain_code")
@@ -187,15 +187,15 @@ class OrderPartCreate(BaseModel):
     def validate_grain_code(cls, v: str) -> str:
         if v not in VALID_GRAIN_CODES:
             raise ValueError(
-                f"grain_code '{v}' geçersiz. İzin verilen: {', '.join(sorted(VALID_GRAIN_CODES))}"
+                f"grain_code '{v}' geÃ§ersiz. Ä°zin verilen: {', '.join(sorted(VALID_GRAIN_CODES))}"
             )
         return v
 
     @model_validator(mode="after")
     def validate_arkalik_no_band(self):
-        """Arkalık parçalarında bant olamaz (Handoff §0.4)."""
+        """ArkalÄ±k parÃ§alarÄ±nda bant olamaz (Handoff Â§0.4)."""
         if self.part_group == "ARKALIK" and any([self.u1, self.u2, self.k1, self.k2]):
-            raise ValueError("Arkalıkta bant olamaz (Handoff §0.4)")
+            raise ValueError("ArkalÄ±kta bant olamaz (Handoff Â§0.4)")
         return self
 
 
@@ -222,7 +222,7 @@ class OrderCreate(BaseModel):
     def validate_thickness(cls, v: float) -> float:
         if v not in VALID_THICKNESSES:
             raise ValueError(
-                f"Kalınlık {v} geçersiz. İzin verilen: {', '.join(str(t) for t in sorted(VALID_THICKNESSES))}"
+                f"KalÄ±nlÄ±k {v} geÃ§ersiz. Ä°zin verilen: {', '.join(str(t) for t in sorted(VALID_THICKNESSES))}"
             )
         return v
 
@@ -230,14 +230,14 @@ class OrderCreate(BaseModel):
     @classmethod
     def validate_plate_w(cls, v: float) -> float:
         if v <= 0:
-            raise ValueError("plate_w_mm 0'dan büyük olmalı")
+            raise ValueError("plate_w_mm 0'dan bÃ¼yÃ¼k olmalÄ±")
         return v
 
     @field_validator("plate_h_mm")
     @classmethod
     def validate_plate_h(cls, v: float) -> float:
         if v <= 0:
-            raise ValueError("plate_h_mm 0'dan büyük olmalı")
+            raise ValueError("plate_h_mm 0'dan bÃ¼yÃ¼k olmalÄ±")
         return v
 
     @field_validator("phone_norm")
@@ -245,37 +245,37 @@ class OrderCreate(BaseModel):
     def validate_phone(cls, v: str) -> str:
         cleaned = re.sub(r"[\s\-\(\)\+]", "", v)
         if not cleaned or not cleaned.isdigit():
-            raise ValueError("Geçersiz telefon numarası formatı")
+            raise ValueError("GeÃ§ersiz telefon numarasÄ± formatÄ±")
         if len(cleaned) < 10:
-            raise ValueError("Telefon numarası en az 10 haneli olmalı")
+            raise ValueError("Telefon numarasÄ± en az 10 haneli olmalÄ±")
         return v
 
     @field_validator("grain_default")
     @classmethod
     def validate_grain_default(cls, v: str) -> str:
         if v not in VALID_GRAIN_CODES:
-            raise ValueError(f"grain_default '{v}' geçersiz")
+            raise ValueError(f"grain_default '{v}' geÃ§ersiz")
         return v
 
     @field_validator("parts")
     @classmethod
     def validate_parts_not_empty(cls, v: List) -> List:
         if not v:
-            raise ValueError("Sipariş en az 1 parça içermelidir")
+            raise ValueError("SipariÅŸ en az 1 parÃ§a iÃ§ermelidir")
         return v
 
     @field_validator("color")
     @classmethod
     def validate_color(cls, v: str) -> str:
         if not v or not v.strip():
-            raise ValueError("Renk boş olamaz")
+            raise ValueError("Renk boÅŸ olamaz")
         return v.strip()
 
     @field_validator("material_name")
     @classmethod
     def validate_material_name(cls, v: str) -> str:
         if not v or not v.strip():
-            raise ValueError("Malzeme adı boş olamaz")
+            raise ValueError("Malzeme adÄ± boÅŸ olamaz")
         return v.strip()
 
 
@@ -315,7 +315,7 @@ class OrderOut(BaseModel):
 
 
 class OrderListItem(BaseModel):
-    """Liste endpoint'i için hafif sipariş — parça dizisi yerine sadece sayı."""
+    """Liste endpoint'i iÃ§in hafif sipariÅŸ â€” parÃ§a dizisi yerine sadece sayÄ±."""
 
     id: str
     order_no: Optional[int] = None
@@ -502,7 +502,7 @@ class ItemOut(BaseModel):
 class SpecSearchQuery(BaseModel):
     """Spec-first arama parametreleri"""
 
-    query: Optional[str] = None  # Serbest metin arama (ör: "BEYAZ 18")
+    query: Optional[str] = None  # Serbest metin arama (Ã¶r: "BEYAZ 18")
     product_type_id: Optional[int] = None
     color_id: Optional[int] = None
     thickness_mm: Optional[float] = None
@@ -626,13 +626,13 @@ class OptiJobListResponse(BaseModel):
     total: int
 
 
-# ═══════════════════════════════════════════════════
-# WHATSAPP ŞEMALARI
-# ═══════════════════════════════════════════════════
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# WHATSAPP ÅEMALARI
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
 
 class WhatsAppConfigUpdate(BaseModel):
-    """WhatsApp yapılandırma güncelleme isteği"""
+    """WhatsApp yapÄ±landÄ±rma gÃ¼ncelleme isteÄŸi"""
 
     phone_number_id: str = ""
     business_account_id: str = ""
@@ -641,7 +641,7 @@ class WhatsAppConfigUpdate(BaseModel):
 
 
 class WhatsAppConfigResponse(BaseModel):
-    """WhatsApp yapılandırma yanıtı (token gizli)"""
+    """WhatsApp yapÄ±landÄ±rma yanÄ±tÄ± (token gizli)"""
 
     configured: bool
     phone_number_id: str = ""
@@ -650,7 +650,7 @@ class WhatsAppConfigResponse(BaseModel):
 
 
 class WhatsAppMessageSend(BaseModel):
-    """WhatsApp mesaj gönderme isteği"""
+    """WhatsApp mesaj gÃ¶nderme isteÄŸi"""
 
     to_phone: str
     template_name: Optional[str] = None
@@ -659,7 +659,7 @@ class WhatsAppMessageSend(BaseModel):
 
 
 class WhatsAppMessageResponse(BaseModel):
-    """WhatsApp mesaj yanıtı"""
+    """WhatsApp mesaj yanÄ±tÄ±"""
 
     id: str
     to_phone: str
@@ -674,7 +674,7 @@ class WhatsAppMessageResponse(BaseModel):
 
 
 class WhatsAppTemplateResponse(BaseModel):
-    """WhatsApp şablon bilgisi"""
+    """WhatsApp ÅŸablon bilgisi"""
 
     name: str
     label: str
@@ -683,7 +683,7 @@ class WhatsAppTemplateResponse(BaseModel):
 
 
 class WhatsAppSummaryResponse(BaseModel):
-    """WhatsApp mesaj özeti"""
+    """WhatsApp mesaj Ã¶zeti"""
 
     configured: bool
     total_sent: int
@@ -693,17 +693,17 @@ class WhatsAppSummaryResponse(BaseModel):
 
 
 class WhatsAppUnreadResponse(BaseModel):
-    """Okunmamış mesaj listesi"""
+    """OkunmamÄ±ÅŸ mesaj listesi"""
 
     unread_messages: list
     count: int
 
 
-# ── Price Tracking Şemaları ──
+# â”€â”€ Price Tracking ÅemalarÄ± â”€â”€
 
 
 class PriceUploadJobOut(BaseModel):
-    """Fiyat yükleme işi yanıtı"""
+    """Fiyat yÃ¼kleme iÅŸi yanÄ±tÄ±"""
 
     id: str
     status: str
@@ -725,7 +725,7 @@ class PriceUploadJobOut(BaseModel):
 
 
 def _decimal_to_float(v):
-    """Decimal/Numeric → float dönüştürücü."""
+    """Decimal/Numeric â†’ float dÃ¶nÃ¼ÅŸtÃ¼rÃ¼cÃ¼."""
     if v is None:
         return None
     try:
@@ -735,7 +735,7 @@ def _decimal_to_float(v):
 
 
 class PriceItemOut(BaseModel):
-    """Fiyat listesi ürün satırı yanıtı"""
+    """Fiyat listesi Ã¼rÃ¼n satÄ±rÄ± yanÄ±tÄ±"""
 
     id: str
     urun_kodu: Optional[str] = None
@@ -763,18 +763,18 @@ class PriceItemOut(BaseModel):
 
 
 class PriceJobDetailOut(PriceUploadJobOut):
-    """Fiyat işi detay yanıtı (ürünlerle birlikte)"""
+    """Fiyat iÅŸi detay yanÄ±tÄ± (Ã¼rÃ¼nlerle birlikte)"""
 
     items: list[PriceItemOut] = Field(default_factory=list)
 
 
 class PriceExportRequest(BaseModel):
-    """Excel export isteği"""
+    """Excel export isteÄŸi"""
 
     job_ids: list[str]
 
 
-# ── Customer Portal Schemas ──
+# â”€â”€ Customer Portal Schemas â”€â”€
 
 
 class PortalDashboardStats(BaseModel):
@@ -808,7 +808,7 @@ class PortalInvoiceOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-# ── Müşteri Destek / Ticket Schemas ──
+# â”€â”€ MÃ¼ÅŸteri Destek / Ticket Schemas â”€â”€
 
 
 class PortalTicketMessageOut(BaseModel):
@@ -843,7 +843,7 @@ class PortalTicketReply(BaseModel):
     message: str
 
 
-# ── OptiPlanning Advanced Schemas ──
+# â”€â”€ OptiPlanning Advanced Schemas â”€â”€
 
 
 class MachineConfigBase(BaseModel):
@@ -910,7 +910,7 @@ class OptimizationJobRunRequest(BaseModel):
     config_name: str = "DEFAULT"
 
 
-# OptimizationJobOut ve OptimizationReportOut aşağıda Base sınıfları üzerinden tanımlanmıştır
+# OptimizationJobOut ve OptimizationReportOut aÅŸaÄŸÄ±da Base sÄ±nÄ±flarÄ± Ã¼zerinden tanÄ±mlanmÄ±ÅŸtÄ±r
 
 
 class OptimizationReportBase(BaseModel):
@@ -954,3 +954,4 @@ class OptimizationJobOut(OptimizationJobBase):
     completed_at: Optional[datetime] = None
     reports: List[OptimizationReportOut] = []
     model_config = ConfigDict(from_attributes=True)
+
