@@ -5,7 +5,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
-from .models import GrainDirectionEnum, PartGroupEnum, OrderStatusEnum
+from .constants.excel_schema import PART_GROUPS, VALID_GRAIN_VALUES
+from .models import GrainDirectionEnum, PartGroupEnum, OrderStatusEnum
 
 
 # --- Legacy/Shared Schemas ---
@@ -119,15 +120,15 @@ class Message(MessageBase):
 
 class GrainType(str, Enum):
     AUTO = "0-Material"
-    LENGTH = "1-Material"
-    WIDTH = "2-Material"
+    LENGTH = "1-Boyuna"
+    WIDTH = "2-Enine"
     MIXED = "3-Material"
 
 
 # --- Order Router Schemas ---
 
-VALID_GRAIN_CODES = {"0-Material", "1-Material", "2-Material", "3-Material"}
-VALID_PART_GROUPS = {"GOVDE", "ARKALIK"}
+VALID_GRAIN_CODES = set(VALID_GRAIN_VALUES)
+VALID_PART_GROUPS = set(PART_GROUPS)
 VALID_THICKNESSES = {4, 5, 8, 18}
 
 
@@ -591,23 +592,53 @@ class ProductRequestOut(BaseModel):
 # --- Orchestrator Job Schemas ---
 
 
-class OptiJobPartInput(BaseModel):
-    id: str
-    part_type: str  # GOVDE | ARKALIK
-    material_code: str
-    length_cm: float
-    width_cm: float
-    quantity: int
-    grain: int = 0  # 0/1/2/3
-    color: str
-    thickness_mm: float
+class OptiJobPartInput(OrderPartCreate):
+    id: Optional[str] = None
+    part_type: Optional[str] = None  # GOVDE | ARKALIK
+    material_code: Optional[str] = None
+    length_cm: Optional[float] = None
+    width_cm: Optional[float] = None
+    quantity: Optional[int] = None
+    grain: Optional[int] = None  # 0/1/2/3
+    color: Optional[str] = None
+    thickness_mm: Optional[float] = None
     edge_up: Optional[str] = None
     edge_lo: Optional[str] = None
     edge_sx: Optional[str] = None
     edge_dx: Optional[str] = None
     iidesc: Optional[str] = None
     desc1: Optional[str] = None
-    delik_kodu: Optional[str] = None
+    delik_kodu: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def normalize_legacy_payload(cls, data):
+        if not isinstance(data, dict):
+            return data
+
+        normalized = dict(data)
+        normalized.setdefault("part_group", normalized.get("part_type") or "GOVDE")
+
+        if normalized.get("boy_mm") is None and normalized.get("length_cm") is not None:
+            normalized["boy_mm"] = float(normalized["length_cm"]) * 10
+        if normalized.get("en_mm") is None and normalized.get("width_cm") is not None:
+            normalized["en_mm"] = float(normalized["width_cm"]) * 10
+        if normalized.get("adet") is None and normalized.get("quantity") is not None:
+            normalized["adet"] = normalized["quantity"]
+
+        if normalized.get("grain_code") is None and normalized.get("grain") is not None:
+            grain_index = int(normalized["grain"])
+            if 0 <= grain_index < len(VALID_GRAIN_VALUES):
+                normalized["grain_code"] = VALID_GRAIN_VALUES[grain_index]
+
+        normalized.setdefault("u1", bool(normalized.get("edge_up")))
+        normalized.setdefault("u2", bool(normalized.get("edge_lo")))
+        normalized.setdefault("k1", bool(normalized.get("edge_sx")))
+        normalized.setdefault("k2", bool(normalized.get("edge_dx")))
+        normalized.setdefault("part_desc", normalized.get("desc1"))
+        normalized.setdefault("drill_code_1", normalized.get("iidesc") or normalized.get("delik_kodu"))
+
+        return normalized
 
 
 class OptiJobCreate(BaseModel):

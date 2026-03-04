@@ -1,0 +1,5553 @@
+diff --git a/backend/app/models/crm.py b/backend/app/models/crm.py
+index 2df5a7b..5c4e68c 100644
+--- a/backend/app/models/crm.py
++++ b/backend/app/models/crm.py
+@@ -1,15 +1,16 @@
+ from app.database import Base
+
+
+
+-from sqlalchemy import (
+
+
+
+-    TIMESTAMP,
+
+
+
+-    Boolean,
+
+
+
+-    Column,
+
+
+
+-    Enum,
+
+
+
+-    Float,
+
+
+
+-    ForeignKey,
+
+
+
+-    Integer,
+
+
+
+-    Numeric,
+
+
+
+-    String,
+
+
+
+-    Text,
+
+
+
++from sqlalchemy import (
++    TIMESTAMP,
++    Boolean,
++    Column,
++    Enum,
++    Float,
++    ForeignKey,
++    Index,
++    Integer,
++    Numeric,
++    String,
++    Text,
+ )
+
+
+
+ from sqlalchemy.orm import relationship
+
+
+
+ from sqlalchemy.sql import func
+
+
+
+@@ -28,10 +29,11 @@ from .enums import (
+ # ═══════════════════════════════════════════════════════════════
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class CRMAccount(Base):
+
+
+
++class CRMAccount(Base):
+     """Cari hesap (firma/bireysel müşteri)"""
+
+
+
+ 
+
+
+
+-    __tablename__ = "crm_accounts"
+
+
+
++    __tablename__ = "crm_accounts"
++    __table_args__ = (Index("ux_crm_account_mikro_cari_kod", "mikro_cari_kod", unique=True),)
+ 
+
+
+
+     id = Column(String, primary_key=True, index=True)
+
+
+
+     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True, index=True)
+
+
+
+@@ -53,7 +55,7 @@ class CRMAccount(Base):
+     notes = Column(Text, nullable=True)
+
+
+
+     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+
+
+
+     is_active = Column(Boolean, default=True)
+
+
+
+-    mikro_cari_kod = Column(String, nullable=True, index=True)  # Mikro cari kodu
+
+
+
++    mikro_cari_kod = Column(String, nullable=True)  # Mikro cari kodu
+ 
+
+
+
+     # Mobilya Üretimi İçin Özel Alanlar
+
+
+
+     dealer_type = Column(Enum(DealerTypeEnum), nullable=True)  # Bayi tipi
+
+
+
+diff --git a/backend/app/models/finance.py b/backend/app/models/finance.py
+index aa9e397..2b04280 100644
+--- a/backend/app/models/finance.py
++++ b/backend/app/models/finance.py
+@@ -1,16 +1,17 @@
+ from app.database import Base
+
+
+
+-from sqlalchemy import (
+
+
+
+-    TIMESTAMP,
+
+
+
+-    Boolean,
+
+
+
+-    Column,
+
+
+
+-    Enum,
+
+
+
+-    Float,
+
+
+
+-    ForeignKey,
+
+
+
+-    Integer,
+
+
+
+-    LargeBinary,
+
+
+
+-    Numeric,
+
+
+
+-    String,
+
+
+
+-    Text,
+
+
+
++from sqlalchemy import (
++    TIMESTAMP,
++    Boolean,
++    Column,
++    Enum,
++    Float,
++    ForeignKey,
++    Index,
++    Integer,
++    LargeBinary,
++    Numeric,
++    String,
++    Text,
+ )
+
+
+
+ from sqlalchemy.orm import relationship
+
+
+
+ from sqlalchemy.sql import func
+
+
+
+@@ -28,10 +29,14 @@ from .enums import (
+ # ═══════════════════════════════════════════════════════════════
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class Invoice(Base):
+
+
+
++class Invoice(Base):
+     """Fatura Tablosu"""
+
+
+
+ 
+
+
+
+-    __tablename__ = "invoices"
+
+
+
++    __tablename__ = "invoices"
++    __table_args__ = (
++        Index("ix_invoice_account_status", "account_id", "status"),
++        Index("ix_invoice_due_date", "due_date"),
++    )
+ 
+
+
+
+     id = Column(String, primary_key=True, index=True)
+
+
+
+     invoice_number = Column(String, unique=True, nullable=False, index=True)
+
+
+
+@@ -152,7 +157,8 @@ class PaymentPromise(Base):
+ 
+
+
+
+     # Hatırlatma
+
+
+
+     reminder_sent = Column(Boolean, default=False)
+
+
+
+-    reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)
+
+
+
++    reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)
++    reminder_count = Column(Integer, default=0, nullable=False)
+ 
+
+
+
+     # İletişim Notları
+
+
+
+     contact_person = Column(String, nullable=True)  # Görüşülen kişi
+
+
+
+diff --git a/backend/app/models/order.py b/backend/app/models/order.py
+index ada2bf5..f800a1b 100644
+--- a/backend/app/models/order.py
++++ b/backend/app/models/order.py
+@@ -1,5 +1,5 @@
+ ﻿from app.database import Base
+
+
+
+-from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Integer, Numeric, String, Text
+
+
+
++from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Index, Integer, Numeric, String, Text
+ from sqlalchemy.orm import relationship
+
+
+
+ from sqlalchemy.sql import func
+
+
+
+ 
+
+
+
+@@ -46,8 +46,9 @@ class Station(Base):
+     last_maintenance_date = Column(TIMESTAMP(timezone=True))  # Son bakım tarihi
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class Order(Base):
+
+
+
+-    __tablename__ = "orders"
+
+
+
++class Order(Base):
++    __tablename__ = "orders"
++    __table_args__ = (Index("ix_order_status_created", "status", "created_at"),)
+     id = Column(Integer, primary_key=True, index=True)
+
+
+
+     order_no = Column(Integer, unique=True, index=True, nullable=True)  # Sıralı sipariş numarası
+
+
+
+     customer_id = Column(Integer, ForeignKey("customers.id"))
+
+
+
+@@ -143,8 +144,9 @@ class Message(Base):
+     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class OrderPart(Base):
+
+
+
+-    __tablename__ = "order_parts"
+
+
+
++class OrderPart(Base):
++    __tablename__ = "order_parts"
++    __table_args__ = (Index("ix_order_part_order_id", "order_id"),)
+ 
+
+
+
+     id = Column(String, primary_key=True, index=True)
+
+
+
+     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
+
+
+
+@@ -164,9 +166,9 @@ class OrderPart(Base):
+ 
+
+
+
+     # Legacy OCR-derived fields kept for compatibility
+
+
+
+     line_number = Column(Integer)
+
+
+
+-    boy = Column(Numeric(10, 2))
+
+
+
+-    en = Column(Numeric(10, 2))
+
+
+
+-    adet = Column(Integer, default=1)
+
+
+
++    boy = Column(Numeric(10, 2), default=0, nullable=False)
++    en = Column(Numeric(10, 2), default=0, nullable=False)
++    adet = Column(Integer, default=1, nullable=False)
+     grain = Column(String, default="0-Material")
+
+
+
+     info = Column(Text)
+
+
+
+ 
+
+
+
+@@ -179,10 +181,11 @@ class OrderPart(Base):
+ # ═══════════════════════════════════════════════════════════════
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class OptiJob(Base):
+
+
+
++class OptiJob(Base):
+     """Orchestrator job kaydı — backend görünürlüğü için"""
+
+
+
+ 
+
+
+
+-    __tablename__ = "opti_jobs"
+
+
+
++    __tablename__ = "opti_jobs"
++    __table_args__ = (Index("ix_opti_job_order_created", "order_id", "created_at"),)
+ 
+
+
+
+     id = Column(String, primary_key=True, index=True)
+
+
+
+     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False, index=True)
+
+
+
+diff --git a/backend/app/routers/aws_textract_router.py b/backend/app/routers/aws_textract_router.py
+index fca09b9..23bb04c 100644
+--- a/backend/app/routers/aws_textract_router.py
++++ b/backend/app/routers/aws_textract_router.py
+@@ -18,6 +18,7 @@ AWS Textract entegrasyon endpoint'leri - Form ve tablo analizi
+ 
+ 
+ 
++import json
+ from datetime import datetime, timezone
+ 
+ 
+@@ -822,7 +823,7 @@ async def process_with_aws_textract(
+ 
+ 
+ 
+-                parsed_data=parsed,
++                parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
+ 
+ 
+ 
+diff --git a/backend/app/routers/azure_router.py b/backend/app/routers/azure_router.py
+index 831ce95..9f98cf4 100644
+--- a/backend/app/routers/azure_router.py
++++ b/backend/app/routers/azure_router.py
+@@ -23,6 +23,7 @@ OCR ve Blob Storage yönetimi
+ 
+ 
+ 
++import json
+ from datetime import datetime, timezone
+ 
+ 
+@@ -1213,7 +1214,7 @@ async def azure_ocr_upload(
+ 
+ 
+ 
+-            parsed_data=parsed,
++            parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
+ 
+ 
+ 
+diff --git a/backend/app/routers/google_vision_router.py b/backend/app/routers/google_vision_router.py
+index 74fdb2a..6df78dd 100644
+--- a/backend/app/routers/google_vision_router.py
++++ b/backend/app/routers/google_vision_router.py
+@@ -3,7 +3,8 @@ Google Cloud Vision OCR Router
+ Google Vision API entegrasyon endpoint'leri
+
+
+
+ """
+
+
+
+ 
+
+
+
+-from datetime import datetime, timezone
+
+
+
++import json
++from datetime import datetime, timezone
+ from typing import Optional
+
+
+
+ from uuid import uuid4
+
+
+
+ 
+
+
+
+@@ -190,7 +191,7 @@ async def process_with_google_vision(
+                 text=text,
+
+
+
+                 confidence=line_data.get("confidence", 0.9),
+
+
+
+                 is_valid=parsed is not None,
+
+
+
+-                parsed_data=parsed,
+
+
+
++                parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
+                 validation_error=None if parsed else "Geçersiz ölçü formatı",
+
+
+
+             )
+
+
+
+             db.add(ocr_line)
+
+
+
+diff --git a/backend/app/routers/ocr_router.py b/backend/app/routers/ocr_router.py
+index d90526c..7bef9a9 100644
+--- a/backend/app/routers/ocr_router.py
++++ b/backend/app/routers/ocr_router.py
+@@ -4,7 +4,8 @@ OCR (Optical Character Recognition) entegrasyonu
+ Fotoğraf işleme, metin tanıma, siparişe dönüştürme
+
+
+
+
+ """
+
+
+
+
+ 
+
+
+
+
+-import io
+
+
+
+
++import io
++import json
+ import logging
+
+
+
+
+ import re
+
+
+
+
+ from datetime import datetime, timezone
+
+
+
+
+@@ -14,8 +15,12 @@ from uuid import uuid4
+ from app.auth import get_current_user
+
+
+
+
+ from app.database import get_db
+
+
+
+
+ from app.exceptions import BusinessRuleError, NotFoundError, ValidationError
+
+
+
+
+-from app.models import AuditLog, Customer, DeviceOCRConfig, OCRJob, OCRLine, Order, OrderPart, User
+
+
+
+
+-from app.services.azure_service import AzureService
+
+
+
+
++from app.models import AuditLog, Customer, DeviceOCRConfig, OCRJob, OCRLine, Order, OrderPart, User
++from app.services.ocr_order_mapper import OcrOrderMapper
++from app.services.order_service import OrderService
++from app.services.orchestrator_service import OrchestratorService
++from app.services.azure_service import AzureService
++from app.utils import normalize_phone
+ from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, UploadFile
+
+
+
+
+ from pydantic import BaseModel, Field
+
+
+
+
+ from sqlalchemy.orm import Session
+
+
+
+
+@@ -188,52 +193,38 @@ def _extract_phone_from_text(text: str) -> Optional[str]:
+     return None
+
+
+
+
+ 
+
+
+
+
+ 
+
+
+
+
+-def _normalize_phone(phone: str) -> str:
+
+
+
+
+-    """Telefon numarasını normalize et"""
+
+
+
+
+-
+
+
+
+
+-    if not phone:
+
+
+
+
+-
+
+
+
+
+-        return ""
+
+
+
+
+-
+
+
+
+
+-    # Sadece rakamları al
+
+
+
+
+-
+
+
+
+
+-    digits = re.sub(r"\D", "", phone)
+
+
+
+
+-
+
+
+
+
+-    # Türkiye formatı: 5XX XXX XX XX
+
+
+
+
+-
+
+
+
+
+-    if digits.startswith("90"):
+
+
+
+
+-
+
+
+
+
+-        digits = digits[2:]
+
+
+
+
+-
+
+
+
+
+-    if digits.startswith("0"):
+
+
+
+
+-
+
+
+
+
+-        digits = digits[1:]
+
+
+
+
+-
+
+
+
+
+-    return digits
+
+
+
+
+-
+
+
+
+
+-
+
+
+
+
+-def _match_customer_by_phone(db: Session, phone: str) -> Optional[Customer]:
+
+
+
+
+-    """Telefona göre müşteri eşleştir"""
+
+
+
+
+-
+
+
+
+
+-    normalized = _normalize_phone(phone)
+
+
+
+
+-
+
+
+
+
+-    if not normalized:
+
+
+
+
+-
+
+
+
+
+-        return None
+
+
+
+
+-
+
+
+
+
+-    # Tam eşleşme
+
+
+
+
+-
+
+
+
+
+-    customer = db.query(Customer).filter(Customer.phone == normalized).first()
+
+
+
+
+-
+
+
+
+
+-    if customer:
+
+
+
+
+-
+
+
+
+
+-        return customer
+
+
+
+
+-
+
+
+
+
+-    # Kısmi eşleşme (son 7 hane)
+
+
+
+
+-
+
+
+
+
+-    if len(normalized) >= 7:
+
+
+
+
+-
+
+
+
+
+-        partial = normalized[-7:]
+
+
+
+
++def _normalize_phone(phone: str) -> str:
++    """Telefon numarasını normalize et"""
++    return normalize_phone(phone)
++
+
+
+
+
++
+
+
+
+
++def _match_customer_by_phone(db: Session, phone: str) -> Optional[Customer]:
++    """Telefona göre müşteri eşleştir"""
++
++    normalized = _normalize_phone(phone)
++
++    if not normalized:
++
++        return None
++
++    variants = {
++        normalized,
++        normalized.replace("+", ""),
++        normalized.removeprefix("+90"),
++        f"0{normalized.removeprefix('+90')}",
++    }
++    customer = db.query(Customer).filter(Customer.phone.in_(variants)).first()
++
++    if customer:
++
++        return customer
++
++    # Kısmi eşleşme (son 7 hane)
++
++    digits_only = normalized.removeprefix("+90")
++    if len(digits_only) >= 7:
++
++        partial = digits_only[-7:]
+ 
+
+
+
+
+         customers = db.query(Customer).all()
+
+
+
+
+ 
+
+
+
+
+@@ -246,7 +237,7 @@ def _match_customer_by_phone(db: Session, phone: str) -> Optional[Customer]:
+     return None
+
+
+
+
+ 
+
+
+
+
+ 
+
+
+
+
+-def _parse_measurement_line(text: str) -> Optional[Dict]:
+
+
+
+
++def _parse_measurement_line(text: str) -> Optional[Dict]:
+     """Ölçü satırını parse et"""
+
+
+
+
+ 
+
+
+
+
+     # Pattern: Boy x En x Adet (örn: 700 x 400 x 2)
+
+
+
+
+@@ -279,7 +270,28 @@ def _parse_measurement_line(text: str) -> Optional[Dict]:
+             "raw": text,
+
+
+
+
+         }
+
+
+
+
+ 
+
+
+
+
+-    return None
+
+
+
+
++    return None
++
++
++def _deserialize_parsed_data(raw_value: Any) -> dict:
++    """OCRLine.parsed_data alanını dict olarak çöz."""
++    if isinstance(raw_value, dict):
++        return raw_value
++    if raw_value in (None, ""):
++        return {}
++    if isinstance(raw_value, str):
++        try:
++            return json.loads(raw_value)
++        except json.JSONDecodeError:
++            return {}
++    return {}
++
++
++def _extract_thickness_from_text(text: str) -> str | None:
++    match = re.search(r"(\d+(?:[.,]\d+)?)\s*mm", str(text or ""), flags=re.IGNORECASE)
++    if not match:
++        return None
++    return match.group(1)
+ 
+
+
+
+
+ 
+
+
+
+
+ def _get_ocr_kv(db: Session, key: str) -> Optional[str]:
+
+
+
+
+@@ -611,7 +623,7 @@ def _process_ocr_job(job_id: str, db: Session, engine: str = "auto"):
+                                 confidence=avg_confidence,
+
+
+
+
+                                 is_valid=parsed is not None,
+
+
+
+
+                                 validation_error=None if parsed else "Geçersiz ölçü formatı",
+
+
+
+
+-                                parsed_data=parsed,
+
+
+
+
++                                parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
+                             )
+
+
+
+
+ 
+
+
+
+
+                             db.add(ocr_line)
+
+
+
+
+@@ -654,7 +666,7 @@ def _process_ocr_job(job_id: str, db: Session, engine: str = "auto"):
+                             confidence=0.85,
+
+
+
+
+                             is_valid=parsed is not None,
+
+
+
+
+                             validation_error=None if parsed else "Geçersiz ölçü formatı",
+
+
+
+
+-                            parsed_data=parsed,
+
+
+
+
++                            parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
+                         )
+
+
+
+
+ 
+
+
+
+
+                         db.add(ocr_line)
+
+
+
+
+@@ -755,7 +767,7 @@ def _job_to_out(job: OCRJob) -> OCRJobOut:
+                 "confidence": line.confidence,
+
+
+
+
+                 "is_valid": line.is_valid,
+
+
+
+
+                 "validation_error": line.validation_error,
+
+
+
+
+-                "parsed_data": line.parsed_data,
+
+
+
+
++                "parsed_data": _deserialize_parsed_data(line.parsed_data),
+             }
+
+
+
+
+         )
+
+
+
+
+ 
+
+
+
+
+@@ -959,20 +971,114 @@ def lookup_customer_by_phone(
+ 
+
+
+
+
+ 
+
+
+
+
+ @router.post("/create-order", response_model=Dict)
+
+
+
+
+-async def create_order_from_ocr(
+
+
+
+
++async def create_order_from_ocr(
+     data: OrderCreateFromOCR,
+
+
+
+
+     db: Session = Depends(get_db),
+
+
+
+
+     current_user: User = Depends(get_current_user),
+
+
+
+
+-):
+
+
+
+
+-    """
+
+
+
+
+-
+
+
+
+
+-
+
+
+
+
+-    OCR sonuçlarından sipariş oluştur
+
+
+
+
+-
+
+
+
+
+-
+
+
+
+
+-    """
+
+
+
+
+-
+
+
+
+
+-    # Job kontrolü
+
+
+
+
++):
++    """
++
+
+
+
+
++
+
+
+
+
++    OCR sonuçlarından sipariş oluştur
++
+
+
+
+
++
+
+
+
+
++    """
++
++    job = db.query(OCRJob).filter(OCRJob.id == data.ocr_job_id).first()
++    if not job:
++        raise NotFoundError("OCR job")
++    if job.status != "COMPLETED":
++        raise BusinessRuleError(f"OCR job tamamlanmamış: {job.status}")
++
++    customer = db.query(Customer).filter(Customer.id == int(data.customer_id)).first()
++    if not customer:
++        raise NotFoundError("Müşteri")
++
++    selected_lines = (
++        db.query(OCRLine)
++        .filter(
++            OCRLine.ocr_job_id == job.id,
++            OCRLine.line_number.in_(data.lines),
++            OCRLine.is_valid.is_(True),
++        )
++        .order_by(OCRLine.line_number.asc())
++        .all()
++    )
++    if not selected_lines:
++        raise BusinessRuleError("Geçerli ölçü satırı bulunamadı")
++
++    mapped_parts: list[dict[str, Any]] = []
++    for line in selected_lines:
++        parsed = _deserialize_parsed_data(line.parsed_data)
++        if not parsed:
++            continue
++        mapped_parts.append(
++            {
++                **parsed,
++                "part_group": "GOVDE",
++                "grain": data.grain or "0-Material",
++                "part_desc": line.text,
++            }
++        )
++
++    if not mapped_parts:
++        raise BusinessRuleError("OCR satırlarında işlenecek parça verisi bulunamadı")
++
++    mapper = OcrOrderMapper()
++    order_payload = mapper.map(
++        {
++            "customer_id": customer.id,
++            "customer_phone": customer.phone or job.phone,
++            "thickness": data.thickness or _extract_thickness_from_text(job.extracted_text) or "18",
++            "plate_size": data.plate_size or "2100x2800",
++            "material_name": data.material or "Bilinmiyor",
++            "color": data.material or "Bilinmiyor",
++            "grain_default": data.grain or "0-Material",
++            "parts": mapped_parts,
++        }
++    )
++
++    order = OrderService.create_order(db, order_payload, current_user)
++    orchestrator_job = OrchestratorService(db).create_job(
++        order_id=order.id,
++        customer_phone=order.phone_norm,
++        parts=[part.model_dump() for part in order_payload.parts],
++        opti_mode="C",
++        plate_width_mm=float(order.plate_w_mm or 0) or None,
++        plate_height_mm=float(order.plate_h_mm or 0) or None,
++        customer_snapshot_name=order.crm_name_snapshot,
++        user_id=current_user.id,
++    )
++
++    job.order_id = order.id
++    job.status = "ORDER_CREATED"
++    db.add(
++        AuditLog(
++            id=str(uuid4()),
++            user_id=current_user.id,
++            order_id=order.id,
++            action="ORDER_CREATE_FROM_OCR",
++            detail=(
++                f"OCR {job.id} -> Sipariş {order.id} | "
++                f"job={orchestrator_job.id} | {len(order_payload.parts)} parça"
++            ),
++            created_at=datetime.now(timezone.utc),
++        )
++    )
++    db.commit()
++
++    return {
++        "success": True,
++        "order_id": str(order.id),
++        "ts_code": order.ts_code,
++        "customer_name": customer.name,
++        "total_parts": len(order_payload.parts),
++        "job_id": orchestrator_job.id,
++        "state": orchestrator_job.state.value,
++        "message": "Sipariş ve orchestrator job başarıyla oluşturuldu",
++    }
++
++    # Job kontrolü
+ 
+
+
+
+
+     job = db.query(OCRJob).filter(OCRJob.id == data.ocr_job_id).first()
+
+
+
+
+ 
+
+
+
+
+diff --git a/backend/app/routers/orders_router.py b/backend/app/routers/orders_router.py
+index 4d99a46..fddd8ec 100644
+--- a/backend/app/routers/orders_router.py
++++ b/backend/app/routers/orders_router.py
+@@ -8,8 +8,8 @@ import json
+ import logging
+ import os
+ import re
+-import unicodedata
+ from datetime import datetime, timezone
++from types import SimpleNamespace
+ from typing import List
+ from uuid import uuid4
+ 
+@@ -18,6 +18,7 @@ from app.database import get_db
+ from app.exceptions import BusinessRuleError, NotFoundError, ValidationError
+ from app.models import Customer, Order, OrderPart, User
+ from app.permissions import Permission
++from app.constants.excel_schema import VALID_GRAIN_VALUES
+ from app.schemas import (
+     ExportFile,
+     ExportResult,
+@@ -29,9 +30,9 @@ from app.schemas import (
+     OrderUpdate,
+     ValidationResult,
+ )
+-from app.services.optimization import get_export_rows
++from app.services.export import generate_xlsx_for_job
+ from app.services.order_service import OrderService
+-from app.utils import create_audit_log
++from app.utils import create_audit_log, normalize_text, sanitize_filename
+ from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
+ from fastapi.responses import FileResponse
+ from openpyxl import Workbook, load_workbook
+@@ -227,9 +228,7 @@ def _load_share_path() -> str | None:
+ 
+ def _safe_filename(name: str) -> str:
+     """Dosya adı için güvenli karakter dönüşümü"""
+-    safe = name.replace(" ", "_").upper()
+-    safe = re.sub(r'[<>:"/\\|?*]', "_", safe)
+-    return safe
++    return sanitize_filename(name, max_len=100).upper()
+ 
+ 
+ @router.post("/{order_id}/export/opti", response_model=ExportResult)
+@@ -248,31 +247,26 @@ def export_opti(
+     if order.status not in ("IN_PRODUCTION", "NEW", "READY"):
+         raise BusinessRuleError("Sipariş uygun durumda değil")
+ 
+-    files: list[ExportFile] = []
++    export_job = SimpleNamespace(
++        id=f"order-{order.id}",
++        order_id=order.id,
++        order=order,
++        customer_snapshot_name=order.crm_name_snapshot,
++    )
++    generated_paths = generate_xlsx_for_job(export_job, list(order.parts), EXPORT_DIR)
+ 
+-    # Export dizinini oluştur
+-    export_dir = os.path.join(EXPORT_DIR, f"{order.crm_name_snapshot}_{order.ts_code}")
+-    os.makedirs(export_dir, exist_ok=True)
+-
+-    # Gövde ve arkalık parçalarını renk ve kalınlık bazında ayır
+-    grouped_parts = {}
+-    for part in order.parts:
+-        key = (part.part_group, part.color, part.thickness_mm)
+-        if key not in grouped_parts:
+-            grouped_parts[key] = []
+-        grouped_parts[key].append(part)
+-
+-    name_safe = _safe_filename(order.crm_name_snapshot)
+-
+-    for (part_group, color, thickness), parts in grouped_parts.items():
+-        group_name = "GOVDE" if part_group == "GOVDE" else "ARKALIK"
+-        fn = f"{name_safe}_{order.ts_code}_{thickness}mm_{color}_{group_name}.xlsx"
+-        path = os.path.join(export_dir, fn)
+-        rows = get_export_rows(parts, part_group=part_group)
+-        _create_opti_xlsx(path, rows, order, group_name)
+-        download_url = f"/api/v1/orders/export/download/{fn}"
++    files: list[ExportFile] = []
++    for path in generated_paths:
++        filename = os.path.basename(path)
++        part_group = "ARKALIK" if filename.upper().endswith("_ARKALIK.XLSX") else "GOVDE"
++        download_url = f"/api/v1/orders/export/download/{filename}"
+         files.append(
+-            ExportFile(filename=fn, part_group=group_name, path=path, download_url=download_url)
++            ExportFile(
++                filename=filename,
++                part_group=part_group,
++                path=path,
++                download_url=download_url,
++            )
+         )
+ 
+     return ExportResult(files=files)
+@@ -387,10 +381,7 @@ def _create_opti_xlsx(path: str, rows: list, order: Order, part_group: str = "GO
+ # XLSX IMPORT - Excel dosyasından parça satırlarını içeri al
+ # ═══════════════════════════════════════════════════
+ def _normalize_text(value) -> str:
+-    s = str(value or "").strip().lower()
+-    s = unicodedata.normalize("NFKD", s)
+-    s = "".join(ch for ch in s if not unicodedata.combining(ch))
+-    return s
++    return normalize_text(str(value or ""))
+ 
+ 
+ def _to_float(value):
+@@ -436,14 +427,17 @@ def _parse_grain(value) -> str:
+     s = str(value).strip()
+     if not s:
+         return "0-Material"
+-    if s in {"0-Material", "1-Material", "2-Material", "3-Material"}:
++    if s in VALID_GRAIN_VALUES:
+         return s
++    legacy_map = {"1-Material": "1-Boyuna", "2-Material": "2-Enine"}
++    if s in legacy_map:
++        return legacy_map[s]
+     n = _to_int(s)
+     if n in (0, 1, 2, 3):
+-        return f"{n}-Material"
++        return VALID_GRAIN_VALUES[n]
+     m = re.match(r"^([0-3])\s*[-_ ]", s)
+     if m:
+-        return f"{m.group(1)}-Material"
++        return VALID_GRAIN_VALUES[int(m.group(1))]
+     return "0-Material"
+ 
+ 
+@@ -854,7 +848,8 @@ async def import_xlsx(
+                 continue
+ 
+             grain = str(row[3]).strip() if len(row) > 3 and row[3] else "0-Material"
+-            if grain not in ("0-Material", "1-Material", "2-Material", "3-Material"):
++            grain = _parse_grain(grain)
++            if grain not in VALID_GRAIN_VALUES:
+                 grain = "0-Material"
+                 warnings.append(f"Satır {row_idx}: geçersiz grain, 0-Material kullanıldı")
+ 
+diff --git a/backend/app/schemas.py b/backend/app/schemas.py
+index b034990..3aecc02 100644
+--- a/backend/app/schemas.py
++++ b/backend/app/schemas.py
+@@ -5,7 +5,8 @@ from typing import List, Optional
+ 
+
+
+
+ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+
+
+
+ 
+
+
+
+-from .models import GrainDirectionEnum, PartGroupEnum, OrderStatusEnum
+
+
+
++from .constants.excel_schema import PART_GROUPS, VALID_GRAIN_VALUES
++from .models import GrainDirectionEnum, PartGroupEnum, OrderStatusEnum
+ 
+
+
+
+ 
+
+
+
+ # --- Legacy/Shared Schemas ---
+
+
+
+@@ -119,15 +120,15 @@ class Message(MessageBase):
+ 
+
+
+
+ class GrainType(str, Enum):
+
+
+
+     AUTO = "0-Material"
+
+
+
+-    LENGTH = "1-Material"
+
+
+
+-    WIDTH = "2-Material"
+
+
+
++    LENGTH = "1-Boyuna"
++    WIDTH = "2-Enine"
+     MIXED = "3-Material"
+
+
+
+ 
+
+
+
+ 
+
+
+
+ # --- Order Router Schemas ---
+
+
+
+ 
+
+
+
+-VALID_GRAIN_CODES = {"0-Material", "1-Material", "2-Material", "3-Material"}
+
+
+
+-VALID_PART_GROUPS = {"GOVDE", "ARKALIK"}
+
+
+
++VALID_GRAIN_CODES = set(VALID_GRAIN_VALUES)
++VALID_PART_GROUPS = set(PART_GROUPS)
+ VALID_THICKNESSES = {4, 5, 8, 18}
+
+
+
+ 
+
+
+
+ 
+
+
+
+@@ -591,23 +592,53 @@ class ProductRequestOut(BaseModel):
+ # --- Orchestrator Job Schemas ---
+
+
+
+ 
+
+
+
+ 
+
+
+
+-class OptiJobPartInput(BaseModel):
+
+
+
+-    id: str
+
+
+
+-    part_type: str  # GOVDE | ARKALIK
+
+
+
+-    material_code: str
+
+
+
+-    length_cm: float
+
+
+
+-    width_cm: float
+
+
+
+-    quantity: int
+
+
+
+-    grain: int = 0  # 0/1/2/3
+
+
+
+-    color: str
+
+
+
+-    thickness_mm: float
+
+
+
++class OptiJobPartInput(OrderPartCreate):
++    id: Optional[str] = None
++    part_type: Optional[str] = None  # GOVDE | ARKALIK
++    material_code: Optional[str] = None
++    length_cm: Optional[float] = None
++    width_cm: Optional[float] = None
++    quantity: Optional[int] = None
++    grain: Optional[int] = None  # 0/1/2/3
++    color: Optional[str] = None
++    thickness_mm: Optional[float] = None
+     edge_up: Optional[str] = None
+
+
+
+     edge_lo: Optional[str] = None
+
+
+
+     edge_sx: Optional[str] = None
+
+
+
+     edge_dx: Optional[str] = None
+
+
+
+     iidesc: Optional[str] = None
+
+
+
+     desc1: Optional[str] = None
+
+
+
+-    delik_kodu: Optional[str] = None
+
+
+
++    delik_kodu: Optional[str] = None
++
++    @model_validator(mode="before")
++    @classmethod
++    def normalize_legacy_payload(cls, data):
++        if not isinstance(data, dict):
++            return data
++
++        normalized = dict(data)
++        normalized.setdefault("part_group", normalized.get("part_type") or "GOVDE")
++
++        if normalized.get("boy_mm") is None and normalized.get("length_cm") is not None:
++            normalized["boy_mm"] = float(normalized["length_cm"]) * 10
++        if normalized.get("en_mm") is None and normalized.get("width_cm") is not None:
++            normalized["en_mm"] = float(normalized["width_cm"]) * 10
++        if normalized.get("adet") is None and normalized.get("quantity") is not None:
++            normalized["adet"] = normalized["quantity"]
++
++        if normalized.get("grain_code") is None and normalized.get("grain") is not None:
++            grain_index = int(normalized["grain"])
++            if 0 <= grain_index < len(VALID_GRAIN_VALUES):
++                normalized["grain_code"] = VALID_GRAIN_VALUES[grain_index]
++
++        normalized.setdefault("u1", bool(normalized.get("edge_up")))
++        normalized.setdefault("u2", bool(normalized.get("edge_lo")))
++        normalized.setdefault("k1", bool(normalized.get("edge_sx")))
++        normalized.setdefault("k2", bool(normalized.get("edge_dx")))
++        normalized.setdefault("part_desc", normalized.get("desc1"))
++        normalized.setdefault("drill_code_1", normalized.get("iidesc") or normalized.get("delik_kodu"))
++
++        return normalized
+ 
+
+
+
+ 
+
+
+
+ class OptiJobCreate(BaseModel):
+
+
+
+diff --git a/backend/app/services/bridge_service.py b/backend/app/services/bridge_service.py
+index 9d8b373..f78221d 100644
+--- a/backend/app/services/bridge_service.py
++++ b/backend/app/services/bridge_service.py
+@@ -1,209 +1,602 @@
+-"""
+
+
+-OptiPlan 360 — Bridge Service
+
+
+-Order + OrderParts → OptiPlanning XLSX (12-tag format)
+
+
+-
+
+
+-Kurallar:
+
+
+-  - GOVDE ve ARKALIK ayrı dosyalar
+
+
+-  - ARKALIK'ta tüm kenar bantlar boş ("")
+
+
+-  - Birimler zaten mm (boy_mm, en_mm)
+
+
+-  - Grain: 0-Material→0, 1-Boyuna→1, 2-Enine→2, 3-Both→3
+
+
+-  - Band: u1=üst, u2=alt, k1=sol, k2=sağ kenar
+
+
+-  - Atomik yazma: .tmp → os.replace
+
+
+-"""
+
+
+-
+
+
+-import io
+
+
+-import logging
+
+
+-import os
+
+
+-from datetime import datetime
+
+
+-from typing import Optional
+
+
+-
+
+
+-import openpyxl
+
+
+-from openpyxl.styles import Alignment, Font, PatternFill
+
+
+-
+
+
+-logger = logging.getLogger(__name__)
+
+
+-
+
+
+-# ── OptiPlanning 12 sütun tag'leri ──────────────────────────────────
+
+
+-OPTI_COLUMNS = [
+
+
+-    "[P_CODE_MAT]",  # Malzeme kodu (renk+kalınlık)
+
+
+-    "[P_LENGTH]",  # Uzunluk (mm)
+
+
+-    "[P_WIDTH]",  # Genişlik (mm)
+
+
+-    "[P_MINQ]",  # Adet
+
+
+-    "[P_GRAIN]",  # Desen yönü (0/1/2/3)
+
+
+-    "[P_IDESC]",  # Açıklama / trim bilgisi
+
+
+-    "[P_EDGE_UP]",  # Üst kenar bant (mm veya "")
+
+
+-    "[P_EDGE_LO]",  # Alt kenar bant (mm veya "")
+
+
+-    "[P_EDGE_SX]",  # Sol kenar bant (mm veya "")
+
+
+-    "[P_EDGE_DX]",  # Sağ kenar bant (mm veya "")
+
+
+-    "[P_CC_MAT]",  # Renk referansı
+
+
+-    "[P_DESC1]",  # Ek açıklama (part_desc)
+
+
+-]
+
+
+-
+
+
+-GRAIN_MAP = {
+
+
+-    "0-Material": 0,
+
+
+-    "1-Boyuna": 1,
+
+
+-    "2-Enine": 2,
+
+
+-    "3-Both": 3,
+
+
+-}
+
+
+-
+
+
+-EXPORT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "exports")
+
+
+-os.makedirs(EXPORT_DIR, exist_ok=True)
+
+
+-
+
+
+-
+
+
+-def _material_code(order) -> str:
+
+
+-    """Malzeme kodu: renk + kalınlık. Örn: 'OAK18'"""
+
+
+-    color = (order.color or "UNKNOWN").replace(" ", "")
+
+
+-    thickness = int(float(order.thickness_mm)) if order.thickness_mm else 18
+
+
+-    return f"{color}{thickness}"
+
+
+-
+
+
+-
+
+
+-def _band_str(flag: bool, band_mm, is_arkalik: bool) -> str:
+
+
+-    """Kenar bant string değeri. ARKALIK'ta her zaman boş."""
+
+
+-    if is_arkalik or not flag or band_mm is None:
+
+
+-        return ""
+
+
+-    return str(float(band_mm))
+
+
+-
+
+
+-
+
+
+-def _trim_desc(order) -> str:
+
+
+-    """Trim açıklaması: 'XYmm gövde, Z.Zmm trim'"""
+
+
+-    thickness = float(order.thickness_mm) if order.thickness_mm else 18.0
+
+
+-    trim = round(thickness * 0.556, 1)
+
+
+-    return f"{int(thickness)}mm, {trim}mm trim"
+
+
+-
+
+
+-
+
+
+-def generate_optiplan_xlsx(order, parts: list) -> dict[str, bytes]:
+
+
+-    """
+
+
+-    Order + OrderPart listesinden OptiPlanning XLSX içeriği üretir.
+
+
+-
+
+
+-    Returns:
+
+
+-        {"GOVDE": <bytes>, "ARKALIK": <bytes>} — sadece parça olan gruplar
+
+
+-    """
+
+
+-    result: dict[str, bytes] = {}
+
+
+-    mat_code = _material_code(order)
+
+
+-    cc_mat = order.color or ""
+
+
+-    trim_info = _trim_desc(order)
+
+
+-
+
+
+-    for group_name in ("GOVDE", "ARKALIK"):
+
+
+-        is_arkalik = group_name == "ARKALIK"
+
+
+-        group_parts = [p for p in parts if (p.part_group or "").upper() == group_name]
+
+
+-        if not group_parts:
+
+
+-            continue
+
+
+-
+
+
+-        wb = openpyxl.Workbook()
+
+
+-        ws = wb.active
+
+
+-        ws.title = group_name
+
+
+-
+
+
+-        # Başlık satırı
+
+
+-        ws.append(OPTI_COLUMNS)
+
+
+-        for cell in ws[1]:
+
+
+-            cell.font = Font(bold=True)
+
+
+-            cell.fill = PatternFill(fill_type="solid", fgColor="FFD700")
+
+
+-            cell.alignment = Alignment(horizontal="center")
+
+
+-
+
+
+-        for part in group_parts:
+
+
+-            grain = GRAIN_MAP.get(part.grain_code or "0-Material", 0)
+
+
+-            band_mm = order.band_mm
+
+
+-            adet = int(part.adet) if part.adet else 1
+
+
+-
+
+
+-            ws.append(
+
+
+-                [
+
+
+-                    mat_code,
+
+
+-                    float(part.boy_mm or 0),
+
+
+-                    float(part.en_mm or 0),
+
+
+-                    adet,
+
+
+-                    grain,
+
+
+-                    trim_info,
+
+
+-                    _band_str(bool(part.u1), band_mm, is_arkalik),
+
+
+-                    _band_str(bool(part.u2), band_mm, is_arkalik),
+
+
+-                    _band_str(bool(part.k1), band_mm, is_arkalik),
+
+
+-                    _band_str(bool(part.k2), band_mm, is_arkalik),
+
+
+-                    cc_mat,
+
+
+-                    part.part_desc or "",
+
+
+-                ]
+
+
+-            )
+
+
+-
+
+
+-        # Sütun genişliklerini otomatik ayarla
+
+
+-        for col in ws.columns:
+
+
+-            max_len = max((len(str(c.value or "")) for c in col), default=8)
+
+
+-            ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 30)
+
+
+-
+
+
+-        buf = io.BytesIO()
+
+
+-        wb.save(buf)
+
+
+-        result[group_name] = buf.getvalue()
+
+
+-
+
+
+-    return result
+
+
+-
+
+
+-
+
+
+-def save_optiplan_xlsx(
+
+
+-    order,
+
+
+-    parts: list,
+
+
+-    output_dir: Optional[str] = None,
+
+
+-    job_id: Optional[str] = None,
+
+
+-) -> list[str]:
+
+
+-    """
+
+
+-    XLSX dosyalarını diske yazar (.tmp → rename atomik).
+
+
+-
+
+
+-    Args:
+
+
+-        order: Order ORM nesnesi
+
+
+-        parts: OrderPart listesi
+
+
+-        output_dir: Hedef dizin (varsayılan: exports/)
+
+
+-        job_id: Dosya adına gömülen prefix (eşleştirme için)
+
+
+-
+
+
+-    Returns:
+
+
+-        Yazılan dosya yollarının listesi
+
+
+-    """
+
+
+-    out_dir = output_dir or EXPORT_DIR
+
+
+-    os.makedirs(out_dir, exist_ok=True)
+
+
+-
+
+
+-    xlsx_data = generate_optiplan_xlsx(order, parts)
+
+
+-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+-    customer = (order.crm_name_snapshot or "unknown").replace(" ", "_")
+
+
+-    ts_code = (order.ts_code or "").replace(" ", "_")
+
+
+-    prefix = job_id[:8] if job_id else timestamp
+
+
+-
+
+
+-    written: list[str] = []
+
+
+-    for group_name, content in xlsx_data.items():
+
+
+-        fname = f"{prefix}_{customer}_{ts_code}_{group_name}.xlsx"
+
+
+-        final_path = os.path.join(out_dir, fname)
+
+
+-        tmp_path = final_path + ".tmp"
+
+
+-
+
+
+-        with open(tmp_path, "wb") as f:
+
+
+-            f.write(content)
+
+
+-        os.replace(tmp_path, final_path)
+
+
+-
+
+
+-        part_count = sum(1 for p in parts if (p.part_group or "").upper() == group_name)
+
+
+-        logger.info("OptiPlanning XLSX yazıldı: %s (%d parça)", fname, part_count)
+
+
+-        written.append(final_path)
+
+
+-
+
+
+-    return written
+
+
+-
+
+
+-
+
+
+-# ── Eski uyumluluk fonksiyonu (geriye dönük) ────────────────────────
+
+
+-def convert_excel_to_optiplanning(file_path: str) -> dict:
+
+
+-    """
+
+
+-    Excel dosyasını okuyup OptiPlanning veri yapısına çevirir.
+
+
+-    (Eski OCR import akışı için korunuyor)
+
+
+-    """
+
+
+-    try:
+
+
+-        import pandas as pd
+
+
+-
+
+
+-        df = pd.read_excel(file_path)
+
+
+-        required = ["Boy", "En", "Adet", "Malzeme Adı", "Grup"]
+
+
+-        for col in required:
+
+
+-            if col not in df.columns:
+
+
+-                return {"error": f"Eksik sütun: {col}"}
+
+
+-        parts_list = [
+
+
+-            {
+
+
+-                "part_group": row["Grup"],
+
+
+-                "material_name": row["Malzeme Adı"],
+
+
+-                "thickness_mm": 18,
+
+
+-                "length_mm": row["Boy"],
+
+
+-                "width_mm": row["En"],
+
+
+-                "quantity": row["Adet"],
+
+
+-                "grain": "1-Boyuna",
+
+
+-                "description": row.get("Notlar", ""),
+
+
+-            }
+
+
+-            for _, row in df.iterrows()
+
+
+-        ]
+
+
+-        return {"customer_id": 1, "crm_name_snapshot": "Excel Import", "parts": parts_list}
+
+
+-    except Exception as exc:
+
+
+-        return {"error": str(exc)}
+
+
++"""
++
++
++OptiPlan 360 — Bridge Service
++
++
++Order + OrderParts → OptiPlanning XLSX (12-tag format)
++
++
++
++
++
++Kurallar:
++
++
++  - GOVDE ve ARKALIK ayrı dosyalar
++
++
++  - ARKALIK'ta tüm kenar bantlar boş ("")
++
++
++  - Birimler zaten mm (boy_mm, en_mm)
++
++
++  - Grain: 0-Material→0, 1-Boyuna→1, 2-Enine→2, 3-Material→3
++
++
++  - Band: u1=üst, u2=alt, k1=sol, k2=sağ kenar
++
++
++  - Atomik yazma: .tmp → os.replace
++
++
++"""
++
++
++
++
++
++import io
++
++
++import logging
++
++
++import os
++
++
++from datetime import datetime
++
++
++from typing import Optional
++
++
++
++
++
++import openpyxl
++
++
++from openpyxl.styles import Alignment, Font, PatternFill
++
++
++from ..constants.excel_schema import GRAIN_MAP
++
++
++logger = logging.getLogger(__name__)
++
++
++# ── OptiPlanning 12 sütun tag'leri ──────────────────────────────────
++
++
++OPTI_COLUMNS = [
++
++
++    "[P_CODE_MAT]",  # Malzeme kodu (renk+kalınlık)
++
++
++    "[P_LENGTH]",  # Uzunluk (mm)
++
++
++    "[P_WIDTH]",  # Genişlik (mm)
++
++
++    "[P_MINQ]",  # Adet
++
++
++    "[P_GRAIN]",  # Desen yönü (0/1/2/3)
++
++
++    "[P_IDESC]",  # Açıklama / trim bilgisi
++
++
++    "[P_EDGE_UP]",  # Üst kenar bant (mm veya "")
++
++
++    "[P_EDGE_LO]",  # Alt kenar bant (mm veya "")
++
++
++    "[P_EDGE_SX]",  # Sol kenar bant (mm veya "")
++
++
++    "[P_EDGE_DX]",  # Sağ kenar bant (mm veya "")
++
++
++    "[P_CC_MAT]",  # Renk referansı
++
++
++    "[P_DESC1]",  # Ek açıklama (part_desc)
++
++
++]
++
++
++
++
++EXPORT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "exports")
++
++
++os.makedirs(EXPORT_DIR, exist_ok=True)
++
++
++
++
++
++
++
++
++def _material_code(order) -> str:
++
++
++    """Malzeme kodu: renk + kalınlık. Örn: 'OAK18'"""
++
++
++    color = (order.color or "UNKNOWN").replace(" ", "")
++
++
++    thickness = int(float(order.thickness_mm)) if order.thickness_mm else 18
++
++
++    return f"{color}{thickness}"
++
++
++
++
++
++
++
++
++def _band_str(flag: bool, band_mm, is_arkalik: bool) -> str:
++
++
++    """Kenar bant string değeri. ARKALIK'ta her zaman boş."""
++
++
++    if is_arkalik or not flag or band_mm is None:
++
++
++        return ""
++
++
++    return str(float(band_mm))
++
++
++
++
++
++
++
++
++def _trim_desc(order) -> str:
++
++
++    """Trim açıklaması: 'XYmm gövde, Z.Zmm trim'"""
++
++
++    thickness = float(order.thickness_mm) if order.thickness_mm else 18.0
++
++
++    trim = round(thickness * 0.556, 1)
++
++
++    return f"{int(thickness)}mm, {trim}mm trim"
++
++
++
++
++
++
++
++
++def generate_optiplan_xlsx(order, parts: list) -> dict[str, bytes]:
++
++
++    """
++
++
++    Order + OrderPart listesinden OptiPlanning XLSX içeriği üretir.
++
++
++
++
++
++    Returns:
++
++
++        {"GOVDE": <bytes>, "ARKALIK": <bytes>} — sadece parça olan gruplar
++
++
++    """
++
++
++    result: dict[str, bytes] = {}
++
++
++    mat_code = _material_code(order)
++
++
++    cc_mat = order.color or ""
++
++
++    trim_info = _trim_desc(order)
++
++
++
++
++
++    for group_name in ("GOVDE", "ARKALIK"):
++
++
++        is_arkalik = group_name == "ARKALIK"
++
++
++        group_parts = [p for p in parts if (p.part_group or "").upper() == group_name]
++
++
++        if not group_parts:
++
++
++            continue
++
++
++
++
++
++        wb = openpyxl.Workbook()
++
++
++        ws = wb.active
++
++
++        ws.title = group_name
++
++
++
++
++
++        # Başlık satırı
++
++
++        ws.append(OPTI_COLUMNS)
++
++
++        for cell in ws[1]:
++
++
++            cell.font = Font(bold=True)
++
++
++            cell.fill = PatternFill(fill_type="solid", fgColor="FFD700")
++
++
++            cell.alignment = Alignment(horizontal="center")
++
++
++
++
++
++        for part in group_parts:
++
++
++            grain = GRAIN_MAP.get(part.grain_code or "0-Material", 0)
++
++
++            band_mm = order.band_mm
++
++
++            adet = int(part.adet) if part.adet else 1
++
++
++
++
++
++            ws.append(
++
++
++                [
++
++
++                    mat_code,
++
++
++                    float(part.boy_mm or 0),
++
++
++                    float(part.en_mm or 0),
++
++
++                    adet,
++
++
++                    grain,
++
++
++                    trim_info,
++
++
++                    _band_str(bool(part.u1), band_mm, is_arkalik),
++
++
++                    _band_str(bool(part.u2), band_mm, is_arkalik),
++
++
++                    _band_str(bool(part.k1), band_mm, is_arkalik),
++
++
++                    _band_str(bool(part.k2), band_mm, is_arkalik),
++
++
++                    cc_mat,
++
++
++                    part.part_desc or "",
++
++
++                ]
++
++
++            )
++
++
++
++
++
++        # Sütun genişliklerini otomatik ayarla
++
++
++        for col in ws.columns:
++
++
++            max_len = max((len(str(c.value or "")) for c in col), default=8)
++
++
++            ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 30)
++
++
++
++
++
++        buf = io.BytesIO()
++
++
++        wb.save(buf)
++
++
++        result[group_name] = buf.getvalue()
++
++
++
++
++
++    return result
++
++
++
++
++
++
++
++
++def save_optiplan_xlsx(
++
++
++    order,
++
++
++    parts: list,
++
++
++    output_dir: Optional[str] = None,
++
++
++    job_id: Optional[str] = None,
++
++
++) -> list[str]:
++
++
++    """
++
++
++    XLSX dosyalarını diske yazar (.tmp → rename atomik).
++
++
++
++
++
++    Args:
++
++
++        order: Order ORM nesnesi
++
++
++        parts: OrderPart listesi
++
++
++        output_dir: Hedef dizin (varsayılan: exports/)
++
++
++        job_id: Dosya adına gömülen prefix (eşleştirme için)
++
++
++
++
++
++    Returns:
++
++
++        Yazılan dosya yollarının listesi
++
++
++    """
++
++
++    out_dir = output_dir or EXPORT_DIR
++
++
++    os.makedirs(out_dir, exist_ok=True)
++
++
++
++
++
++    xlsx_data = generate_optiplan_xlsx(order, parts)
++
++
++    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
++
++
++    customer = (order.crm_name_snapshot or "unknown").replace(" ", "_")
++
++
++    ts_code = (order.ts_code or "").replace(" ", "_")
++
++
++    prefix = job_id[:8] if job_id else timestamp
++
++
++
++
++
++    written: list[str] = []
++
++
++    for group_name, content in xlsx_data.items():
++
++
++        fname = f"{prefix}_{customer}_{ts_code}_{group_name}.xlsx"
++
++
++        final_path = os.path.join(out_dir, fname)
++
++
++        tmp_path = final_path + ".tmp"
++
++
++
++
++
++        with open(tmp_path, "wb") as f:
++
++
++            f.write(content)
++
++
++        os.replace(tmp_path, final_path)
++
++
++
++
++
++        part_count = sum(1 for p in parts if (p.part_group or "").upper() == group_name)
++
++
++        logger.info("OptiPlanning XLSX yazıldı: %s (%d parça)", fname, part_count)
++
++
++        written.append(final_path)
++
++
++
++
++
++    return written
++
++
++
++
++
++
++
++
++# ── Eski uyumluluk fonksiyonu (geriye dönük) ────────────────────────
++
++
++def convert_excel_to_optiplanning(file_path: str) -> dict:
++
++
++    """
++
++
++    Excel dosyasını okuyup OptiPlanning veri yapısına çevirir.
++
++
++    (Eski OCR import akışı için korunuyor)
++
++
++    """
++
++
++    try:
++
++
++        import pandas as pd
++
++
++
++
++
++        df = pd.read_excel(file_path)
++
++
++        required = ["Boy", "En", "Adet", "Malzeme Adı", "Grup"]
++
++
++        for col in required:
++
++
++            if col not in df.columns:
++
++
++                return {"error": f"Eksik sütun: {col}"}
++
++
++        parts_list = [
++
++
++            {
++
++
++                "part_group": row["Grup"],
++
++
++                "material_name": row["Malzeme Adı"],
++
++
++                "thickness_mm": 18,
++
++
++                "length_mm": row["Boy"],
++
++
++                "width_mm": row["En"],
++
++
++                "quantity": row["Adet"],
++
++
++                "grain": "1-Boyuna",
++
++
++                "description": row.get("Notlar", ""),
++
++
++            }
++
++
++            for _, row in df.iterrows()
++
++
++        ]
++
++
++        return {"customer_id": 1, "crm_name_snapshot": "Excel Import", "parts": parts_list}
++
++
++    except Exception as exc:
++
++
++        return {"error": str(exc)}
++
++
+diff --git a/backend/app/services/drop_optimization.py b/backend/app/services/drop_optimization.py
+index cdde512..7dc630d 100644
+--- a/backend/app/services/drop_optimization.py
++++ b/backend/app/services/drop_optimization.py
+@@ -14,7 +14,7 @@ class GrainCode(Enum):
+     ZERO = "0-Material"  # Desensiz - @2012 uygulanabilir
+
+
+     BOYUNA = "1-Boyuna"  # Damarlı
+
+
+     ENINE = "2-Enine"  # Damarlı
+
+
+-    MIXED = "3-Mixed"  # Karışık
+
+
++    MIXED = "3-Material"  # Karışık
+ 
+
+
+ 
+
+
+ @dataclass
+
+
+@@ -55,7 +55,7 @@ class DropOptimizationService:
+         Grain kodunun @2012 optimizasyonunu destekleyip desteklemediğini kontrol et
+
+
+ 
+
+
+         Args:
+
+
+-            grain_code: Grain kodu (0-Material, 1-Boyuna, 2-Enine, 3-Mixed)
+
+
++            grain_code: Grain kodu (0-Material, 1-Boyuna, 2-Enine, 3-Material)
+ 
+
+
+         Returns:
+
+
+             bool: True ise drop optimizasyonu uygulanabilir
+
+
+diff --git a/backend/app/services/export.py b/backend/app/services/export.py
+index 986eaa0..6ccd953 100644
+--- a/backend/app/services/export.py
++++ b/backend/app/services/export.py
+@@ -1,163 +1,180 @@
+-"""
+
+
+-OptiPlan 360 — Sipariş İhracat Servisi (Excel)
+
+
+-
+
+
+-Bu servis, veritabanından alınan sipariş verilerini OptiPlanning için
+
+
+-gerekli olan Excel (.xlsx) formatına dönüştürür.
+
+
+-"""
+
+
+-
+
+
+-import datetime
+
+
+-import os
+
+
+-
+
+
+-import pandas as pd
+
+
+-from openpyxl import Workbook
+
+
+-from sqlalchemy.orm import Session, joinedload
+
+
+-
+
+
+-from .. import models
+
+
+-
+
+
+-# KURAL 4: Grain (damar yönü) değerlerini metinden sayıya dönüştüren harita
+
+
+-GRAIN_MAP = {
+
+
+-    "0-Material": 0,
+
+
+-    "1-Boyuna": 1,
+
+
+-    "2-Enine": 2,
+
+
+-}
+
+
+-
+
+
+-# Excel dosyalarının kaydedileceği dizin
+
+
+-EXPORT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "exports")
+
+
+-os.makedirs(EXPORT_DIR, exist_ok=True)
+
+
+-
+
+
+-
+
+
+-def export_order_to_excel(db: Session, order_id: str) -> list[str]:
+
+
+-    """
+
+
+-    Belirtilen siparişi veritabanından alır ve "GÖVDE" ve "ARKALIK"
+
+
+-    parça grupları için ayrı Excel dosyaları oluşturur. (KURAL 2)
+
+
+-
+
+
+-    Args:
+
+
+-        db: SQLAlchemy session objesi.
+
+
+-        order_id: İşlenecek siparişin ID'si.
+
+
+-
+
+
+-    Returns:
+
+
+-        Oluşturulan Excel dosyalarının tam yollarını içeren bir liste.
+
+
+-    """
+
+
+-
+
+
+-    order = (
+
+
+-        db.query(models.Order)
+
+
+-        .options(joinedload(models.Order.parts))
+
+
+-        .filter(models.Order.id == order_id)
+
+
+-        .first()
+
+
+-    )
+
+
+-    if not order:
+
+
+-        raise ValueError(f"Sipariş ID'si {order_id} bulunamadı.")
+
+
+-
+
+
+-    if not order.parts:
+
+
+-        return []
+
+
+-
+
+
+-    # Parçaları daha güvenli bir şekilde DataFrame'e aktar
+
+
+-    part_data = [
+
+
+-        {
+
+
+-            "part_group": p.part_group,
+
+
+-            "boy_mm": p.boy_mm,
+
+
+-            "en_mm": p.en_mm,
+
+
+-            "adet": p.adet,
+
+
+-            "grain_code": p.grain_code,
+
+
+-            "u1": p.u1,
+
+
+-            "u2": p.u2,
+
+
+-            "k1": p.k1,
+
+
+-            "k2": p.k2,
+
+
+-            "part_desc": p.part_desc,
+
+
+-            "drill_code_1": p.drill_code_1,
+
+
+-            "drill_code_2": p.drill_code_2,
+
+
+-        }
+
+
+-        for p in order.parts
+
+
+-    ]
+
+
+-    df = pd.DataFrame(part_data)
+
+
+-
+
+
+-    exported_files = []
+
+
+-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+
+
+-    customer_name = order.crm_name_snapshot.replace(" ", "_")
+
+
+-
+
+
+-    # DataFrame'i "part_group"a göre filtrele
+
+
+-    for part_group_name in ["GOVDE", "ARKALIK"]:
+
+
+-        group_df = df[df["part_group"] == part_group_name]
+
+
+-
+
+
+-        if not group_df.empty:
+
+
+-            # Sütunları oluştur ve Excel'e yaz
+
+
+-            output_df = pd.DataFrame()
+
+
+-            output_df["Boy"] = group_df["boy_mm"]
+
+
+-            output_df["En"] = group_df["en_mm"]
+
+
+-            output_df["Adet"] = group_df["adet"]
+
+
+-            output_df["Grain"] = group_df["grain_code"].map(GRAIN_MAP).fillna(0).astype(int)
+
+
+-            output_df["U1"] = group_df["u1"].astype(int)
+
+
+-            output_df["U2"] = group_df["u2"].astype(int)
+
+
+-            output_df["K1"] = group_df["k1"].astype(int)
+
+
+-            output_df["K2"] = group_df["k2"].astype(int)
+
+
+-            output_df["Açıklama"] = group_df["part_desc"]
+
+
+-            output_df["Delik1"] = group_df["drill_code_1"]
+
+
+-            output_df["Delik2"] = group_df["drill_code_2"]
+
+
+-
+
+
+-            material_name_safe = order.material_name.replace(" ", "_").replace("/", "-")
+
+
+-
+
+
+-            # KURAL 3: Dosya isimlendirme
+
+
+-            file_name = f"{customer_name}_{timestamp}_{material_name_safe}_{part_group_name}.xlsx"
+
+
+-            file_path = os.path.join(EXPORT_DIR, file_name)
+
+
+-
+
+
+-            output_df.to_excel(file_path, index=False)
+
+
+-            exported_files.append(file_path)
+
+
+-
+
+
+-    return exported_files
+
+
+-
+
+
+-
+
+
+-# Ensure export correctness per manifesto
+
+
+-
+
+
+-
+
+
+-def export_order_to_excel_openpyxl(order):
+
+
+-    # Group parts by part_group, color, and thickness
+
+
+-    grouped_parts = {}
+
+
+-    for part in order.parts:
+
+
+-        key = (part.part_group, part.color, part.thickness_mm)
+
+
+-        if key not in grouped_parts:
+
+
+-            grouped_parts[key] = []
+
+
+-        grouped_parts[key].append(part)
+
+
+-
+
+
+-    # Generate separate Excel files for each group
+
+
+-    export_files = []
+
+
+-    for (part_group, color, thickness), parts in grouped_parts.items():
+
+
+-        filename = f"{order.crm_name_snapshot}_{order.created_at.strftime('%Y%m%d_%H%M%S')}_{thickness}mm_{color}_{part_group}.xlsx"
+
+
+-        filepath = os.path.join(EXPORT_DIR, filename)
+
+
+-        workbook = Workbook()
+
+
+-        sheet = workbook.active
+
+
+-        sheet.title = f"{part_group} Parts"
+
+
+-
+
+
+-        # Write header row
+
+
+-        sheet.append(
+
+
+-            [
+
+
+-                "Part ID",
+
+
+-                "Material",
+
+
+-                "Thickness",
+
+
+-                "Length",
+
+
+-                "Width",
+
+
+-                "Quantity",
+
+
+-                "Grain",
+
+
+-                "Edge Banding",
+
+
+-            ]
+
+
+-        )
+
+
+-
+
+
+-        # Write part data
+
+
+-        for part in parts:
+
+
+-            sheet.append(
+
+
+-                [
+
+
+-                    part.id,
+
+
+-                    part.material_name,
+
+
+-                    part.thickness_mm,
+
+
+-                    part.length_mm,
+
+
+-                    part.width_mm,
+
+
+-                    part.quantity,
+
+
+-                    part.grain,
+
+
+-                    f"{part.edge_banding_u1}/{part.edge_banding_u2}/{part.edge_banding_k1}/{part.edge_banding_k2}",
+
+
+-                ]
+
+
+-            )
+
+
+-
+
+
+-        # Save the file
+
+
+-        workbook.save(filepath)
+
+
+-        export_files.append(filepath)
+
+
+-
+
+
+-    return export_files
+
+
++from __future__ import annotations
++
++import os
++from pathlib import Path
++from types import SimpleNamespace
++
++import pandas as pd
++from sqlalchemy.orm import Session, joinedload
++
++from .. import models
++from ..constants.excel_schema import PART_GROUPS, REQUIRED_COLUMNS, VALID_GRAIN_VALUES
++from ..exceptions import NotFoundError, ValidationError
++from ..models import OptiJob, Order, OrderPart
++from .export_validator import ExportValidator
++from .filename_generator import FilenameGenerator
++
++EXPORT_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "exports")
++os.makedirs(EXPORT_DIR, exist_ok=True)
++
++_LEGACY_GRAIN_MAP = {
++    "1-Material": "1-Boyuna",
++    "2-Material": "2-Enine",
++    "3-Mixed": "3-Material",
++}
++
++
++def generate_xlsx_for_job(job: OptiJob, parts: list[OrderPart], output_dir: str) -> list[str]:
++    """GOVDE ve ARKALIK gruplari icin XLSX uretir."""
++    if not parts:
++        return []
++
++    order = getattr(job, "order", None)
++    crm_name = (
++        getattr(job, "customer_snapshot_name", None)
++        or getattr(order, "crm_name_snapshot", None)
++        or "UNKNOWN"
++    )
++    color = getattr(order, "color", None) or getattr(order, "material_name", None) or "UNKNOWN"
++
++    generator = FilenameGenerator()
++    validator = ExportValidator()
++
++    export_root = Path(output_dir)
++    export_root.mkdir(parents=True, exist_ok=True)
++
++    generated_files: list[str] = []
++    for part_group in PART_GROUPS:
++        group_parts = [
++            part for part in parts if str(getattr(part, "part_group", "GOVDE")).upper() == part_group
++        ]
++        if not group_parts:
++            continue
++
++        thickness = _resolve_group_thickness(order, part_group, group_parts)
++        frame = _build_export_dataframe(group_parts, part_group)
++        validation = validator.validate(frame, group=part_group)
++        if not validation.is_valid:
++            raise ValidationError(f"Export kural ihlali: {validation.errors}")
++
++        filename = generator.generate(
++            crm_name=crm_name,
++            thickness=f"{int(thickness)}mm",
++            color=color,
++            group=part_group,
++        )
++        final_path = export_root / filename
++        tmp_path = final_path.with_name(f"{final_path.stem}.tmp{final_path.suffix}")
++        frame.to_excel(tmp_path, index=False)
++        os.replace(tmp_path, final_path)
++        generated_files.append(str(final_path))
++
++    return generated_files
++
++
++def export_order_to_excel(db: Session, order_id: str) -> list[str]:
++    """Legacy helper that delegates to the canonical job export pipeline."""
++    order = (
++        db.query(models.Order)
++        .options(joinedload(models.Order.parts))
++        .filter(models.Order.id == order_id)
++        .first()
++    )
++    if not order:
++        raise NotFoundError("Sipariş", order_id)
++    if not order.parts:
++        return []
++
++    job = (
++        db.query(models.OptiJob)
++        .filter(models.OptiJob.order_id == order.id)
++        .order_by(models.OptiJob.created_at.desc())
++        .first()
++    )
++    export_job = job or SimpleNamespace(
++        id=f"order-{order.id}",
++        order_id=order.id,
++        order=order,
++        customer_snapshot_name=order.crm_name_snapshot,
++    )
++    if getattr(export_job, "order", None) is None:
++        export_job.order = order
++    return generate_xlsx_for_job(export_job, list(order.parts), EXPORT_DIR)
++
++
++def export_order_to_excel_openpyxl(order):
++    """Backward-compatible alias for the canonical export path."""
++    export_job = SimpleNamespace(
++        id=f"order-{order.id}",
++        order_id=order.id,
++        order=order,
++        customer_snapshot_name=order.crm_name_snapshot,
++    )
++    return generate_xlsx_for_job(export_job, list(order.parts), EXPORT_DIR)
++
++
++def _build_export_dataframe(parts: list[OrderPart], group: str) -> pd.DataFrame:
++    rows: list[dict[str, object]] = []
++    is_arkalik = group == "ARKALIK"
++
++    for index, part in enumerate(parts, start=1):
++        rows.append(
++            {
++                "NO": index,
++                "CODE": str(getattr(part, "id", index)),
++                "LENGTH": _coerce_dimension(getattr(part, "boy_mm", None), getattr(part, "boy", None)),
++                "WIDTH": _coerce_dimension(getattr(part, "en_mm", None), getattr(part, "en", None)),
++                "QUANTITY": int(getattr(part, "adet", None) or getattr(part, "quantity", None) or 1),
++                "GRAIN": _normalize_grain(
++                    getattr(part, "grain_code", None) or getattr(part, "grain", None)
++                ),
++                "TOP_EDGE": "" if is_arkalik else _edge_cell(getattr(part, "u1", None)),
++                "BOTTOM_EDGE": "" if is_arkalik else _edge_cell(getattr(part, "u2", None)),
++                "LEFT_EDGE": "" if is_arkalik else _edge_cell(getattr(part, "k1", None)),
++                "RIGHT_EDGE": "" if is_arkalik else _edge_cell(getattr(part, "k2", None)),
++            }
++        )
++
++    return pd.DataFrame(rows, columns=REQUIRED_COLUMNS)
++
++
++def _coerce_dimension(primary: object, fallback: object) -> float:
++    value = primary if primary not in (None, "", 0) else fallback
++    if value in (None, ""):
++        return 0.0
++    return float(value)
++
++
++def _edge_cell(value: object) -> str:
++    if value in (None, "", False, 0, "0", "0.0"):
++        return ""
++    return "1"
++
++
++def _normalize_grain(value: object) -> str:
++    if value in (None, ""):
++        return "0-Material"
++
++    text = _LEGACY_GRAIN_MAP.get(str(value).strip(), str(value).strip())
++    if text in VALID_GRAIN_VALUES:
++        return text
++
++    if text.isdigit():
++        index = int(text)
++        if 0 <= index < len(VALID_GRAIN_VALUES):
++            return VALID_GRAIN_VALUES[index]
++
++    return "0-Material"
++
++
++def _resolve_group_thickness(order: Order | None, group: str, parts: list[OrderPart]) -> float:
++    if group == "ARKALIK":
++        for part in parts:
++            part_thickness = getattr(part, "thickness_mm", None)
++            if part_thickness not in (None, ""):
++                return float(part_thickness)
++        return 8.0
++
++    if order is not None and getattr(order, "thickness_mm", None) not in (None, ""):
++        return float(order.thickness_mm)
++    return 18.0
+diff --git a/backend/app/services/export_validator.py b/backend/app/services/export_validator.py
+index e52b632..7c340c6 100644
+--- a/backend/app/services/export_validator.py
++++ b/backend/app/services/export_validator.py
+@@ -1,687 +1,150 @@
+-"""
+-
+-
+-Export Format Doğrulama Servisi
+-
+-
+-Değişmez kurallara göre export öncesi format kontrolü
+-
+-
+-"""
+-
+-
+-
+-
+-
+-from dataclasses import dataclass
+-
+-
+-from typing import Any, Dict, List
+-
+-
+-
+-
+-
++from dataclasses import dataclass, field
++from typing import Any
+ 
++from ..constants.excel_schema import (
++    ARKALIK_FORBIDDEN_COLUMNS,
++    PART_GROUPS,
++    REQUIRED_COLUMNS,
++    VALID_GRAIN_VALUES,
++)
+ 
+ 
+ @dataclass
+-
+-
+ class ValidationResult:
++    is_valid: bool
++    details: dict[str, Any] = field(default_factory=dict)
++    errors: list[str] = field(default_factory=list)
++    warnings: list[str] = field(default_factory=list)
+ 
+-
+-    passed: bool
+-
+-
+-    details: Dict[str, Any]
+-
+-
+-    errors: List[str]
+-
+-
+-    warnings: List[str]
+-
+-
+-
+-
+-
+-
++    @property
++    def passed(self) -> bool:
++        return self.is_valid
+ 
+ 
+ class ExportValidator:
+-
+-
+-    """
+-
+-
+-    Export öncesi format doğrulama
+-
+-
+-    Kural #3: .xlsx formatı kontrolü
+-
+-
+-    Kural #4: Tag bütünlüğü kontrolü
+-
+-
+-    Kural #5: Ondalık değer doğrulama
+-
+-
+-    Kural #1: Gövde/Arkalık ayrımı
+-
+-
+-    Kural #2: Renk/Kalınlık ayrımı
+-
+-
+-    """
+-
+-
+-
+-
+-
+-    # OptiPlanning Excel tag'leri - Kural #4: Asla değiştirilmez
+-
+-
+-    REQUIRED_EXCEL_TAGS = [
+-
+-
+-        "NO",
+-
+-
+-        "CODE",
+-
+-
+-        "LENGTH",
+-
+-
+-        "WIDTH",
+-
+-
+-        "QUANTITY",
+-
+-
+-        "GRAIN",
+-
+-
+-        "TOP_EDGE",
+-
+-
+-        "BOTTOM_EDGE",
+-
+-
+-        "LEFT_EDGE",
+-
+-
+-        "RIGHT_EDGE",
+-
+-
+-    ]
+-
+-
+-
+-
+-
+-    # Kural #8: Makinenin kabul ettiği grain değerleri
+-
+-
+-    VALID_GRAIN_VALUES = ["0-Material", "1-Material", "2-Material", "3-Material"]
+-
+-
+-
+-
+-
+-    def __init__(self):
+-
+-
+-        self.errors = []
+-
+-
+-        self.warnings = []
+-
+-
+-
+-
+-
+-    def validate_export_format(self, data: Dict[str, Any]) -> ValidationResult:
+-
+-
+-        """Ana doğrulama fonksiyonu"""
+-
+-
+-        self.errors = []
+-
+-
+-        self.warnings = []
+-
+-
+-
+-
++    """Canonical export validation entry point."""
++
++    def validate(self, data: Any, group: str) -> ValidationResult:
++        errors: list[str] = []
++        warnings: list[str] = []
++        normalized_group = (group or "").upper()
++
++        if normalized_group not in PART_GROUPS:
++            errors.append(f"Gecersiz part group: {group}")
++            return ValidationResult(is_valid=False, errors=errors, warnings=warnings)
++
++        frame = self._coerce_dataframe(data)
++        columns = list(frame.columns)
++        missing_columns = [column for column in REQUIRED_COLUMNS if column not in columns]
++        if missing_columns:
++            errors.append(f"Eksik zorunlu kolonlar: {missing_columns}")
++
++        if "GRAIN" in frame.columns:
++            invalid_grains = sorted(
++                {
++                    str(value)
++                    for value in frame["GRAIN"].dropna().tolist()
++                    if str(value) not in VALID_GRAIN_VALUES
++                }
++            )
++            if invalid_grains:
++                errors.append(f"Gecersiz grain degerleri: {invalid_grains}")
++
++        if normalized_group == "ARKALIK":
++            band_violations = self._find_arkalik_band_violations(frame)
++            if band_violations:
++                errors.append(
++                    "Kural #9 ihlali: ARKALIK satirlarinda bant kolonlari bos olmali "
++                    f"(satirlar: {band_violations})"
++                )
+ 
+         details = {
+-
+-
+-            "format_check": self._check_format(data),
+-
+-
+-            "tags_intact": self._verify_excel_tags(data),
+-
+-
+-            "decimal_values": self._check_decimal_values(data),
+-
+-
+-            "split_by_group": self._check_group_separation(data),
+-
+-
+-            "split_by_material": self._check_material_separation(data),
+-
+-
+-            "grain_values": self._check_grain_values(data),
+-
+-
+-            "band_on_arkalik": self._check_no_band_on_arkalik(data),
+-
+-
++            "group": normalized_group,
++            "row_count": len(frame.index),
++            "columns": columns,
++            "missing_columns": missing_columns,
+         }
+-
+-
+-
+-
+-
+-        passed = all(details.values()) and len(self.errors) == 0
+-
+-
+-
+-
+-
+         return ValidationResult(
+-
+-
+-            passed=passed, details=details, errors=self.errors, warnings=self.warnings
+-
+-
++            is_valid=len(errors) == 0,
++            details=details,
++            errors=errors,
++            warnings=warnings,
+         )
+ 
+-
+-
+-
+-
+-    def _check_format(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #3: Format .xlsx olmalı"""
+-
+-
+-        format_type = data.get("format", "").lower()
+-
+-
+-        if format_type != "xlsx":
+-
+-
+-            self.errors.append(f"Format hatası: {format_type} yerine xlsx olmalı (Kural #3)")
+-
+-
+-            return False
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def _verify_excel_tags(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #4: Excel tag'leri asla değiştirilmez/eksiltilmez"""
+-
+-
+-        columns = data.get("columns", [])
+-
+-
+-        missing_tags = [tag for tag in self.REQUIRED_EXCEL_TAGS if tag not in columns]
+-
+-
+-
+-
+-
+-        if missing_tags:
+-
+-
+-            self.errors.append(f"Eksik Excel tag'leri: {missing_tags} (Kural #4)")
+-
+-
+-            return False
+-
+-
+-
+-
+-
+-        extra_tags = [tag for tag in columns if tag not in self.REQUIRED_EXCEL_TAGS]
+-
+-
+-        if extra_tags:
+-
+-
+-            self.warnings.append(f"Ekstra tag'ler (dikkat): {extra_tags}")
+-
+-
+-
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def _check_decimal_values(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #5: Makine ondalık kabul eder"""
+-
+-
+-        measures = data.get("measures", [])
+-
+-
+-        invalid_measures = []
+-
+-
+-
+-
+-
+-        for measure in measures:
+-
+-
+-            length = measure.get("length")
+-
+-
+-            width = measure.get("width")
+-
+-
+-
+-
+-
+-            # Ondalık kontrolü
+-
+-
+-            if isinstance(length, int) or isinstance(width, int):
+-
+-
+-                invalid_measures.append(measure)
+-
+-
+-                self.warnings.append(f"Tam sayı değer: {measure}. Ondalığa çevrilecek (Kural #5)")
+-
+-
+-
+-
+-
+-        return len(invalid_measures) == 0
+-
+-
+-
+-
+-
+-    def _check_group_separation(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #1: Gövde ve arkalık ayrı çıktı"""
+-
+-
+-        groups = data.get("groups", [])
+-
+-
+-
+-
+-
+-        has_govde = any(g.get("type") == "GOVDE" for g in groups)
+-
+-
+-        has_arkalik = any(g.get("type") == "ARKALIK" for g in groups)
+-
+-
+-
+-
+-
+-        if has_govde and has_arkalik:
+-
+-
+-            # Aynı dosyada olmamalı
+-
+-
+-            govde_count = sum(1 for g in groups if g.get("type") == "GOVDE")
+-
+-
+-            arkalik_count = sum(1 for g in groups if g.get("type") == "ARKALIK")
+-
+-
+-
+-
+-
+-            if govde_count > 0 and arkalik_count > 0:
+-
+-
+-                self.errors.append(
+-
+-
+-                    "Gövde ve arkalık aynı dosyada! Ayrı export yapılmalı (Kural #1)"
+-
+-
+-                )
+-
+-
+-                return False
+-
+-
+-
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def _check_material_separation(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #2: Renk ve kalınlık farklıysa ayrı liste"""
+-
+-
+-        groups = data.get("groups", [])
+-
+-
+-
+-
+-
+-        if not groups:
+-
+-
+-            return True
+-
+-
+-
+-
+-
+-        # Her grup içinde malzeme çeşitliliği kontrolü
+-
+-
+-        for group in groups:
+-
+-
+-            materials = group.get("materials", [])
+-
+-
+-            unique_combinations = set()
+-
+-
+-
+-
+-
+-            for material in materials:
+-
+-
+-                thickness = material.get("thickness")
+-
+-
+-                color = material.get("color")
+-
+-
+-                combo = f"{thickness}_{color}"
+-
+-
+-                unique_combinations.add(combo)
+-
+-
+-
+-
+-
+-            if len(unique_combinations) > 1:
+-
+-
+-                self.warnings.append(
+-
+-
+-                    f"Grup '{group.get('name')}' içinde farklı malzemeler: {unique_combinations}. "
+-
+-
+-                    f"Ayrı listeler önerilir (Kural #2)"
+-
+-
+-                )
+-
+-
+-
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def _check_grain_values(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #8: Grain değerleri 0/1/2/3-Material olmalı"""
+-
++    def validate_export_format(self, data: dict[str, Any]) -> ValidationResult:
++        """
++        Backward-compatible wrapper for older dict payload validation.
++        Expected keys:
++        - format
++        - columns
++        - measures
++        - groups
++        """
++
++        errors: list[str] = []
++        warnings: list[str] = []
++        format_type = str(data.get("format", "")).lower()
++        if format_type and format_type != "xlsx":
++            errors.append(f"Format hatasi: {format_type} yerine xlsx olmali")
++
++        columns = [str(column) for column in data.get("columns", [])]
++        missing_columns = [column for column in REQUIRED_COLUMNS if column not in columns]
++        if missing_columns:
++            errors.append(f"Eksik zorunlu kolonlar: {missing_columns}")
+ 
+         measures = data.get("measures", [])
+-
+-
+-
+-
+-
+-        for measure in measures:
+-
+-
+-            grain = measure.get("grain")
+-
+-
+-            if grain and grain not in self.VALID_GRAIN_VALUES:
+-
+-
+-                self.errors.append(
+-
+-
+-                    f"Geçersiz grain değeri: {grain}. "
+-
+-
+-                    f"Olmalı: {self.VALID_GRAIN_VALUES} (Kural #8)"
+-
+-
+-                )
+-
+-
+-                return False
+-
+-
+-
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def _check_no_band_on_arkalik(self, data: Dict[str, Any]) -> bool:
+-
+-
+-        """Kural #9: Arkalıkta bant kesinlikle olmaz"""
+-
+-
+-        groups = data.get("groups", [])
+-
+-
+-
+-
+-
+-        for group in groups:
+-
+-
+-            if group.get("type") == "ARKALIK":
+-
+-
+-                measures = group.get("measures", [])
+-
+-
+-                for measure in measures:
+-
+-
+-                    band_edges = [
+-
+-
+-                        measure.get("top_edge", False),
+-
+-
+-                        measure.get("bottom_edge", False),
+-
+-
+-                        measure.get("left_edge", False),
+-
+-
+-                        measure.get("right_edge", False),
+-
+-
+-                    ]
+-
+-
+-                    if any(band_edges):
+-
+-
+-                        self.errors.append(f"Arkalıkta bant var! Satır: {measure} (Kural #9)")
+-
+-
+-                        return False
+-
+-
+-
+-
+-
+-        return True
+-
+-
+-
+-
+-
+-    def generate_checklist(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
+-
+-
+-        """Export öncesi kontrol listesi"""
+-
+-
+-        return [
+-
+-
+-            {
+-
+-
+-                "item": "Gövde/Arkalık ayrımı",
+-
+-
+-                "status": self._check_group_separation(data),
+-
+-
+-                "rule": "#1",
+-
+-
+-            },
+-
+-
++        invalid_grains = sorted(
+             {
++                str(measure.get("grain"))
++                for measure in measures
++                if measure.get("grain") and str(measure.get("grain")) not in VALID_GRAIN_VALUES
++            }
++        )
++        if invalid_grains:
++            errors.append(f"Gecersiz grain degerleri: {invalid_grains}")
+ 
++        for group in data.get("groups", []):
++            if str(group.get("type", "")).upper() == "ARKALIK":
++                for index, measure in enumerate(group.get("measures", []), start=1):
++                    if any(self._has_value(measure.get(column.lower())) for column in ARKALIK_FORBIDDEN_COLUMNS):
++                        errors.append(f"Kural #9 ihlali: ARKALIK measure#{index} bant iceriyor")
++                        break
+ 
+-                "item": "Renk/Kalınlık ayrımı",
+-
+-
+-                "status": self._check_material_separation(data),
+-
+-
+-                "rule": "#2",
+-
+-
+-            },
+-
+-
+-            {"item": "Format .xlsx", "status": self._check_format(data), "rule": "#3"},
+-
+-
+-            {"item": "Excel tag'leri bütün", "status": self._verify_excel_tags(data), "rule": "#4"},
+-
+-
+-            {
+-
+-
+-                "item": "Ondalık değerler hazır",
+-
+-
+-                "status": self._check_decimal_values(data),
+-
+-
+-                "rule": "#5",
+-
+-
+-            },
+-
+-
+-            {
+-
+-
+-                "item": "Grain değerleri doğru",
+-
+-
+-                "status": self._check_grain_values(data),
+-
+-
+-                "rule": "#8",
+-
+-
+-            },
+-
+-
+-            {
+-
+-
+-                "item": "Arkalıkta bant yok",
+-
+-
+-                "status": self._check_no_band_on_arkalik(data),
+-
+-
+-                "rule": "#9",
+-
+-
++        return ValidationResult(
++            is_valid=len(errors) == 0,
++            details={
++                "format": format_type or "unknown",
++                "columns": columns,
++                "missing_columns": missing_columns,
+             },
++            errors=errors,
++            warnings=warnings,
++        )
+ 
+-
+-        ]
+-
+-
+-
+-
+-
+-
+-
+-
+-# Singleton instance
+-
+-
+-validator = ExportValidator()
+-
+-
+-
+-
+-
+-
+-
+-
+-def validate_export(data: Dict[str, Any]) -> ValidationResult:
+-
+-
+-    """Kolay kullanım fonksiyonu"""
+-
+-
+-    return validator.validate_export_format(data)
+-
+-
++    def _coerce_dataframe(self, data: Any):
++        import pandas as pd
++
++        if isinstance(data, pd.DataFrame):
++            return data.copy()
++        if isinstance(data, list):
++            return pd.DataFrame(data)
++        if isinstance(data, dict):
++            if "rows" in data:
++                return pd.DataFrame(data["rows"])
++            if "measures" in data:
++                return pd.DataFrame(data["measures"])
++        return pd.DataFrame()
++
++    def _find_arkalik_band_violations(self, frame) -> list[int]:
++        violating_rows: list[int] = []
++        for row_index, (_, row) in enumerate(frame.iterrows(), start=1):
++            if any(self._has_value(row.get(column)) for column in ARKALIK_FORBIDDEN_COLUMNS):
++                violating_rows.append(row_index)
++        return violating_rows
++
++    def _has_value(self, value: Any) -> bool:
++        if value is None:
++            return False
++        if isinstance(value, str):
++            return value.strip() not in {"", "0", "0.0", "false", "False"}
++        return bool(value)
+diff --git a/backend/app/services/filename_generator.py b/backend/app/services/filename_generator.py
+index 341ef76..a9559ce 100644
+--- a/backend/app/services/filename_generator.py
++++ b/backend/app/services/filename_generator.py
+@@ -16,14 +16,13 @@ MASTER HANDOFF kurallarına göre standart dosya adlandırma
+ import re
+ 
+ 
+-import unicodedata
+-
+-
+ from datetime import datetime
+ 
+ 
+ from typing import Any, Dict, Optional
+ 
++from app.utils.text_normalize import normalize_material_name, sanitize_filename
++
+ 
+ 
+ 
+@@ -100,18 +99,21 @@ class FilenameGenerator:
+         crm_name: str,
+ 
+ 
+-        material: str,
++        material: Optional[str] = None,
+ 
+ 
+-        group: str,  # "GOVDE" veya "ARKALIK"
++        group: str = "",  # "GOVDE" veya "ARKALIK"
+ 
+ 
+-        thickness: str,
++        thickness: str = "",
+ 
+ 
+         timestamp: Optional[datetime] = None,
+ 
+ 
++        color: Optional[str] = None,
++
++
+     ) -> str:
+ 
+ 
+@@ -140,6 +142,7 @@ class FilenameGenerator:
+ 
+ 
+             timestamp: Zaman damgası (varsayılan: şimdi)
++            color: `material` verilmezse malzeme/rengi buradan al
+ 
+ 
+ 
+@@ -169,7 +172,7 @@ class FilenameGenerator:
+         clean_crm = self._normalize_crm_name(crm_name)
+ 
+ 
+-        clean_material = self._normalize_material(material, thickness)
++        clean_material = self._normalize_material(material or color or "UNKNOWN", thickness)
+ 
+ 
+         clean_group = self._normalize_group(group)
+@@ -238,49 +241,7 @@ class FilenameGenerator:
+ 
+ 
+ 
+-        # Unicode normalize (Türkçe karakterler)
+-
+-
+-        name = unicodedata.normalize("NFKD", name)
+-
+-
+-
+-
+-
+-        # Boşlukları alt çizgi ile değiştir
+-
+-
+-        name = name.replace(" ", "_")
+-
+-
+-
+-
+-
+-        # Geçersiz karakterleri kaldır
+-
+-
+-        name = re.sub(self.INVALID_CHARS, "", name)
+-
+-
+-
+-
+-
+-        # Türkçe karakterleri dönüştür (opsiyonel, ama güvenli)
+-
+-
+-        tr_map = str.maketrans("ğĞıİöÖüÜşŞçÇ", "gGiIoOuUsScC")
+-
+-
+-        name = name.translate(tr_map)
+-
+-
+-
+-
+-
+-        # Büyük harf
+-
+-
+-        name = name.upper()
++        name = sanitize_filename(name, max_len=self.MAX_CRM_NAME).upper()
+ 
+ 
+ 
+@@ -310,16 +271,13 @@ class FilenameGenerator:
+ 
+ 
+ 
+-        # Kalınlığı malzeme adından çıkar (eğer varsa)
+-
++        material_clean = normalize_material_name(material)
+ 
+-        material_clean = material
+ 
++        if thickness and thickness in material_clean:
+ 
+-        if thickness and thickness in material:
+ 
+-
+-            material_clean = material.replace(thickness, "").strip()
++            material_clean = material_clean.replace(thickness, "").strip()
+ 
+ 
+ 
+@@ -334,18 +292,6 @@ class FilenameGenerator:
+ 
+ 
+ 
+-        # MLAM/SLAM dönüşümleri (Kural #172-173)
+-
+-
+-        material_clean = material_clean.replace("MLAM", "MDFLAM")
+-
+-
+-        material_clean = material_clean.replace("SLAM", "SUNTALAM")
+-
+-
+-
+-
+-
+         # Kalınlık ekle (yoksa)
+ 
+ 
+@@ -358,10 +304,7 @@ class FilenameGenerator:
+ 
+ 
+ 
+-        # Geçersiz karakterleri kaldır
+-
+-
+-        material_clean = re.sub(self.INVALID_CHARS, "", material_clean)
++        material_clean = sanitize_filename(material_clean, max_len=self.MAX_MATERIAL)
+ 
+ 
+ 
+diff --git a/backend/app/services/grain_matcher.py b/backend/app/services/grain_matcher.py
+index a9e444f..fd9547a 100644
+--- a/backend/app/services/grain_matcher.py
++++ b/backend/app/services/grain_matcher.py
+@@ -21,6 +21,8 @@ from dataclasses import dataclass
+ 
+ from typing import Dict, List
+ 
++from app.utils.text_normalize import normalize_material_name, normalize_turkish
++
+ 
+ 
+ 
+@@ -34,7 +36,7 @@ from typing import Dict, List
+ class GrainSuggestion:
+ 
+ 
+-    grain: str  # "0-Material", "1-Material", "2-Material", "3-Material"
++    grain: str  # "0-Material", "1-Boyuna", "2-Enine", "3-Material"
+ 
+ 
+     confidence: float  # 0.0 - 1.0
+@@ -73,10 +75,10 @@ class GrainMatcher:
+     - 0-Material: Desensiz, boyutlar değiştirilebilir
+ 
+ 
+-    - 1-Material: Damar kısa kenar boyunca
++    - 1-Boyuna: Damar kısa kenar boyunca
+ 
+ 
+-    - 2-Material: Damar uzun kenar boyunca
++    - 2-Enine: Damar uzun kenar boyunca
+ 
+ 
+     - 3-Material: Karışık/önemsiz desen
+@@ -133,7 +135,7 @@ class GrainMatcher:
+         },
+ 
+ 
+-        "1-Material": {
++        "1-Boyuna": {
+ 
+ 
+             "patterns": [
+@@ -172,7 +174,7 @@ class GrainMatcher:
+         },
+ 
+ 
+-        "2-Material": {
++        "2-Enine": {
+ 
+ 
+             "patterns": [
+@@ -328,7 +330,7 @@ class GrainMatcher:
+ 
+ 
+ 
+-        material_lower = material_name.lower()
++        material_lower = normalize_turkish(normalize_material_name(material_name)).lower()
+ 
+ 
+ 
+@@ -454,10 +456,10 @@ class GrainMatcher:
+             "0-Material": 0,  # Otomatik
+ 
+ 
+-            "1-Material": 1,  # Uzunluk
++            "1-Boyuna": 1,  # Uzunluk
+ 
+ 
+-            "2-Material": 2,  # Genişlik
++            "2-Enine": 2,  # Genişlik
+ 
+ 
+             "3-Material": 3,  # Karışık
+@@ -541,7 +543,7 @@ class GrainMatcher:
+             ],
+ 
+ 
+-            "1-Material": [
++            "1-Boyuna": [
+ 
+ 
+                 "Damar kısa kenar boyunca (uzunluk yönünde)",
+@@ -556,7 +558,7 @@ class GrainMatcher:
+             ],
+ 
+ 
+-            "2-Material": [
++            "2-Enine": [
+ 
+ 
+                 "Damar uzun kenar boyunca (genişlik yönünde)",
+@@ -616,6 +618,24 @@ def suggest_grain(material_name: str) -> GrainSuggestion:
+     return matcher.suggest_grain(material_name)
+ 
+ 
++def suggest_grain_with_explanation(material_name: str) -> Dict:
++
++
++    """Kolay kullanım: açıklamalı grain önerisi."""
++
++
++    return matcher.suggest_grain_with_explanation(material_name)
++
++
++def batch_suggest(material_names: List[str]) -> List[GrainSuggestion]:
++
++
++    """Kolay kullanım: toplu grain önerisi."""
++
++
++    return matcher.batch_suggest(material_names)
++
++
+ 
+ 
+ 
+@@ -652,7 +672,7 @@ def get_grain_dropdown_options() -> List[Dict]:
+         {
+ 
+ 
+-            "value": "1-Material",
++            "value": "1-Boyuna",
+ 
+ 
+             "label": "1 - Uzunluk (Damar kısa kenar)",
+@@ -670,7 +690,7 @@ def get_grain_dropdown_options() -> List[Dict]:
+         {
+ 
+ 
+-            "value": "2-Material",
++            "value": "2-Enine",
+ 
+ 
+             "label": "2 - Genişlik (Damar uzun kenar)",
+diff --git a/backend/app/services/optimization.py b/backend/app/services/optimization.py
+index 118fcd5..a925921 100644
+--- a/backend/app/services/optimization.py
++++ b/backend/app/services/optimization.py
+@@ -8,13 +8,13 @@ from dataclasses import dataclass, field
+ from typing import Any, List, Optional, Protocol
+
+
+
+ 
+
+
+
+ # ─── Handoff §0.3: Grain ↔ OptiPlanning @437 ─────────────────────────────
+
+
+
+-GRAIN_VALUES = ("0-Material", "1-Material", "2-Material", "3-Material")
+
+
+
++GRAIN_VALUES = ("0-Material", "1-Boyuna", "2-Enine", "3-Material")
+ 
+
+
+
+ # OptiPlanning @437 parametresi: 0=Otomatik, 1=Uzunluk, 2=Genişlik, 3=Karışık
+
+
+
+ OPTI_437 = {
+
+
+
+     "0-Material": 0,  # Damar/desen yok, parça her iki yönde yerleştirilebilir
+
+
+
+-    "1-Material": 1,  # Damar kısa kenar boyunca, parça genişliği = panel genişliği
+
+
+
+-    "2-Material": 2,  # Damar uzun kenar boyunca, parça uzunluğu = panel uzunluğu
+
+
+
++    "1-Boyuna": 1,  # Damar kısa kenar boyunca, parça genişliği = panel genişliği
++    "2-Enine": 2,  # Damar uzun kenar boyunca, parça uzunluğu = panel uzunluğu
+     "3-Material": 3,  # Desen yönü var ama karışık/önemsiz
+
+
+
+ }
+
+
+
+ 
+
+
+
+@@ -33,7 +33,7 @@ class GrainExportInfo:
+ class GrainService:
+
+
+
+     """
+
+
+
+     Handoff §0.3 Grain Kuralı.
+
+
+
+-    - Makine: 0-Material, 1-Material, 2-Material, 3-Material
+
+
+
++    - Makine: 0-Material, 1-Boyuna, 2-Enine, 3-Material
+     - @437: OptiPlanning parametresi ile birebir eşleşme
+
+
+
+     - @433: Grain 1/2'de OptiPlanning yönelimi için 0,1 mm uzunluk ekler (UI ölçüsünü etkilemez)
+
+
+
+     - @2012: Grain 0'da asgari değiştirilebilir boyutlar (drop optimizasyonu)
+
+
+
+@@ -52,7 +52,7 @@ class GrainService:
+         Bu değer UI'dan gönderilen ölçüyü etkilemez; OptiPlanning kendi içinde uygular.
+
+
+
+         Export'ta boyutu değiştirmiyoruz, sadece bilgi/metadata için True döner.
+
+
+
+         """
+
+
+
+-        return grain_code in ("1-Material", "2-Material")
+
+
+
++        return grain_code in ("1-Boyuna", "2-Enine")
+ 
+
+
+
+     @staticmethod
+
+
+
+     def supports_min_changeable_dimensions(grain_code: str) -> bool:
+
+
+
+@@ -75,8 +75,8 @@ class GrainService:
+         code = cls.normalize_grain(grain_code)
+
+
+
+         labels = {
+
+
+
+             "0-Material": "Otomatik (desensiz)",
+
+
+
+-            "1-Material": "Uzunluk (damar kısa kenar)",
+
+
+
+-            "2-Material": "Genişlik (damar uzun kenar)",
+
+
+
++            "1-Boyuna": "Uzunluk (damar kısa kenar)",
++            "2-Enine": "Genişlik (damar uzun kenar)",
+             "3-Material": "Karışık",
+
+
+
+         }
+
+
+
+         return GrainExportInfo(
+
+
+
+diff --git a/backend/app/services/optiplanning_service.py b/backend/app/services/optiplanning_service.py
+index b83d447..885531f 100644
+--- a/backend/app/services/optiplanning_service.py
++++ b/backend/app/services/optiplanning_service.py
+@@ -3,10 +3,12 @@ import os
+ import shutil
+ import subprocess
+ from datetime import datetime, timezone
++from types import SimpleNamespace
+ from typing import Any, Dict, List, Tuple
+ 
+ from app.exceptions import ValidationError as AppValidationError
+ from app.models import Order, OrderPart
++from app.services.export import generate_xlsx_for_job
+ from app.services.order_service import OrderService
+ from sqlalchemy.orm import Session
+ 
+@@ -183,6 +185,26 @@ class OptiPlanningService:
+         Ana disa aktarma (export) fonksiyonu. Siparisi alip GOVDE/ARKALIK ve
+         renk/kalinlik bazinda ayirip dosyalar olusturur.
+         """
++        if format_type.upper() != "EXCEL":
++            raise AppValidationError("Yalnizca EXCEL export kanonik olarak desteklenir")
++
++        order = OrderService.get_order(db, order_id, with_parts=True)
++        if not order.parts:
++            raise ValueError(f"Siparis ({order_id}) icin disa aktarilacak parca bulunamadi.")
++
++        export_context = SimpleNamespace(
++            id=f"order-{order.id}",
++            order_id=order.id,
++            order=order,
++            customer_snapshot_name=order.crm_name_snapshot,
++        )
++        generated_files = generate_xlsx_for_job(export_context, list(order.parts), self.export_dir)
++
++        if trigger_exe and generated_files and os.path.exists(self.optiplan_exe):
++            self._trigger_optiplan(generated_files)
++
++        return generated_files
++
+         # Template validasyonu (AGENT_ONEFILE §3)
+         if format_type.upper() == "EXCEL":
+             valid, err = _validate_template(self.template_path)
+diff --git a/backend/app/services/orchestrator_service.py b/backend/app/services/orchestrator_service.py
+index d090b12..bae6c92 100644
+--- a/backend/app/services/orchestrator_service.py
++++ b/backend/app/services/orchestrator_service.py
+@@ -546,7 +546,7 @@ class OrchestratorService:
+         _call_orchestrator("POST", f"/jobs/{job_id}/cancel")
+ 
+         job.state = OptiJobStateEnum.FAILED
+-        job.error_code = "E_CANCELLED"
++        job.error_code = JobErrorCode.CANCELLED
+         job.error_message = "Kullanici tarafindan iptal edildi"
+         _add_audit(self.db, job_id, "CANCEL", "Job iptal edildi", {"cancelled_by": user_id})
+         self.db.commit()
+diff --git a/backend/app/services/payment_service.py b/backend/app/services/payment_service.py
+index 497a031..2e7810b 100644
+--- a/backend/app/services/payment_service.py
++++ b/backend/app/services/payment_service.py
+@@ -20,7 +20,7 @@ from app.models import (
+     ReminderTypeEnum,
+ )
+ from app.services.base_service import BaseService
+-from app.exceptions import ValidationError as AppValidationError
++from app.exceptions import ValidationError as AppValidationError, NotFoundError
+ from sqlalchemy import and_, func, or_
+ from sqlalchemy.orm import Session
+ 
+@@ -246,7 +246,7 @@ def create_payment(
+     # Fatura kontrolü
+     invoice = get_invoice(db, invoice_id)
+     if not invoice:
+-        raise ValueError("Fatura bulunamadı")
++        raise NotFoundError("Fatura", invoice_id)
+ 
+     # Ödeme numarası generate et
+     payment_count = db.query(Payment).count() + 1
+@@ -297,7 +297,7 @@ def cancel_payment(db: Session, payment_id: str, user_id: Optional[int] = None)
+     """Ödemeyi iptal et ve faturayı güncelle"""
+     payment = db.query(Payment).filter(Payment.id == payment_id).first()
+     if not payment or payment.is_cancelled:
+-        raise ValueError("Ödeme bulunamadı veya zaten iptal edilmiş")
++        raise NotFoundError("Ödeme", payment_id)
+ 
+     payment.is_cancelled = True
+     payment.cancelled_at = datetime.now()
+@@ -380,7 +380,7 @@ def update_payment_promise_status(
+     """Ödeme sözü durumunu güncelle"""
+     promise = db.query(PaymentPromise).filter(PaymentPromise.id == promise_id).first()
+     if not promise:
+-        raise ValueError("Ödeme sözü bulunamadı")
++        raise NotFoundError("Ödeme sözü", promise_id)
+ 
+     promise.status = status
+     if notes:
+@@ -436,7 +436,7 @@ def send_payment_reminder(db: Session, promise_id: str) -> PaymentPromise:
+     """Ödeme sözü için hatırlatma gönder"""
+     promise = db.query(PaymentPromise).filter(PaymentPromise.id == promise_id).first()
+     if not promise:
+-        raise ValueError("Ödeme sözü bulunamadı")
++        raise NotFoundError("Ödeme sözü", promise_id)
+ 
+     if (promise.reminder_count or 0) >= MAX_REMINDER_COUNT:
+         raise AppValidationError(
+diff --git a/backend/app/services/stock_matcher.py b/backend/app/services/stock_matcher.py
+index 9d0412a..c7d1690 100644
+--- a/backend/app/services/stock_matcher.py
++++ b/backend/app/services/stock_matcher.py
+@@ -24,6 +24,8 @@ from difflib import SequenceMatcher
+ 
+ from typing import Dict, List, Optional, Tuple
+ 
++from app.utils.text_normalize import normalize_material_name, normalize_turkish
++
+ 
+ 
+ 
+@@ -100,30 +102,6 @@ class StockMatcher:
+ 
+ 
+ 
+-    # Normalize kuralları (Kural #172-173)
+-
+-
+-    NORMALIZE_RULES = {
+-
+-
+-        "MLAM": "MDFLAM",
+-
+-
+-        "LAM": "LAM",
+-
+-
+-        "SLAM": "SUNTALAM",
+-
+-
+-        "SUNTA": "SUNTALAM",
+-
+-
+-    }
+-
+-
+-
+-
+-
+     # Kalınlık pattern'leri
+ 
+ 
+@@ -292,34 +270,9 @@ class StockMatcher:
+ 
+ 
+ 
+-        name = name.upper()
+-
+-
+-
+-
+-
+-        # MLAM/SLAM dönüşümleri
+-
+-
+-        for old, new in self.NORMALIZE_RULES.items():
+-
+-
+-            name = name.replace(old, new)
+-
+-
+-
+-
+-
+-        # Fazla boşlukları temizle
+-
+-
+-        name = " ".join(name.split())
+-
+-
+-
+-
+-
+-        return name
++        normalized = normalize_material_name(name)
++        normalized = normalize_turkish(normalized).upper()
++        return " ".join(normalized.split())
+ 
+ 
+ 
+diff --git a/backend/app/utils.py b/backend/app/utils.py
+deleted file mode 100644
+index 571bc96..0000000
+--- a/backend/app/utils.py
++++ /dev/null
+@@ -1,37 +0,0 @@
+-from datetime import datetime, timezone
+
+
+
+-from typing import Optional
+
+
+
+-from uuid import uuid4
+
+
+
+-
+
+
+
+-from app.models import AuditLog
+
+
+
+-from sqlalchemy.orm import Session
+
+
+
+-
+
+
+
+-
+
+
+
+-def create_audit_log(
+
+
+
+-    db: Session,
+
+
+
+-    user_id: str,
+
+
+
+-    action: str,
+
+
+
+-    detail: Optional[str] = None,
+
+
+
+-    order_id: Optional[str] = None,
+
+
+
+-):
+
+
+
+-    """
+
+
+
+-    Merkezi Audit Log oluşturma fonksiyonu.
+
+
+
+-
+
+
+
+-    Args:
+
+
+
+-        db: Veritabanı oturumu
+
+
+
+-        user_id: İşlemi yapan kullanıcı ID
+
+
+
+-        action: İşlem türü (örn: "CREATE_ORDER", "DELETE_USER")
+
+
+
+-        detail: İşlem detayı veya açıklama
+
+
+
+-        order_id: İlgili sipariş ID (varsa)
+
+
+
+-    """
+
+
+
+-    log = AuditLog(
+
+
+
+-        id=str(uuid4()),
+
+
+
+-        user_id=user_id,
+
+
+
+-        action=action,
+
+
+
+-        order_id=order_id,
+
+
+
+-        detail=detail,
+
+
+
+-        created_at=datetime.now(timezone.utc),
+
+
+
+-    )
+
+
+
+-    db.add(log)
+
+
+
+-    # Not: db.commit() çağrısı transaction bütünlüğü için çağıran fonksiyona bırakılabilir.
+
+
+
+-    # Ancak logların bağımsız olması istenirse burada commit denenebilir.
+
+
+
+-    # Şimdilik session'a ekleyip bırakıyoruz.
+
+
+
+diff --git a/frontend/src/components/Orders/Orders.tsx b/frontend/src/components/Orders/Orders.tsx
+index 3df769a..87e48bc 100644
+--- a/frontend/src/components/Orders/Orders.tsx
++++ b/frontend/src/components/Orders/Orders.tsx
+@@ -1,6 +1,6 @@
+ ﻿import { useMemo, useState, useCallback, useEffect } from "react";
+ 
+-import { Plus, MessageSquare, Copy } from "lucide-react";
++import { Plus } from "lucide-react";
+ import { OrderNotesPanel } from "./OrderNotesPanel";
+ 
+ import { TopBar } from "../Layout/TopBar";
+@@ -37,7 +37,7 @@ export function Orders({ onEdit }: OrdersProps) {
+ 
+   const { addToast } = useToast();
+ 
+-  const { orders, saveOrder, fetchOrders, initialized } = useOrdersStore();
++  const { orders, upsertOrder, fetchOrders, initialized } = useOrdersStore();
+ 
+ 
+ 
+@@ -61,7 +61,7 @@ export function Orders({ onEdit }: OrdersProps) {
+ 
+   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set());
+ 
+-  const [bulkStatus] = useState<"ALL" | "NEW" | "IN_PRODUCTION" | "READY" | "HOLD">("ALL");
++  const [bulkStatus, setBulkStatus] = useState<OrderStatus | "">("");
+   const [notesOrderId, setNotesOrderId] = useState<string | null>(null);
+ 
+ 
+@@ -116,33 +116,53 @@ export function Orders({ onEdit }: OrdersProps) {
+ 
+ 
+ 
+-  const handleBulkStatusUpdate = useCallback(async (newStatus: string) => {
++  const handleBulkStatusUpdate = useCallback(async (newStatus: OrderStatus) => {
+ 
+     if (selectedRows.size === 0) return;
+ 
++    const orderIds = Array.from(selectedRows, String);
+ 
++    try {
+ 
+-    const selectedOrders = orders.filter((o) => selectedRows.has(o.id));
++      const result = await ordersService.bulkUpdateStatus({ orderIds, newStatus });
+ 
+-    let successCount = 0;
++      const updatedCount = result.updated ?? 0;
+ 
++      const failedCount = result.failed.length;
+ 
++      if (updatedCount > 0) {
+ 
+-    for (const order of selectedOrders) {
++        await fetchOrders();
+ 
+-      const result = await saveOrder({ ...order, status: newStatus as OrderStatus });
++      }
+ 
+-      if (result.ok) successCount++;
++      setSelectedRows(new Set(result.failed.map((item) => item.id)));
+ 
+-    }
++      setBulkStatus("");
++
++      if (failedCount === 0) {
++
++        addToast(`${updatedCount}/${orderIds.length} sipariş başarıyla güncellendi`, "success");
+ 
++      } else if (updatedCount > 0) {
+ 
++        addToast(`${updatedCount} sipariş güncellendi, ${failedCount} sipariş başarısız oldu`, "warning");
+ 
+-    addToast(`${successCount}/${selectedRows.size} sipariş başarıyla güncellendi`, successCount === selectedRows.size ? "success" : "warning");
++      } else {
+ 
+-    setSelectedRows(new Set());
++        addToast("Seçili siparişler güncellenemedi", "error");
+ 
+-  }, [selectedRows, orders, saveOrder, addToast]);
++      }
++
++    } catch {
++
++      setBulkStatus("");
++
++      addToast("Toplu durum güncellemesi sırasında hata oluştu", "error");
++
++    }
++
++  }, [selectedRows, fetchOrders, addToast]);
+ 
+ 
+ 
+@@ -154,33 +174,41 @@ export function Orders({ onEdit }: OrdersProps) {
+ 
+ 
+ 
+-    let successCount = 0;
++    const orderIds = Array.from(selectedRows, String);
+ 
+-    for (const id of selectedRows) {
++    try {
+ 
+-      try {
++      const result = await ordersService.bulkDelete({ orderIds });
+ 
+-        await ordersService.remove(String(id));
++      const deletedCount = result.deleted ?? 0;
+ 
+-        successCount++;
++      const failedCount = result.failed.length;
+ 
+-      } catch { /* bireysel hata sessizce geçilir */ }
++      if (deletedCount > 0) {
+ 
+-    }
++        await fetchOrders();
++
++      }
+ 
++      setSelectedRows(new Set(result.failed.map((item) => item.id)));
+ 
++      if (failedCount === 0) {
+ 
+-    if (successCount > 0) {
++        addToast(`${deletedCount}/${orderIds.length} sipariş silindi`, "success");
+ 
+-      addToast(`${successCount}/${selectedRows.size} sipariş silindi`, successCount === selectedRows.size ? "success" : "warning");
++      } else if (deletedCount > 0) {
+ 
+-      setSelectedRows(new Set());
++        addToast(`${deletedCount} sipariş silindi, ${failedCount} sipariş silinemedi`, "warning");
+ 
+-      void fetchOrders();
++      } else {
+ 
+-    } else {
++        addToast("Siparişler silinemedi (sadece NEW durumundaki siparişler silinebilir)", "error");
+ 
+-      addToast("Siparişler silinemedi (sadece NEW durumundaki siparişler silinebilir)", "error");
++      }
++
++    } catch {
++
++      addToast("Toplu silme sırasında hata oluştu", "error");
+ 
+     }
+ 
+@@ -408,12 +436,26 @@ export function Orders({ onEdit }: OrdersProps) {
+ 
+                   value={bulkStatus}
+ 
+-                  onChange={(e) => handleBulkStatusUpdate(e.target.value)}
++                  onChange={(e) => {
++
++                    const nextStatus = e.target.value as OrderStatus | "";
++
++                    setBulkStatus(nextStatus);
++
++                    if (nextStatus) {
++
++                      void handleBulkStatusUpdate(nextStatus);
++
++                    }
++
++                  }}
+ 
+                   style={{ padding: "6px 8px", fontSize: 12, borderRadius: RADIUS.md, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}
+ 
+                 >
+ 
++                  <option value="" disabled>Durumu değiştir</option>
++
+                   <option value="NEW">Durumu değiştir: Yeni</option>
+ 
+                   <option value="IN_PRODUCTION">Durumu değiştir: Üretimde</option>
+@@ -559,7 +601,8 @@ export function Orders({ onEdit }: OrdersProps) {
+                 onClick: async (row: Order) => {
+                   try {
+                     const cloned = await ordersService.cloneOrder(String(row.id));
+-                    saveOrder(cloned);
++                    upsertOrder(cloned);
++                    void fetchOrders();
+                     addToast(`Sipariş klonlandı: #${cloned.id}`, "success");
+                   } catch {
+                     addToast("Sipariş klonlanırken hata oluştu", "error");

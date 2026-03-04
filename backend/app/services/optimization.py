@@ -8,13 +8,13 @@ from dataclasses import dataclass, field
 from typing import Any, List, Optional, Protocol
 
 # ─── Handoff §0.3: Grain ↔ OptiPlanning @437 ─────────────────────────────
-GRAIN_VALUES = ("0-Material", "1-Material", "2-Material", "3-Material")
+GRAIN_VALUES = ("0-Material", "1-Boyuna", "2-Enine", "3-Material")
 
 # OptiPlanning @437 parametresi: 0=Otomatik, 1=Uzunluk, 2=Genişlik, 3=Karışık
 OPTI_437 = {
     "0-Material": 0,  # Damar/desen yok, parça her iki yönde yerleştirilebilir
-    "1-Material": 1,  # Damar kısa kenar boyunca, parça genişliği = panel genişliği
-    "2-Material": 2,  # Damar uzun kenar boyunca, parça uzunluğu = panel uzunluğu
+    "1-Boyuna": 1,  # Damar kısa kenar boyunca, parça genişliği = panel genişliği
+    "2-Enine": 2,  # Damar uzun kenar boyunca, parça uzunluğu = panel uzunluğu
     "3-Material": 3,  # Desen yönü var ama karışık/önemsiz
 }
 
@@ -33,7 +33,7 @@ class GrainExportInfo:
 class GrainService:
     """
     Handoff §0.3 Grain Kuralı.
-    - Makine: 0-Material, 1-Material, 2-Material, 3-Material
+    - Makine: 0-Material, 1-Boyuna, 2-Enine, 3-Material
     - @437: OptiPlanning parametresi ile birebir eşleşme
     - @433: Grain 1/2'de OptiPlanning yönelimi için 0,1 mm uzunluk ekler (UI ölçüsünü etkilemez)
     - @2012: Grain 0'da asgari değiştirilebilir boyutlar (drop optimizasyonu)
@@ -52,7 +52,7 @@ class GrainService:
         Bu değer UI'dan gönderilen ölçüyü etkilemez; OptiPlanning kendi içinde uygular.
         Export'ta boyutu değiştirmiyoruz, sadece bilgi/metadata için True döner.
         """
-        return grain_code in ("1-Material", "2-Material")
+        return grain_code in ("1-Boyuna", "2-Enine")
 
     @staticmethod
     def supports_min_changeable_dimensions(grain_code: str) -> bool:
@@ -75,8 +75,8 @@ class GrainService:
         code = cls.normalize_grain(grain_code)
         labels = {
             "0-Material": "Otomatik (desensiz)",
-            "1-Material": "Uzunluk (damar kısa kenar)",
-            "2-Material": "Genişlik (damar uzun kenar)",
+            "1-Boyuna": "Uzunluk (damar kısa kenar)",
+            "2-Enine": "Genişlik (damar uzun kenar)",
             "3-Material": "Karışık",
         }
         return GrainExportInfo(

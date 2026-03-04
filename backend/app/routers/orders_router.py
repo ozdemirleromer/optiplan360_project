@@ -8,8 +8,8 @@ import json
 import logging
 import os
 import re
-import unicodedata
 from datetime import datetime, timezone
+from types import SimpleNamespace
 from typing import List
 from uuid import uuid4
 
@@ -18,6 +18,7 @@ from app.database import get_db
 from app.exceptions import BusinessRuleError, NotFoundError, ValidationError
 from app.models import Customer, Order, OrderPart, User
 from app.permissions import Permission
+from app.constants.excel_schema import LEGACY_GRAIN_MAP, VALID_GRAIN_VALUES
 from app.schemas import (
     ExportFile,
     ExportResult,
@@ -29,9 +30,9 @@ from app.schemas import (
     OrderUpdate,
     ValidationResult,
 )
-from app.services.optimization import get_export_rows
+from app.services.export import generate_xlsx_for_job
 from app.services.order_service import OrderService
-from app.utils import create_audit_log
+from app.utils import create_audit_log, normalize_text, sanitize_filename
 from fastapi import APIRouter, Depends, File, Form, Query, UploadFile
 from fastapi.responses import FileResponse
 from openpyxl import Workbook, load_workbook
@@ -227,9 +228,7 @@ def _load_share_path() -> str | None:
 
 def _safe_filename(name: str) -> str:
     """Dosya adı için güvenli karakter dönüşümü"""
-    safe = name.replace(" ", "_").upper()
-    safe = re.sub(r'[<>:"/\\|?*]', "_", safe)
-    return safe
+    return sanitize_filename(name, max_len=100).upper()
 
 
 @router.post("/{order_id}/export/opti", response_model=ExportResult)
@@ -248,31 +247,26 @@ def export_opti(
     if order.status not in ("IN_PRODUCTION", "NEW", "READY"):
         raise BusinessRuleError("Sipariş uygun durumda değil")
 
+    export_job = SimpleNamespace(
+        id=f"order-{order.id}",
+        order_id=order.id,
+        order=order,
+        customer_snapshot_name=order.crm_name_snapshot,
+    )
+    generated_paths = generate_xlsx_for_job(export_job, list(order.parts), EXPORT_DIR)
+
     files: list[ExportFile] = []
-
-    # Export dizinini oluştur
-    export_dir = os.path.join(EXPORT_DIR, f"{order.crm_name_snapshot}_{order.ts_code}")
-    os.makedirs(export_dir, exist_ok=True)
-
-    # Gövde ve arkalık parçalarını renk ve kalınlık bazında ayır
-    grouped_parts = {}
-    for part in order.parts:
-        key = (part.part_group, part.color, part.thickness_mm)
-        if key not in grouped_parts:
-            grouped_parts[key] = []
-        grouped_parts[key].append(part)
-
-    name_safe = _safe_filename(order.crm_name_snapshot)
-
-    for (part_group, color, thickness), parts in grouped_parts.items():
-        group_name = "GOVDE" if part_group == "GOVDE" else "ARKALIK"
-        fn = f"{name_safe}_{order.ts_code}_{thickness}mm_{color}_{group_name}.xlsx"
-        path = os.path.join(export_dir, fn)
-        rows = get_export_rows(parts, part_group=part_group)
-        _create_opti_xlsx(path, rows, order, group_name)
-        download_url = f"/api/v1/orders/export/download/{fn}"
+    for path in generated_paths:
+        filename = os.path.basename(path)
+        part_group = "ARKALIK" if filename.upper().endswith("_ARKALIK.XLSX") else "GOVDE"
+        download_url = f"/api/v1/orders/export/download/{filename}"
         files.append(
-            ExportFile(filename=fn, part_group=group_name, path=path, download_url=download_url)
+            ExportFile(
+                filename=filename,
+                part_group=part_group,
+                path=path,
+                download_url=download_url,
+            )
         )
 
     return ExportResult(files=files)
@@ -387,10 +381,7 @@ def _create_opti_xlsx(path: str, rows: list, order: Order, part_group: str = "GO
 # XLSX IMPORT - Excel dosyasından parça satırlarını içeri al
 # ═══════════════════════════════════════════════════
 def _normalize_text(value) -> str:
-    s = str(value or "").strip().lower()
-    s = unicodedata.normalize("NFKD", s)
-    s = "".join(ch for ch in s if not unicodedata.combining(ch))
-    return s
+    return normalize_text(str(value or ""))
 
 
 def _to_float(value):
@@ -436,14 +427,16 @@ def _parse_grain(value) -> str:
     s = str(value).strip()
     if not s:
         return "0-Material"
-    if s in {"0-Material", "1-Material", "2-Material", "3-Material"}:
+    if s in VALID_GRAIN_VALUES:
         return s
+    if s in LEGACY_GRAIN_MAP:
+        return LEGACY_GRAIN_MAP[s]
     n = _to_int(s)
     if n in (0, 1, 2, 3):
-        return f"{n}-Material"
+        return VALID_GRAIN_VALUES[n]
     m = re.match(r"^([0-3])\s*[-_ ]", s)
     if m:
-        return f"{m.group(1)}-Material"
+        return VALID_GRAIN_VALUES[int(m.group(1))]
     return "0-Material"
 
 
@@ -854,7 +847,8 @@ async def import_xlsx(
                 continue
 
             grain = str(row[3]).strip() if len(row) > 3 and row[3] else "0-Material"
-            if grain not in ("0-Material", "1-Material", "2-Material", "3-Material"):
+            grain = _parse_grain(grain)
+            if grain not in VALID_GRAIN_VALUES:
                 grain = "0-Material"
                 warnings.append(f"Satır {row_idx}: geçersiz grain, 0-Material kullanıldı")
 

@@ -546,7 +546,7 @@ class OrchestratorService:
         _call_orchestrator("POST", f"/jobs/{job_id}/cancel")
 
         job.state = OptiJobStateEnum.FAILED
-        job.error_code = "E_CANCELLED"
+        job.error_code = JobErrorCode.CANCELLED
         job.error_message = "Kullanici tarafindan iptal edildi"
         _add_audit(self.db, job_id, "CANCEL", "Job iptal edildi", {"cancelled_by": user_id})
         self.db.commit()

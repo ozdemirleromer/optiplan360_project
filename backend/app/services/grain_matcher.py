@@ -21,6 +21,8 @@ from dataclasses import dataclass
 
 from typing import Dict, List
 
+from app.utils.text_normalize import normalize_material_name, normalize_turkish
+
 
 
 
@@ -34,7 +36,7 @@ from typing import Dict, List
 class GrainSuggestion:
 
 
-    grain: str  # "0-Material", "1-Material", "2-Material", "3-Material"
+    grain: str  # "0-Material", "1-Boyuna", "2-Enine", "3-Material"
 
 
     confidence: float  # 0.0 - 1.0
@@ -73,10 +75,10 @@ class GrainMatcher:
     - 0-Material: Desensiz, boyutlar değiştirilebilir
 
 
-    - 1-Material: Damar kısa kenar boyunca
+    - 1-Boyuna: Damar kısa kenar boyunca
 
 
-    - 2-Material: Damar uzun kenar boyunca
+    - 2-Enine: Damar uzun kenar boyunca
 
 
     - 3-Material: Karışık/önemsiz desen
@@ -133,7 +135,7 @@ class GrainMatcher:
         },
 
 
-        "1-Material": {
+        "1-Boyuna": {
 
 
             "patterns": [
@@ -172,7 +174,7 @@ class GrainMatcher:
         },
 
 
-        "2-Material": {
+        "2-Enine": {
 
 
             "patterns": [
@@ -328,7 +330,7 @@ class GrainMatcher:
 
 
 
-        material_lower = material_name.lower()
+        material_lower = normalize_turkish(normalize_material_name(material_name)).lower()
 
 
 
@@ -454,10 +456,10 @@ class GrainMatcher:
             "0-Material": 0,  # Otomatik
 
 
-            "1-Material": 1,  # Uzunluk
+            "1-Boyuna": 1,  # Uzunluk
 
 
-            "2-Material": 2,  # Genişlik
+            "2-Enine": 2,  # Genişlik
 
 
             "3-Material": 3,  # Karışık
@@ -541,7 +543,7 @@ class GrainMatcher:
             ],
 
 
-            "1-Material": [
+            "1-Boyuna": [
 
 
                 "Damar kısa kenar boyunca (uzunluk yönünde)",
@@ -556,7 +558,7 @@ class GrainMatcher:
             ],
 
 
-            "2-Material": [
+            "2-Enine": [
 
 
                 "Damar uzun kenar boyunca (genişlik yönünde)",
@@ -616,6 +618,24 @@ def suggest_grain(material_name: str) -> GrainSuggestion:
     return matcher.suggest_grain(material_name)
 
 
+def suggest_grain_with_explanation(material_name: str) -> Dict:
+
+
+    """Kolay kullanım: açıklamalı grain önerisi."""
+
+
+    return matcher.suggest_grain_with_explanation(material_name)
+
+
+def batch_suggest(material_names: List[str]) -> List[GrainSuggestion]:
+
+
+    """Kolay kullanım: toplu grain önerisi."""
+
+
+    return matcher.batch_suggest(material_names)
+
+
 
 
 
@@ -652,7 +672,7 @@ def get_grain_dropdown_options() -> List[Dict]:
         {
 
 
-            "value": "1-Material",
+            "value": "1-Boyuna",
 
 
             "label": "1 - Uzunluk (Damar kısa kenar)",
@@ -670,7 +690,7 @@ def get_grain_dropdown_options() -> List[Dict]:
         {
 
 
-            "value": "2-Material",
+            "value": "2-Enine",
 
 
             "label": "2 - Genişlik (Damar uzun kenar)",

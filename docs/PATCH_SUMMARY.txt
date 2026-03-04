@@ -1,0 +1,23 @@
+ backend/app/models/crm.py                    |  30 +-
+ backend/app/models/finance.py                |  36 +-
+ backend/app/models/order.py                  |  23 +-
+ backend/app/routers/aws_textract_router.py   |   3 +-
+ backend/app/routers/azure_router.py          |   3 +-
+ backend/app/routers/google_vision_router.py  |   5 +-
+ backend/app/routers/ocr_router.py            | 236 +++++---
+ backend/app/routers/orders_router.py         |  69 ++-
+ backend/app/schemas.py                       |  63 ++-
+ backend/app/services/bridge_service.py       | 811 ++++++++++++++++++++-------
+ backend/app/services/drop_optimization.py    |   4 +-
+ backend/app/services/export.py               | 343 +++++------
+ backend/app/services/export_validator.py     | 793 +++++---------------------
+ backend/app/services/filename_generator.py   |  87 +--
+ backend/app/services/grain_matcher.py        |  44 +-
+ backend/app/services/optimization.py         |  14 +-
+ backend/app/services/optiplanning_service.py |  22 +
+ backend/app/services/orchestrator_service.py |   2 +-
+ backend/app/services/payment_service.py      |  10 +-
+ backend/app/services/stock_matcher.py        |  57 +-
+ backend/app/utils.py                         |  37 --
+ frontend/src/components/Orders/Orders.tsx    |  99 +++-
+ 22 files changed, 1377 insertions(+), 1414 deletions(-)

@@ -1,6 +1,6 @@
 ﻿import { useMemo, useState, useCallback, useEffect } from "react";
 
-import { Plus, MessageSquare, Copy } from "lucide-react";
+import { Plus } from "lucide-react";
 import { OrderNotesPanel } from "./OrderNotesPanel";
 
 import { TopBar } from "../Layout/TopBar";
@@ -37,7 +37,7 @@ export function Orders({ onEdit }: OrdersProps) {
 
   const { addToast } = useToast();
 
-  const { orders, saveOrder, fetchOrders, initialized } = useOrdersStore();
+  const { orders, upsertOrder, fetchOrders, initialized } = useOrdersStore();
 
 
 
@@ -61,7 +61,7 @@ export function Orders({ onEdit }: OrdersProps) {
 
   const [selectedRows, setSelectedRows] = useState<Set<string | number>>(new Set());
 
-  const [bulkStatus] = useState<"ALL" | "NEW" | "IN_PRODUCTION" | "READY" | "HOLD">("ALL");
+  const [bulkStatus, setBulkStatus] = useState<OrderStatus | "">("");
   const [notesOrderId, setNotesOrderId] = useState<string | null>(null);
 
 
@@ -116,33 +116,53 @@ export function Orders({ onEdit }: OrdersProps) {
 
 
 
-  const handleBulkStatusUpdate = useCallback(async (newStatus: string) => {
+  const handleBulkStatusUpdate = useCallback(async (newStatus: OrderStatus) => {
 
     if (selectedRows.size === 0) return;
 
+    const orderIds = Array.from(selectedRows, String);
 
+    try {
 
-    const selectedOrders = orders.filter((o) => selectedRows.has(o.id));
+      const result = await ordersService.bulkUpdateStatus({ orderIds, newStatus });
 
-    let successCount = 0;
+      const updatedCount = result.updated ?? 0;
 
+      const failedCount = result.failed.length;
 
+      if (updatedCount > 0) {
 
-    for (const order of selectedOrders) {
+        await fetchOrders();
 
-      const result = await saveOrder({ ...order, status: newStatus as OrderStatus });
+      }
 
-      if (result.ok) successCount++;
+      setSelectedRows(new Set(result.failed.map((item) => item.id)));
+
+      setBulkStatus("");
+
+      if (failedCount === 0) {
+
+        addToast(`${updatedCount}/${orderIds.length} sipariş başarıyla güncellendi`, "success");
+
+      } else if (updatedCount > 0) {
+
+        addToast(`${updatedCount} sipariş güncellendi, ${failedCount} sipariş başarısız oldu`, "warning");
+
+      } else {
+
+        addToast("Seçili siparişler güncellenemedi", "error");
+
+      }
+
+    } catch {
+
+      setBulkStatus("");
+
+      addToast("Toplu durum güncellemesi sırasında hata oluştu", "error");
 
     }
 
-
-
-    addToast(`${successCount}/${selectedRows.size} sipariş başarıyla güncellendi`, successCount === selectedRows.size ? "success" : "warning");
-
-    setSelectedRows(new Set());
-
-  }, [selectedRows, orders, saveOrder, addToast]);
+  }, [selectedRows, fetchOrders, addToast]);
 
 
 
@@ -154,33 +174,41 @@ export function Orders({ onEdit }: OrdersProps) {
 
 
 
-    let successCount = 0;
+    const orderIds = Array.from(selectedRows, String);
 
-    for (const id of selectedRows) {
+    try {
 
-      try {
+      const result = await ordersService.bulkDelete({ orderIds });
 
-        await ordersService.remove(String(id));
+      const deletedCount = result.deleted ?? 0;
 
-        successCount++;
+      const failedCount = result.failed.length;
 
-      } catch { /* bireysel hata sessizce geçilir */ }
+      if (deletedCount > 0) {
 
-    }
+        await fetchOrders();
 
+      }
 
+      setSelectedRows(new Set(result.failed.map((item) => item.id)));
 
-    if (successCount > 0) {
+      if (failedCount === 0) {
 
-      addToast(`${successCount}/${selectedRows.size} sipariş silindi`, successCount === selectedRows.size ? "success" : "warning");
+        addToast(`${deletedCount}/${orderIds.length} sipariş silindi`, "success");
 
-      setSelectedRows(new Set());
+      } else if (deletedCount > 0) {
 
-      void fetchOrders();
+        addToast(`${deletedCount} sipariş silindi, ${failedCount} sipariş silinemedi`, "warning");
 
-    } else {
+      } else {
 
-      addToast("Siparişler silinemedi (sadece NEW durumundaki siparişler silinebilir)", "error");
+        addToast("Siparişler silinemedi (sadece NEW durumundaki siparişler silinebilir)", "error");
+
+      }
+
+    } catch {
+
+      addToast("Toplu silme sırasında hata oluştu", "error");
 
     }
 
@@ -408,11 +436,25 @@ export function Orders({ onEdit }: OrdersProps) {
 
                   value={bulkStatus}
 
-                  onChange={(e) => handleBulkStatusUpdate(e.target.value)}
+                  onChange={(e) => {
+
+                    const nextStatus = e.target.value as OrderStatus | "";
+
+                    setBulkStatus(nextStatus);
+
+                    if (nextStatus) {
+
+                      void handleBulkStatusUpdate(nextStatus);
+
+                    }
+
+                  }}
 
                   style={{ padding: "6px 8px", fontSize: 12, borderRadius: RADIUS.md, border: `1px solid ${COLORS.border}`, background: COLORS.surface }}
 
                 >
+
+                  <option value="" disabled>Durumu değiştir</option>
 
                   <option value="NEW">Durumu değiştir: Yeni</option>
 
@@ -559,7 +601,8 @@ export function Orders({ onEdit }: OrdersProps) {
                 onClick: async (row: Order) => {
                   try {
                     const cloned = await ordersService.cloneOrder(String(row.id));
-                    saveOrder(cloned);
+                    upsertOrder(cloned);
+                    void fetchOrders();
                     addToast(`Sipariş klonlandı: #${cloned.id}`, "success");
                   } catch {
                     addToast("Sipariş klonlanırken hata oluştu", "error");

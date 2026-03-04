@@ -14,7 +14,7 @@ class GrainCode(Enum):
     ZERO = "0-Material"  # Desensiz - @2012 uygulanabilir
     BOYUNA = "1-Boyuna"  # Damarlı
     ENINE = "2-Enine"  # Damarlı
-    MIXED = "3-Mixed"  # Karışık
+    MIXED = "3-Material"  # Karışık
 
 
 @dataclass
@@ -55,7 +55,7 @@ class DropOptimizationService:
         Grain kodunun @2012 optimizasyonunu destekleyip desteklemediğini kontrol et
 
         Args:
-            grain_code: Grain kodu (0-Material, 1-Boyuna, 2-Enine, 3-Mixed)
+            grain_code: Grain kodu (0-Material, 1-Boyuna, 2-Enine, 3-Material)
 
         Returns:
             bool: True ise drop optimizasyonu uygulanabilir

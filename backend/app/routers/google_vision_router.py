@@ -3,7 +3,8 @@ Google Cloud Vision OCR Router
 Google Vision API entegrasyon endpoint'leri
 """
 
-from datetime import datetime, timezone
+import json
+from datetime import datetime, timezone
 from typing import Optional
 from uuid import uuid4
 
@@ -190,7 +191,7 @@ async def process_with_google_vision(
                 text=text,
                 confidence=line_data.get("confidence", 0.9),
                 is_valid=parsed is not None,
-                parsed_data=parsed,
+                parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
                 validation_error=None if parsed else "Geçersiz ölçü formatı",
             )
             db.add(ocr_line)
