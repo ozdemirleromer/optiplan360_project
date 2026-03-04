@@ -1,0 +1,791 @@
+
+
+
+
+
+
+@router.post("/create-order", response_model=Dict)
+
+
+
+
+async def create_order_from_ocr(
+    data: OrderCreateFromOCR,
+
+
+
+
+    db: Session = Depends(get_db),
+
+
+
+
+    current_user: User = Depends(get_current_user),
+
+
+
+
+):
+    """
+
+
+
+
+
+
+
+
+
+
+    OCR sonuçlarından sipariş oluştur
+
+
+
+
+
+
+
+
+
+
+    """
+
+    job = db.query(OCRJob).filter(OCRJob.id == data.ocr_job_id).first()
+    if not job:
+        raise NotFoundError("OCR job")
+    if job.status != "COMPLETED":
+        raise BusinessRuleError(f"OCR job tamamlanmamış: {job.status}")
+
+    customer = db.query(Customer).filter(Customer.id == int(data.customer_id)).first()
+    if not customer:
+        raise NotFoundError("Müşteri")
+
+    selected_lines = (
+        db.query(OCRLine)
+        .filter(
+            OCRLine.ocr_job_id == job.id,
+            OCRLine.line_number.in_(data.lines),
+            OCRLine.is_valid.is_(True),
+        )
+        .order_by(OCRLine.line_number.asc())
+        .all()
+    )
+    if not selected_lines:
+        raise BusinessRuleError("Geçerli ölçü satırı bulunamadı")
+
+    mapped_parts: list[dict[str, Any]] = []
+    for line in selected_lines:
+        parsed = _deserialize_parsed_data(line.parsed_data)
+        if not parsed:
+            continue
+        mapped_parts.append(
+            {
+                **parsed,
+                "part_group": "GOVDE",
+                "grain": data.grain or "0-Material",
+                "part_desc": line.text,
+            }
+        )
+
+    if not mapped_parts:
+        raise BusinessRuleError("OCR satırlarında işlenecek parça verisi bulunamadı")
+
+    mapper = OcrOrderMapper()
+    order_payload = mapper.map(
+        {
+            "customer_id": customer.id,
+            "customer_phone": customer.phone or job.phone,
+            "thickness": data.thickness or _extract_thickness_from_text(job.extracted_text) or "18",
+            "plate_size": data.plate_size or "2100x2800",
+            "material_name": data.material or "Bilinmiyor",
+            "color": data.material or "Bilinmiyor",
+            "grain_default": data.grain or "0-Material",
+            "parts": mapped_parts,
+        }
+    )
+
+    order = OrderService.create_order(db, order_payload, current_user)
+    orchestrator_job = OrchestratorService(db).create_job(
+        order_id=order.id,
+        customer_phone=order.phone_norm,
+        parts=[part.model_dump() for part in order_payload.parts],
+        opti_mode="C",
+        plate_width_mm=float(order.plate_w_mm or 0) or None,
+        plate_height_mm=float(order.plate_h_mm or 0) or None,
+        customer_snapshot_name=order.crm_name_snapshot,
+        user_id=current_user.id,
+    )
+
+    job.order_id = order.id
+    job.status = "ORDER_CREATED"
+    db.add(
+        AuditLog(
+            id=str(uuid4()),
+            user_id=current_user.id,
+            order_id=order.id,
+            action="ORDER_CREATE_FROM_OCR",
+            detail=(
+                f"OCR {job.id} -> Sipariş {order.id} | "
+                f"job={orchestrator_job.id} | {len(order_payload.parts)} parça"
+            ),
+            created_at=datetime.now(timezone.utc),
+        )
+    )
+    db.commit()
+
+    return {
+        "success": True,
+        "order_id": str(order.id),
+        "ts_code": order.ts_code,
+        "customer_name": customer.name,
+        "total_parts": len(order_payload.parts),
+        "job_id": orchestrator_job.id,
+        "state": orchestrator_job.state.value,
+        "message": "Sipariş ve orchestrator job başarıyla oluşturuldu",
+    }
+
+    # Job kontrolü
+
+
+
+
+
+    job = db.query(OCRJob).filter(OCRJob.id == data.ocr_job_id).first()
+
+
+
+
+
+
+
+
+
+    if not job:
+
+
+
+
+
+
+
+
+
+        raise NotFoundError("OCR job")
+
+
+
+
+
+
+
+
+
+    if job.status != "COMPLETED":
+
+
+
+
+
+
+
+
+
+        raise BusinessRuleError(f"OCR job tamamlanmamış: {job.status}")
+
+
+
+
+
+
+
+
+
+    # Müşteri kontrolü
+
+
+
+
+
+
+
+
+
+    customer = db.query(Customer).filter(Customer.id == data.customer_id).first()
+
+
+
+
+
+
+
+
+
+    if not customer:
+
+
+
+
+
+
+
+
+
+        raise NotFoundError("Müşteri")
+
+
+
+
+
+
+
+
+
+    # Satırları al
+
+
+
+
+
+
+
+
+
+    selected_lines = (
+
+
+
+
+        db.query(OCRLine)
+
+
+
+
+        .filter(
+
+
+
+
+            OCRLine.ocr_job_id == job.id,
+
+
+
+
+            OCRLine.line_number.in_(data.lines),
+
+
+
+
+            OCRLine.is_valid == True,
+
+
+
+
+        )
+
+
+
+
+        .all()
+
+
+
+
+    )
+
+
+
+
+
+
+
+
+
+    if not selected_lines:
+
+
+
+
+
+
+
+
+
+        raise BusinessRuleError("Geçerli ölçü satırı bulunamadı")
+
+
+
+
+
+
+
+
+
+    # Sipariş oluştur
+
+
+
+
+
+
+
+
+
+    ts_code = f"OP-{datetime.now().year}-{str(uuid4().hex[:4]).upper()}"
+
+
+
+
+
+
+
+
+
+    order = Order(
+
+
+
+
+        id=str(uuid4()),
+
+
+
+
+        ts_code=ts_code,
+
+
+
+
+        customer_id=customer.id,
+
+
+
+
+        customer_name=customer.name,
+
+
+
+
+        customer_phone=customer.phone,
+
+
+
+
+        material=data.material or "Bilinmiyor",
+
+
+
+
+        thickness=data.thickness or "18",
+
+
+
+
+        plate_size=data.plate_size or "2100x2800",
+
+
+
+
+        grain=data.grain or "0-Material",
+
+
+
+
+        status="NEW",
+
+
+
+
+        source="OCR",
+
+
+
+
+        ocr_job_id=job.id,
+
+
+
+
+        notes=data.notes or job.notes,
+
+
+
+
+        created_by_id=current_user.id,
+
+
+
+
+        created_at=datetime.now(timezone.utc),
+
+
+
+
+    )
+
+
+
+
+
+
+
+
+
+    db.add(order)
+
+
+
+
+
+
+
+
+
+    db.flush()  # order.id almak için
+
+
+
+
+
+
+
+
+
+    # Parçaları oluştur
+
+
+
+
+
+
+
+
+
+    total_parts = 0
+
+
+
+
+
+
+
+
+
+    for line in selected_lines:
+
+
+
+
+
+
+
+
+
+        parsed = line.parsed_data or {}
+
+
+
+
+
+
+
+
+
+        adet = parsed.get("adet", 1)
+
+
+
+
+
+
+
+
+
+        total_parts += adet
+
+
+
+
+
+
+
+
+
+        part = OrderPart(
+
+
+
+
+            id=str(uuid4()),
+
+
+
+
+            order_id=order.id,
+
+
+
+
+            line_number=line.line_number,
+
+
+
+
+            boy=parsed.get("boy", 0),
+
+
+
+
+            en=parsed.get("en", 0),
+
+
+
+
+            adet=adet,
+
+
+
+
+            grain=data.grain or "0-Material",
+
+
+
+
+            info=line.text,
+
+
+
+
+            created_at=datetime.now(timezone.utc),
+
+
+
+
+        )
+
+
+
+
+
+
+
+
+
+        db.add(part)
+
+
+
+
+
+
+
+
+
+    order.total_parts = total_parts
+
+
+
+
+
+
+
+
+
+    # Job'ı güncelle
+
+
+
+
+
+
+
+
+
+    job.order_id = order.id
+
+
+
+
+
+
+
+
+
+    job.status = "ORDER_CREATED"
+
+
+
+
+
+
+
+
+
+    # Audit log
+
+
+
+
+
+
+
+
+
+    log = AuditLog(
+
+
+
+
+        id=str(uuid4()),
+
+
+
+
+        user_id=current_user.id,
+
+
+
+
+        order_id=order.id,
+
+
+
+
+        action="ORDER_CREATE_FROM_OCR",
+
+
+
+
+        detail=f"OCR {job.id} -> Sipariş {order.id} | {total_parts} parça",
+
+
+
+
+        created_at=datetime.now(timezone.utc),
+
+
+
+
+    )
+
+
+
+
+
+
+
+
+
+    db.add(log)
+
+
+
+
+
+
+
+
+
+    db.commit()
+
+
+
+
+
+
+
+
+
+    return {
+
+
+
+
+        "success": True,
+
+
+
+
+        "order_id": order.id,
+
+
+
+
+        "ts_code": ts_code,
+
+
+
+
+        "customer_name": customer.name,
+
+
+
+
+        "total_parts": total_parts,
+
+
+
+
+        "message": "Sipariş başarıyla oluşturuldu",
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# ÖZET VE İSTATİSTİKLER
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# -----------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+

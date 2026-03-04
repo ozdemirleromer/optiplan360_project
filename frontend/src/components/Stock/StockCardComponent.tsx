@@ -74,7 +74,15 @@ const EMPTY_FORM: NewStockCardForm = {
   warehouse_location: '',
 };
 
-export const StockCardComponent: React.FC = () => {
+interface StockCardComponentProps {
+  openCreateOnMount?: boolean;
+  onCreateOpenHandled?: () => void;
+}
+
+export const StockCardComponent: React.FC<StockCardComponentProps> = ({
+  openCreateOnMount = false,
+  onCreateOpenHandled,
+}) => {
   const [searchText, setSearchText] = useState('');
   const [stockDetail, setStockDetail] = useState<StockCardDetailResponse | null>(null);
   const [stockList, setStockList] = useState<StockCard[]>([]);
@@ -198,7 +206,17 @@ export const StockCardComponent: React.FC = () => {
     fetchLowStockItems();
   }, []);
 
-  return (
+  useEffect(() => {
+    if (!openCreateOnMount) {
+      return;
+    }
+
+    setNewCardError(null);
+    setShowNewCardModal(true);
+    onCreateOpenHandled?.();
+  }, [openCreateOnMount, onCreateOpenHandled]);
+
+  return (
     <div style={{ padding: '20px', minHeight: '100vh', backgroundColor: COLORS.bg.main }}>
       {/* Arama ve Kontroller */}
       <div

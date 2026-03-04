@@ -1,5 +1,5 @@
 ﻿from app.database import Base
-from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import TIMESTAMP, Boolean, Column, Enum, ForeignKey, Index, Integer, Numeric, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -46,8 +46,9 @@ class Station(Base):
     last_maintenance_date = Column(TIMESTAMP(timezone=True))  # Son bakım tarihi
 
 
-class Order(Base):
-    __tablename__ = "orders"
+class Order(Base):
+    __tablename__ = "orders"
+    __table_args__ = (Index("ix_order_status_created", "status", "created_at"),)
     id = Column(Integer, primary_key=True, index=True)
     order_no = Column(Integer, unique=True, index=True, nullable=True)  # Sıralı sipariş numarası
     customer_id = Column(Integer, ForeignKey("customers.id"))
@@ -143,8 +144,9 @@ class Message(Base):
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
 
 
-class OrderPart(Base):
-    __tablename__ = "order_parts"
+class OrderPart(Base):
+    __tablename__ = "order_parts"
+    __table_args__ = (Index("ix_order_part_order_id", "order_id"),)
 
     id = Column(String, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
@@ -164,9 +166,9 @@ class OrderPart(Base):
 
     # Legacy OCR-derived fields kept for compatibility
     line_number = Column(Integer)
-    boy = Column(Numeric(10, 2))
-    en = Column(Numeric(10, 2))
-    adet = Column(Integer, default=1)
+    boy = Column(Numeric(10, 2), default=0, nullable=False)
+    en = Column(Numeric(10, 2), default=0, nullable=False)
+    adet = Column(Integer, default=1, nullable=False)
     grain = Column(String, default="0-Material")
     info = Column(Text)
 
@@ -179,10 +181,11 @@ class OrderPart(Base):
 # ═══════════════════════════════════════════════════════════════
 
 
-class OptiJob(Base):
+class OptiJob(Base):
     """Orchestrator job kaydı — backend görünürlüğü için"""
 
-    __tablename__ = "opti_jobs"
+    __tablename__ = "opti_jobs"
+    __table_args__ = (Index("ix_opti_job_order_created", "order_id", "created_at"),)
 
     id = Column(String, primary_key=True, index=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False, index=True)

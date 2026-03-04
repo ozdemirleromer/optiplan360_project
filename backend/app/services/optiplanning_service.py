@@ -3,10 +3,12 @@ import os
 import shutil
 import subprocess
 from datetime import datetime, timezone
+from types import SimpleNamespace
 from typing import Any, Dict, List, Tuple
 
 from app.exceptions import ValidationError as AppValidationError
 from app.models import Order, OrderPart
+from app.services.export import generate_xlsx_for_job
 from app.services.order_service import OrderService
 from sqlalchemy.orm import Session
 
@@ -183,6 +185,26 @@ class OptiPlanningService:
         Ana disa aktarma (export) fonksiyonu. Siparisi alip GOVDE/ARKALIK ve
         renk/kalinlik bazinda ayirip dosyalar olusturur.
         """
+        if format_type.upper() != "EXCEL":
+            raise AppValidationError("Yalnizca EXCEL export kanonik olarak desteklenir")
+
+        order = OrderService.get_order(db, order_id, with_parts=True)
+        if not order.parts:
+            raise ValueError(f"Siparis ({order_id}) icin disa aktarilacak parca bulunamadi.")
+
+        export_context = SimpleNamespace(
+            id=f"order-{order.id}",
+            order_id=order.id,
+            order=order,
+            customer_snapshot_name=order.crm_name_snapshot,
+        )
+        generated_files = generate_xlsx_for_job(export_context, list(order.parts), self.export_dir)
+
+        if trigger_exe and generated_files and os.path.exists(self.optiplan_exe):
+            self._trigger_optiplan(generated_files)
+
+        return generated_files
+
         # Template validasyonu (AGENT_ONEFILE §3)
         if format_type.upper() == "EXCEL":
             valid, err = _validate_template(self.template_path)

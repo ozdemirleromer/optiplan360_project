@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 from app.models import (
+    CRMAccount,
     Invoice,
     Payment,
     PaymentMethodEnum,
@@ -20,7 +21,8 @@ from app.models import (
     ReminderTypeEnum,
 )
 from app.services.base_service import BaseService
-from app.exceptions import ValidationError as AppValidationError
+from app.services.email_service import email_service
+from app.exceptions import ValidationError as AppValidationError, NotFoundError
 from sqlalchemy import and_, func, or_
 from sqlalchemy.orm import Session
 
@@ -246,7 +248,7 @@ def create_payment(
     # Fatura kontrolü
     invoice = get_invoice(db, invoice_id)
     if not invoice:
-        raise ValueError("Fatura bulunamadı")
+        raise NotFoundError("Fatura", invoice_id)
 
     # Ödeme numarası generate et
     payment_count = db.query(Payment).count() + 1
@@ -297,7 +299,7 @@ def cancel_payment(db: Session, payment_id: str, user_id: Optional[int] = None) 
     """Ödemeyi iptal et ve faturayı güncelle"""
     payment = db.query(Payment).filter(Payment.id == payment_id).first()
     if not payment or payment.is_cancelled:
-        raise ValueError("Ödeme bulunamadı veya zaten iptal edilmiş")
+        raise NotFoundError("Ödeme", payment_id)
 
     payment.is_cancelled = True
     payment.cancelled_at = datetime.now()
@@ -380,7 +382,7 @@ def update_payment_promise_status(
     """Ödeme sözü durumunu güncelle"""
     promise = db.query(PaymentPromise).filter(PaymentPromise.id == promise_id).first()
     if not promise:
-        raise ValueError("Ödeme sözü bulunamadı")
+        raise NotFoundError("Ödeme sözü", promise_id)
 
     promise.status = status
     if notes:
@@ -432,11 +434,62 @@ def list_payment_promises(
 
 
 MAX_REMINDER_COUNT = 3  # Maksimum hatirlatma sayisi
+
+
+def send_invoice_reminder(db: Session, invoice_id: str) -> Invoice:
+    """Fatura icin hatirlatma gonder ve reminder alanlarini guncelle."""
+    invoice = db.query(Invoice).filter(Invoice.id == invoice_id).first()
+    if not invoice:
+        raise NotFoundError("Fatura", invoice_id)
+
+    if not invoice.reminder_type:
+        raise AppValidationError("Bu fatura icin hatirlatma tipi tanimli degil")
+
+    if (invoice.reminder_count or 0) >= MAX_REMINDER_COUNT:
+        raise AppValidationError(
+            f"Maksimum hatirlatma sayisina ({MAX_REMINDER_COUNT}) ulasildi"
+        )
+
+    account = db.query(CRMAccount).filter(CRMAccount.id == invoice.account_id).first()
+    if not account:
+        raise NotFoundError("Cari hesap", invoice.account_id)
+
+    if not account.email:
+        raise AppValidationError("Cari hesap icin e-posta adresi tanimli degil")
+
+    customer_name = account.company_name or "Musteri"
+    due_date = invoice.due_date or invoice.issue_date or datetime.now()
+    sent = email_service.send_payment_reminder(
+        to_email=account.email,
+        customer_name=customer_name,
+        invoice_id=invoice.invoice_number,
+        amount=float(invoice.remaining_amount or invoice.total_amount or 0),
+        currency=invoice.currency or "TRY",
+        due_date=due_date.strftime("%Y-%m-%d"),
+    )
+
+    if not sent:
+        raise AppValidationError("Odeme hatirlatmasi gonderilemedi")
+
+    invoice.reminder_sent = True
+    invoice.reminder_sent_at = datetime.now()
+    invoice.reminder_status = ReminderStatusEnum.SENT
+    invoice.reminder_count = (invoice.reminder_count or 0) + 1
+    if invoice.reminder_count < MAX_REMINDER_COUNT:
+        invoice.next_reminder_date = datetime.now() + timedelta(days=7)
+    else:
+        invoice.next_reminder_date = None
+
+    db.commit()
+    db.refresh(invoice)
+    return invoice
+
+
 def send_payment_reminder(db: Session, promise_id: str) -> PaymentPromise:
     """Ödeme sözü için hatırlatma gönder"""
     promise = db.query(PaymentPromise).filter(PaymentPromise.id == promise_id).first()
     if not promise:
-        raise ValueError("Ödeme sözü bulunamadı")
+        raise NotFoundError("Ödeme sözü", promise_id)
 
     if (promise.reminder_count or 0) >= MAX_REMINDER_COUNT:
         raise AppValidationError(

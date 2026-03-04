@@ -161,7 +161,12 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
 }
 
 // ── Accounts Tab ──
-export function AccountsTab() {
+interface AccountsTabProps {
+  openCreateOnMount?: boolean;
+  onCreateOpenHandled?: () => void;
+}
+
+export function AccountsTab({ openCreateOnMount = false, onCreateOpenHandled }: AccountsTabProps = {}) {
   const [accounts, setAccounts] = useState<CRMAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<CRMAccount | null>(null);
   const [contacts, setContacts] = useState<CRMContact[]>([]);
@@ -201,7 +206,17 @@ export function AccountsTab() {
     void loadAccounts();
   }, []);
 
-  async function loadAccounts() {
+  useEffect(() => {
+    if (!openCreateOnMount) {
+      return;
+    }
+
+    setCreateError(null);
+    setCreateOpen(true);
+    onCreateOpenHandled?.();
+  }, [openCreateOnMount, onCreateOpenHandled]);
+
+  async function loadAccounts() {
     try {
       setLoading(true);
       const data = await crmService.listAccounts({ is_active: true });

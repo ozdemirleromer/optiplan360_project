@@ -15,7 +15,9 @@ import { LoginPage } from "./features/Auth/LoginPage";
 import { ErrorBoundary } from "./components/Shared/ErrorBoundary";
 import { ToastContainer } from "./components/Shared/Toast";
 import { ConfirmationProvider } from "./components/Shared/Confirmation";
-import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useKeyboardShortcuts } from "./hooks/useKeyboardShortcuts";
+import { useForceActiveButtons } from "./hooks/useForceActiveButtons";
+import { subscribeToAppNavigation } from "./utils/appNavigation";
 
 import "./styles/animations.css";
 import "./styles/responsive.css";
@@ -148,7 +150,21 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
     void fetchOrders();
   }, [fetchOrders]);
 
-  const currentUser = useMemo(
+  useEffect(() => {
+
+    return subscribeToAppNavigation(({ page: nextPage }) => {
+
+      setPage(nextPage as Page);
+
+      setMobileMenuOpen(false);
+
+    });
+
+  }, []);
+
+
+
+  const currentUser = useMemo(
     () => ({
       name: authUser.fullName || authUser.username || authUser.email || "Operator",
       role: toSidebarRole(authUser.role),
@@ -336,8 +352,10 @@ function MainApp() {
   );
 }
 
-export default function App() {
-  const pathname = window.location.pathname;
+export default function App() {
+  useForceActiveButtons();
+
+  const pathname = window.location.pathname;
   if (pathname.startsWith("/track/")) {
     const token = pathname.replace("/track/", "");
     return (

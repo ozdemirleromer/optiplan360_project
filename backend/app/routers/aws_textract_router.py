@@ -18,6 +18,7 @@ AWS Textract entegrasyon endpoint'leri - Form ve tablo analizi
 
 
 
+import json
 from datetime import datetime, timezone
 
 
@@ -822,7 +823,7 @@ async def process_with_aws_textract(
 
 
 
-                parsed_data=parsed,
+                parsed_data=json.dumps(parsed, ensure_ascii=False) if parsed else None,
 
 
 

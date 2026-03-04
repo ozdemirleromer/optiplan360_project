@@ -179,6 +179,17 @@ button:active {
   transform: translateY(1px);
 }
 
+button[data-force-enabled="true"],
+input[type="button"][data-force-enabled="true"],
+input[type="submit"][data-force-enabled="true"],
+input[type="reset"][data-force-enabled="true"],
+[role="button"][data-force-enabled="true"] {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
 .text-gradient-primary {
   background: linear-gradient(135deg, var(--primary) 0%, #ff8a00 52%, var(--accent) 100%);
   -webkit-background-clip: text;

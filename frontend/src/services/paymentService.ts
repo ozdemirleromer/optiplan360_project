@@ -203,7 +203,27 @@ export const invoiceService = {
   },
 
   /**
-   * Fatura sil
+   * Fatura icin odeme hatirlatmasi gonder
+   */
+
+
+  async sendReminder(invoiceId: string): Promise<Invoice> {
+
+
+    return await apiRequest<Invoice>(`/payments/invoices/${invoiceId}/remind`, {
+
+
+      method: "POST",
+
+
+    });
+
+
+  },
+
+
+  /**
+   * Fatura sil
    */
   async delete(invoiceId: string): Promise<void> {
     return await apiRequest<void>(`/payments/invoices/${invoiceId}`, {

@@ -24,6 +24,8 @@ from difflib import SequenceMatcher
 
 from typing import Dict, List, Optional, Tuple
 
+from app.utils.text_normalize import normalize_material_name, normalize_turkish
+
 
 
 
@@ -95,30 +97,6 @@ class StockMatcher:
 
 
     """
-
-
-
-
-
-    # Normalize kuralları (Kural #172-173)
-
-
-    NORMALIZE_RULES = {
-
-
-        "MLAM": "MDFLAM",
-
-
-        "LAM": "LAM",
-
-
-        "SLAM": "SUNTALAM",
-
-
-        "SUNTA": "SUNTALAM",
-
-
-    }
 
 
 
@@ -292,34 +270,9 @@ class StockMatcher:
 
 
 
-        name = name.upper()
-
-
-
-
-
-        # MLAM/SLAM dönüşümleri
-
-
-        for old, new in self.NORMALIZE_RULES.items():
-
-
-            name = name.replace(old, new)
-
-
-
-
-
-        # Fazla boşlukları temizle
-
-
-        name = " ".join(name.split())
-
-
-
-
-
-        return name
+        normalized = normalize_material_name(name)
+        normalized = normalize_turkish(normalized).upper()
+        return " ".join(normalized.split())
 
 
 
