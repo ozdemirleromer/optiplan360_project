@@ -8,9 +8,20 @@ import logging
 import os
 from typing import Any, Dict, List, Optional
 
-import pyodbc
+try:
+    import pyodbc
+except ImportError:
+    pyodbc = None  # type: ignore[assignment]
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
+
+def _require_pyodbc() -> Any:
+    if pyodbc is None:
+        raise RuntimeError(
+            "pyodbc yuklu degil. Mikro SQL entegrasyonu icin 'pip install pyodbc' gerekli."
+        )
+    return pyodbc
 
 
 class MikroSQLClient:
@@ -56,10 +67,12 @@ class MikroSQLClient:
                 f"MIKRO_READ_ONLY_MODE aktif; write islemi engellendi: {operation}"
             )
 
-    def connect(self) -> bool:
+    def connect(self) -> bool:
         """Mikro SQL'e bağlan"""
-        try:
-            driver = self.config.get("driver", "ODBC Driver 17 for SQL Server")
+        try:
+            pyodbc_module = _require_pyodbc()
+
+            driver = self.config.get("driver", "ODBC Driver 17 for SQL Server")
             host = self.config.get("host", "localhost")
             port = self.config.get("port", 1433)
             database = self.config.get("database")
@@ -85,10 +98,13 @@ class MikroSQLClient:
             if trust_cert:
                 connection_string += "TrustServerCertificate=yes;"
 
-            self.connection = pyodbc.connect(connection_string)
+            self.connection = pyodbc_module.connect(connection_string)
             if self.read_only_mode:
                 try:
-                    self.connection.setattr(pyodbc.SQL_ATTR_ACCESS_MODE, pyodbc.SQL_MODE_READ_ONLY)
+                    self.connection.setattr(
+                        pyodbc_module.SQL_ATTR_ACCESS_MODE,
+                        pyodbc_module.SQL_MODE_READ_ONLY,
+                    )
                 except Exception:
                     # Bazı ODBC sürücülerinde bu attr desteklenmeyebilir.
                     pass

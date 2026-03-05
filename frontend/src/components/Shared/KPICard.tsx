@@ -74,13 +74,13 @@ export const KPICard = ({ icon, label, value, change, color, sparkData }: KPICar
                   borderRadius: RADIUS.full,
                   fontSize: 11,
                   fontWeight: TYPOGRAPHY.fontWeight.semibold,
-                  background: change > 0 ? COLORS.success.light : COLORS.danger.light,
-                  color: change > 0 ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT,
+                  background: change > 0 ? COLORS.success : COLORS.danger,
+                  color: change > 0 ? COLORS.success : COLORS.danger,
                 }}
               >
                 {change > 0 ? "▲" : "▼"} {Math.abs(change)}%
               </span>
-              <span style={{ fontSize: 11, color: COLORS.gray[400] }}>vs dün</span>
+              <span style={{ fontSize: 11, color: COLORS.muted }}>vs dün</span>
             </div>
           ) : null}
         </div>
@@ -108,3 +108,4 @@ export const KPICard = ({ icon, label, value, change, color, sparkData }: KPICar
     </Card>
   );
 };
+

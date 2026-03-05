@@ -16,13 +16,12 @@ MASTER HANDOFF kurallarına göre standart dosya adlandırma
 import re
 
 
-import unicodedata
-
-
 from datetime import datetime
 
 
 from typing import Any, Dict, Optional
+
+from app.utils.text_normalize import normalize_material_name, sanitize_filename
 
 
 
@@ -100,16 +99,19 @@ class FilenameGenerator:
         crm_name: str,
 
 
-        material: str,
+        material: Optional[str] = None,
 
 
-        group: str,  # "GOVDE" veya "ARKALIK"
+        group: str = "",  # "GOVDE" veya "ARKALIK"
 
 
-        thickness: str,
+        thickness: str = "",
 
 
         timestamp: Optional[datetime] = None,
+
+
+        color: Optional[str] = None,
 
 
     ) -> str:
@@ -140,6 +142,7 @@ class FilenameGenerator:
 
 
             timestamp: Zaman damgası (varsayılan: şimdi)
+            color: `material` verilmezse malzeme/rengi buradan al
 
 
 
@@ -169,7 +172,7 @@ class FilenameGenerator:
         clean_crm = self._normalize_crm_name(crm_name)
 
 
-        clean_material = self._normalize_material(material, thickness)
+        clean_material = self._normalize_material(material or color or "UNKNOWN", thickness)
 
 
         clean_group = self._normalize_group(group)
@@ -238,49 +241,7 @@ class FilenameGenerator:
 
 
 
-        # Unicode normalize (Türkçe karakterler)
-
-
-        name = unicodedata.normalize("NFKD", name)
-
-
-
-
-
-        # Boşlukları alt çizgi ile değiştir
-
-
-        name = name.replace(" ", "_")
-
-
-
-
-
-        # Geçersiz karakterleri kaldır
-
-
-        name = re.sub(self.INVALID_CHARS, "", name)
-
-
-
-
-
-        # Türkçe karakterleri dönüştür (opsiyonel, ama güvenli)
-
-
-        tr_map = str.maketrans("ğĞıİöÖüÜşŞçÇ", "gGiIoOuUsScC")
-
-
-        name = name.translate(tr_map)
-
-
-
-
-
-        # Büyük harf
-
-
-        name = name.upper()
+        name = sanitize_filename(name, max_len=self.MAX_CRM_NAME).upper()
 
 
 
@@ -310,16 +271,13 @@ class FilenameGenerator:
 
 
 
-        # Kalınlığı malzeme adından çıkar (eğer varsa)
+        material_clean = normalize_material_name(material)
 
 
-        material_clean = material
+        if thickness and thickness in material_clean:
 
 
-        if thickness and thickness in material:
-
-
-            material_clean = material.replace(thickness, "").strip()
+            material_clean = material_clean.replace(thickness, "").strip()
 
 
 
@@ -329,18 +287,6 @@ class FilenameGenerator:
 
 
         material_clean = material_clean.replace(" ", "")
-
-
-
-
-
-        # MLAM/SLAM dönüşümleri (Kural #172-173)
-
-
-        material_clean = material_clean.replace("MLAM", "MDFLAM")
-
-
-        material_clean = material_clean.replace("SLAM", "SUNTALAM")
 
 
 
@@ -358,10 +304,7 @@ class FilenameGenerator:
 
 
 
-        # Geçersiz karakterleri kaldır
-
-
-        material_clean = re.sub(self.INVALID_CHARS, "", material_clean)
+        material_clean = sanitize_filename(material_clean, max_len=self.MAX_MATERIAL)
 
 
 

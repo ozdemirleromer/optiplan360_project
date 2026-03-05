@@ -74,7 +74,15 @@ const EMPTY_FORM: NewStockCardForm = {
   warehouse_location: '',
 };
 
-export const StockCardComponent: React.FC = () => {
+interface StockCardComponentProps {
+  openCreateOnMount?: boolean;
+  onCreateOpenHandled?: () => void;
+}
+
+export const StockCardComponent: React.FC<StockCardComponentProps> = ({
+  openCreateOnMount = false,
+  onCreateOpenHandled,
+}) => {
   const [searchText, setSearchText] = useState('');
   const [stockDetail, setStockDetail] = useState<StockCardDetailResponse | null>(null);
   const [stockList, setStockList] = useState<StockCard[]>([]);
@@ -198,7 +206,17 @@ export const StockCardComponent: React.FC = () => {
     fetchLowStockItems();
   }, []);
 
-  return (
+  useEffect(() => {
+    if (!openCreateOnMount) {
+      return;
+    }
+
+    setNewCardError(null);
+    setShowNewCardModal(true);
+    onCreateOpenHandled?.();
+  }, [openCreateOnMount, onCreateOpenHandled]);
+
+  return (
     <div style={{ padding: '20px', minHeight: '100vh', backgroundColor: COLORS.bg.main }}>
       {/* Arama ve Kontroller */}
       <div
@@ -223,7 +241,7 @@ export const StockCardComponent: React.FC = () => {
               alignItems: 'center',
               gap: 8,
               padding: '10px 20px',
-              backgroundColor: COLORS.primary.DEFAULT,
+              backgroundColor: COLORS.primary,
               color: 'white',
               border: 'none',
               borderRadius: RADIUS.md,
@@ -266,7 +284,7 @@ export const StockCardComponent: React.FC = () => {
             type="submit"
             style={{
               padding: '10px 16px',
-              backgroundColor: COLORS.primary.DEFAULT,
+              backgroundColor: COLORS.primary,
               color: 'white',
               border: 'none',
               borderRadius: '6px',
@@ -282,7 +300,7 @@ export const StockCardComponent: React.FC = () => {
             disabled={syncing}
             style={{
               padding: '10px 16px',
-              backgroundColor: COLORS.success.DEFAULT,
+              backgroundColor: COLORS.success,
               color: 'white',
               border: 'none',
               borderRadius: '6px',
@@ -304,12 +322,12 @@ export const StockCardComponent: React.FC = () => {
             onClick={() => { setActiveTab('all'); fetchStockCards(); }}
             style={{
               padding: '12px 16px',
-              backgroundColor: activeTab === 'all' ? COLORS.primary.DEFAULT : 'transparent',
+              backgroundColor: activeTab === 'all' ? COLORS.primary : 'transparent',
               color: activeTab === 'all' ? 'white' : COLORS.text,
               border: 'none',
               cursor: 'pointer',
               fontWeight: 'bold',
-              borderBottom: activeTab === 'all' ? `2px solid ${COLORS.primary.DEFAULT}` : 'transparent'
+              borderBottom: activeTab === 'all' ? `2px solid ${COLORS.primary}` : 'transparent'
             }}
           >
             Tüm Stoklar ({stockList.length})
@@ -318,12 +336,12 @@ export const StockCardComponent: React.FC = () => {
             onClick={() => setActiveTab('low-stock')}
             style={{
               padding: '12px 16px',
-              backgroundColor: activeTab === 'low-stock' ? COLORS.warning.DEFAULT : 'transparent',
+              backgroundColor: activeTab === 'low-stock' ? COLORS.warning : 'transparent',
               color: activeTab === 'low-stock' ? 'white' : COLORS.text,
               border: 'none',
               cursor: 'pointer',
               fontWeight: 'bold',
-              borderBottom: activeTab === 'low-stock' ? `2px solid ${COLORS.warning.DEFAULT}` : 'transparent'
+              borderBottom: activeTab === 'low-stock' ? `2px solid ${COLORS.warning}` : 'transparent'
             }}
           >
             Düşük Stok ({lowStockItems.length})
@@ -333,12 +351,12 @@ export const StockCardComponent: React.FC = () => {
               onClick={() => setActiveTab('detail')}
               style={{
                 padding: '12px 16px',
-                backgroundColor: activeTab === 'detail' ? COLORS.primary.DEFAULT : 'transparent',
+                backgroundColor: activeTab === 'detail' ? COLORS.primary : 'transparent',
                 color: activeTab === 'detail' ? 'white' : COLORS.text,
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: 'bold',
-                borderBottom: activeTab === 'detail' ? `2px solid ${COLORS.primary.DEFAULT}` : 'transparent'
+                borderBottom: activeTab === 'detail' ? `2px solid ${COLORS.primary}` : 'transparent'
               }}
             >
               Detay: {stockDetail.stockCode}
@@ -392,7 +410,7 @@ export const StockCardComponent: React.FC = () => {
                   e.currentTarget.style.transform = 'translateY(0)';
                 }}
               >
-                <div style={{ fontWeight: 'bold', fontSize: '14px', color: COLORS.primary.DEFAULT, marginBottom: '8px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', color: COLORS.primary, marginBottom: '8px' }}>
                   {stock.stockCode}
                 </div>
                 <div style={{ fontSize: '13px', color: COLORS.text, marginBottom: '12px', lineHeight: '1.4' }}>
@@ -416,7 +434,7 @@ export const StockCardComponent: React.FC = () => {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
                     <span style={{ fontSize: '11px', color: COLORS.muted }}>Uygun</span>
-                    <span style={{ color: stock.availableQuantity > 0 ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT }}>
+                    <span style={{ color: stock.availableQuantity > 0 ? COLORS.success : COLORS.danger }}>
                       {stock.availableQuantity} {stock.unit}
                     </span>
                   </div>
@@ -437,7 +455,7 @@ export const StockCardComponent: React.FC = () => {
                       marginTop: '12px',
                       padding: '8px',
                       backgroundColor: '#fef3c7',
-                      border: `1px solid ${COLORS.warning.DEFAULT}`,
+                      border: `1px solid ${COLORS.warning}`,
                       borderRadius: '4px',
                       display: 'flex',
                       alignItems: 'center',
@@ -479,11 +497,11 @@ export const StockCardComponent: React.FC = () => {
                   backgroundColor: '#fef3c7',
                   padding: '16px',
                   borderRadius: '8px',
-                  border: `2px solid ${COLORS.warning.DEFAULT}`,
+                  border: `2px solid ${COLORS.warning}`,
                   cursor: 'pointer'
                 }}
               >
-                <div style={{ fontWeight: 'bold', fontSize: '14px', color: COLORS.warning.DEFAULT, marginBottom: '8px' }}>
+                <div style={{ fontWeight: 'bold', fontSize: '14px', color: COLORS.warning, marginBottom: '8px' }}>
                   {stock.stockCode}
                 </div>
                 <div style={{ fontSize: '13px', color: '#b45309', marginBottom: '12px' }}>
@@ -527,7 +545,7 @@ export const StockCardComponent: React.FC = () => {
           >
             <div style={{ backgroundColor: COLORS.bg.surface, padding: '16px', borderRadius: '8px', border: `1px solid ${COLORS.border}` }}>
               <div style={{ fontSize: '12px', color: COLORS.muted, marginBottom: '8px' }}>Toplam Miktar</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.primary.DEFAULT }}>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.primary }}>
                 {stockDetail.totalQuantity} {stockDetail.unit}
               </div>
             </div>
@@ -538,7 +556,7 @@ export const StockCardComponent: React.FC = () => {
                 style={{
                   fontSize: '24px',
                   fontWeight: 'bold',
-                  color: stockDetail.availableQuantity > 0 ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT
+                  color: stockDetail.availableQuantity > 0 ? COLORS.success : COLORS.danger
                 }}
               >
                 {stockDetail.availableQuantity} {stockDetail.unit}
@@ -547,7 +565,7 @@ export const StockCardComponent: React.FC = () => {
 
             <div style={{ backgroundColor: COLORS.bg.surface, padding: '16px', borderRadius: '8px', border: `1px solid ${COLORS.border}` }}>
               <div style={{ fontSize: '12px', color: COLORS.muted, marginBottom: '8px' }}>Rezerve Miktar</div>
-              <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.warning.DEFAULT }}>
+              <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.warning }}>
                 {stockDetail.reservedQuantity} {stockDetail.unit}
               </div>
             </div>
@@ -557,7 +575,7 @@ export const StockCardComponent: React.FC = () => {
                 <div style={{ fontSize: '12px', color: COLORS.muted, marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <DollarSign size={14} /> Satış Fiyatı
                 </div>
-                <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.primary.DEFAULT }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', color: COLORS.primary }}>
                   ₺{stockDetail.salePrice.toFixed(2)}
                 </div>
               </div>
@@ -663,7 +681,7 @@ export const StockCardComponent: React.FC = () => {
 
               {/* Sol Kolon - Temel Bilgiler */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary.DEFAULT, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
+                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
                   Temel Bilgiler
                 </h4>
 
@@ -699,7 +717,7 @@ export const StockCardComponent: React.FC = () => {
 
               {/* Sağ Kolon - Fiyat ve Özellikler */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary.DEFAULT, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
+                <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
                   Fiyat ve Özellikler
                 </h4>
 
@@ -732,7 +750,7 @@ export const StockCardComponent: React.FC = () => {
               </div>
 
               {newCardError && (
-                <div style={{ gridColumn: '1 / -1', padding: 10, background: COLORS.error.light, border: `1px solid ${COLORS.error.DEFAULT}`, borderRadius: RADIUS.md, color: COLORS.error.DEFAULT, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <div style={{ gridColumn: '1 / -1', padding: 10, background: COLORS.danger, border: `1px solid ${COLORS.danger}`, borderRadius: RADIUS.md, color: COLORS.danger, fontSize: 13, display: 'flex', alignItems: 'center', gap: 6 }}>
                   <AlertCircle size={14} /> {newCardError}
                 </div>
               )}
@@ -741,7 +759,7 @@ export const StockCardComponent: React.FC = () => {
                 <button type="button" onClick={() => setShowNewCardModal(false)} disabled={newCardLoading} style={{ padding: '10px 16px', border: `1px solid ${COLORS.border}`, background: COLORS.bg.main, color: COLORS.text, borderRadius: RADIUS.md, cursor: 'pointer', fontSize: 14, fontWeight: 500, minWidth: 100 }}>
                   Vazgeç
                 </button>
-                <button type="submit" disabled={newCardLoading} style={{ padding: '10px 16px', border: 'none', background: COLORS.primary.DEFAULT, color: 'white', borderRadius: RADIUS.md, cursor: newCardLoading ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 600, opacity: newCardLoading ? 0.7 : 1, minWidth: 140 }}>
+                <button type="submit" disabled={newCardLoading} style={{ padding: '10px 16px', border: 'none', background: COLORS.primary, color: 'white', borderRadius: RADIUS.md, cursor: newCardLoading ? 'not-allowed' : 'pointer', fontSize: 14, fontWeight: 600, opacity: newCardLoading ? 0.7 : 1, minWidth: 140 }}>
                   {newCardLoading ? 'Oluşturuluyor...' : 'Stok Kartı Oluştur'}
                 </button>
               </div>
@@ -754,3 +772,4 @@ export const StockCardComponent: React.FC = () => {
 };
 
 export default StockCardComponent;
+

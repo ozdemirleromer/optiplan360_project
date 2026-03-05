@@ -54,9 +54,9 @@ export function SimpleIntegrationsPage() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "connected": return COLORS.success.DEFAULT;
-      case "error": return COLORS.error.DEFAULT;
-      default: return COLORS.gray[400];
+      case "connected": return COLORS.success;
+      case "error": return COLORS.danger;
+      default: return COLORS.muted;
     }
   };
 
@@ -155,3 +155,4 @@ export function SimpleIntegrationsPage() {
     </div>
   );
 }
+

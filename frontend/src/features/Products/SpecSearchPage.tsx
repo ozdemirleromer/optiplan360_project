@@ -66,7 +66,7 @@ export default function SpecSearchPage() {
                 left: 12,
                 top: "50%",
                 transform: "translateY(-50%)",
-                color: COLORS.gray[400],
+                color: COLORS.muted,
               }}
               aria-hidden="true"
             />
@@ -116,7 +116,7 @@ export default function SpecSearchPage() {
             style={{
               textAlign: "center",
               padding: 40,
-              color: COLORS.gray[400],
+              color: COLORS.muted,
               fontSize: 14,
             }}
           >
@@ -130,7 +130,7 @@ export default function SpecSearchPage() {
 
         {results.length > 0 && (
           <>
-            <div style={{ fontSize: 12, color: COLORS.gray[400], marginBottom: 12 }}>
+            <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 12 }}>
               {total} sonuc bulundu
             </div>
 
@@ -163,7 +163,7 @@ export default function SpecSearchPage() {
                         <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>
                           {spec.productTypeName} — {spec.colorName}
                         </div>
-                        <div style={{ fontSize: 12, color: COLORS.gray[400], marginTop: 2 }}>
+                        <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 2 }}>
                           {spec.thicknessMm}mm | {spec.widthCm}×{spec.heightCm} cm
                         </div>
                       </div>
@@ -189,7 +189,7 @@ export default function SpecSearchPage() {
 
                     {/* Tedarikci bilgileri */}
                     {spec.supplierItems.length > 0 && (
-                      <div style={{ fontSize: 12, color: COLORS.gray[400] }}>
+                      <div style={{ fontSize: 12, color: COLORS.muted }}>
                         <div style={{ fontWeight: 600, marginBottom: 4 }}>Tedarikciler:</div>
                         {spec.supplierItems.map((si) => (
                           <div
@@ -204,7 +204,7 @@ export default function SpecSearchPage() {
                             <span style={{ fontWeight: si.isDefault ? 700 : 400 }}>
                               {si.brandName}
                             </span>
-                            <span style={{ color: COLORS.gray[400] }}>— {si.displayName}</span>
+                            <span style={{ color: COLORS.muted }}>— {si.displayName}</span>
                             {si.isDefault && (
                               <span
                                 style={{
@@ -262,3 +262,4 @@ export default function SpecSearchPage() {
     </div>
   );
 }
+

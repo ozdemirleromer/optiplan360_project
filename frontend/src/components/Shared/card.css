@@ -1,7 +1,5 @@
 .shared-card {
-  background:
-    linear-gradient(160deg, rgba(35, 35, 40, 0.82), rgba(21, 21, 25, 0.9)),
-    var(--bg-surface);
+  background: transparent;
   border: 1px solid rgba(var(--primary-rgb), 0.22);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-card);
@@ -42,7 +40,7 @@
   min-height: 40px;
   padding: 9px 14px;
   border-bottom: 1px solid rgba(var(--primary-rgb), 0.2);
-  background: linear-gradient(180deg, rgba(28, 28, 32, 0.86), rgba(20, 20, 24, 0.76));
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: space-between;

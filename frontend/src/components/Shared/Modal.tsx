@@ -119,7 +119,7 @@ export function Modal({ open, onClose, title, subtitle, children, wide = false, 
           style={{
             background: COLORS.panel,
             borderRadius: RADIUS.xl,
-            border: `1px solid ${COLORS.border2}`,
+            border: `1px solid ${COLORS.border}`,
             width: "90%",
             maxWidth: wide ? 700 : 500,
             maxHeight: "85vh",
@@ -187,8 +187,8 @@ export function Modal({ open, onClose, title, subtitle, children, wide = false, 
                 padding: 0,
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = `${COLORS.error.DEFAULT}20`;
-                e.currentTarget.style.color = COLORS.error.DEFAULT;
+                e.currentTarget.style.background = `${COLORS.danger}20`;
+                e.currentTarget.style.color = COLORS.danger;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = "transparent";
@@ -210,3 +210,4 @@ export function Modal({ open, onClose, title, subtitle, children, wide = false, 
     </>
   );
 }
+

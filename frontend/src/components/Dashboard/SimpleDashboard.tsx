@@ -43,7 +43,7 @@ export function SimpleDashboard({ currentUser, stations, onNav, onNewOrder }: Da
         {/* Özet Kartları */}
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16 }}>
           <Card title="Bugün Gelen">
-            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary[500] }}>
+            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary }}>
               12
             </div>
             <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
@@ -52,7 +52,7 @@ export function SimpleDashboard({ currentUser, stations, onNav, onNewOrder }: Da
           </Card>
           
           <Card title="Üretimde">
-            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.accent[400] }}>
+            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.accent }}>
               8
             </div>
             <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
@@ -61,7 +61,7 @@ export function SimpleDashboard({ currentUser, stations, onNav, onNewOrder }: Da
           </Card>
           
           <Card title="Tamamlanan">
-            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.success.DEFAULT }}>
+            <div style={{ fontSize: 24, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.success }}>
               {totalScans}
             </div>
             <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
@@ -92,7 +92,7 @@ export function SimpleDashboard({ currentUser, stations, onNav, onNewOrder }: Da
                       width: 8,
                       height: 8,
                       borderRadius: "50%",
-                      background: station.active ? COLORS.success.DEFAULT : COLORS.gray[400],
+                      background: station.active ? COLORS.success : COLORS.muted,
                     }}
                   />
                   <div>
@@ -139,3 +139,5 @@ export function SimpleDashboard({ currentUser, stations, onNav, onNewOrder }: Da
     </div>
   );
 }
+
+

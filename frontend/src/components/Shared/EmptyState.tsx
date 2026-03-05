@@ -65,13 +65,13 @@ export const EmptyState = ({
           width: compact ? 48 : 72,
           height: compact ? 48 : 72,
           borderRadius: "50%",
-          background: `linear-gradient(135deg, ${COLORS.primary[500]}15, ${COLORS.primary[700]}15)`,
-          border: `1px solid ${COLORS.primary[500]}30`,
+          background: `linear-gradient(135deg, ${COLORS.primary}15, ${COLORS.accent}15)`,
+          border: `1px solid ${COLORS.primary}30`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           marginBottom: compact ? 12 : 20,
-          color: COLORS.primary[400],
+          color: COLORS.primary,
         }}
       >
         {customIcon || <IconComponent size={compact ? 24 : 36} strokeWidth={1.5} />}
@@ -231,3 +231,5 @@ export const ErrorState = ({
 );
 
 export default EmptyState;
+
+

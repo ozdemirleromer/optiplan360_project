@@ -169,18 +169,18 @@ export function PriceTrackingPage() {
       ? {
           background: "rgba(16,185,129,0.12)",
           border: "rgba(16,185,129,0.35)",
-          color: COLORS.success.DEFAULT,
+          color: COLORS.success,
         }
       : feedback?.type === "error"
       ? {
           background: "rgba(239,68,68,0.12)",
           border: "rgba(239,68,68,0.35)",
-          color: COLORS.error.DEFAULT,
+          color: COLORS.danger,
         }
       : {
           background: "rgba(59,130,246,0.12)",
           border: "rgba(59,130,246,0.35)",
-          color: COLORS.primary.DEFAULT,
+          color: COLORS.primary,
         };
 
   return (
@@ -249,3 +249,4 @@ export function PriceTrackingPage() {
 }
 
 export default PriceTrackingPage;
+

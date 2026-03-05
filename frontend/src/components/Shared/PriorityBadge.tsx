@@ -6,10 +6,10 @@ interface PriorityBadgeProps {
 
 export const PriorityBadge = ({ priority }: PriorityBadgeProps) => {
   const config = {
-    urgent: { color: COLORS.danger.DEFAULT, label: "Acil" },
-    high: { color: COLORS.danger.DEFAULT, label: "Yüksek" },
-    normal: { color: COLORS.info.DEFAULT, label: "Normal" },
-    low: { color: COLORS.gray[500], label: "Düşük" },
+    urgent: { color: COLORS.danger, label: "Acil" },
+    high: { color: COLORS.danger, label: "Yüksek" },
+    normal: { color: COLORS.primary, label: "Normal" },
+    low: { color: COLORS.muted, label: "Düşük" },
   } as const;
 
   const c = config[priority] || config.normal;
@@ -32,3 +32,4 @@ export const PriorityBadge = ({ priority }: PriorityBadgeProps) => {
     </span>
   );
 };
+

@@ -2,7 +2,8 @@
 uvicorn[standard]==0.30.0
 Pillow>=10.0.0
 sqlalchemy==2.0.34
-psycopg2-binary==2.9.9
+# Native drivers are optional for the default SQLite-first local setup.
+psycopg2-binary==2.9.9; python_version < "3.13"
 alembic==1.13.2
 python-jose[cryptography]
 slowapi
@@ -12,7 +13,7 @@ openpyxl
 pandas
 python-multipart
 pytz
-pyodbc
+pyodbc; python_version < "3.13"
 google-generativeai
 apscheduler
 pytest==8.3.2

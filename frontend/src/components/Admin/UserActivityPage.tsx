@@ -117,16 +117,16 @@ export function UserActivityPage() {
   // Activity type color helper
   const getActivityColor = (type: string) => {
     const colors: Record<string, string> = {
-      LOGIN: COLORS.success.DEFAULT,
-      LOGOUT: COLORS.warning.DEFAULT,
-      CREATE: COLORS.info[500],
-      UPDATE: COLORS.accent[400],
-      DELETE: COLORS.error.DEFAULT,
+      LOGIN: COLORS.success,
+      LOGOUT: COLORS.warning,
+      CREATE: COLORS.primary,
+      UPDATE: COLORS.accent,
+      DELETE: COLORS.danger,
       VIEW: COLORS.muted,
-      EXPORT: COLORS.primary[500],
-      IMPORT: COLORS.primary[500],
+      EXPORT: COLORS.primary,
+      IMPORT: COLORS.primary,
     };
-    return colors[type] || COLORS.gray[400];
+    return colors[type] || COLORS.muted;
   };
 
   return (
@@ -140,7 +140,7 @@ export function UserActivityPage() {
       <div className="app-page-container" style={{ display: "grid", gap: 16 }}>
         {error && (
           <Card style={{ background: "rgba(239, 68, 68, 0.1)" }}>
-            <div style={{ color: COLORS.error.DEFAULT }}>{error}</div>
+            <div style={{ color: COLORS.danger }}>{error}</div>
           </Card>
         )}
 
@@ -148,25 +148,25 @@ export function UserActivityPage() {
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 12 }}>
           <Card>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary[500] }}>{activityCounts.total}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary }}>{activityCounts.total}</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Toplam Aktiviteler</div>
             </div>
           </Card>
           <Card>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success.DEFAULT }}>{activityCounts.logins}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success }}>{activityCounts.logins}</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Girişler</div>
             </div>
           </Card>
           <Card>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.info[500] }}>{activeSessions}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary }}>{activeSessions}</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Aktif Oturumlar</div>
             </div>
           </Card>
           <Card>
             <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.accent[400] }}>{activityCounts.creates}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.accent }}>{activityCounts.creates}</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Oluşturmalar</div>
             </div>
           </Card>
@@ -178,7 +178,7 @@ export function UserActivityPage() {
             onClick={() => setActiveTab("activities")}
             style={{
               padding: "12px 16px",
-              background: activeTab === "activities" ? COLORS.primary[500] : "transparent",
+              background: activeTab === "activities" ? COLORS.primary : "transparent",
               color: activeTab === "activities" ? "white" : COLORS.muted,
               border: "none",
               cursor: "pointer",
@@ -191,7 +191,7 @@ export function UserActivityPage() {
             onClick={() => setActiveTab("sessions")}
             style={{
               padding: "12px 16px",
-              background: activeTab === "sessions" ? COLORS.primary[500] : "transparent",
+              background: activeTab === "sessions" ? COLORS.primary : "transparent",
               color: activeTab === "sessions" ? "white" : COLORS.muted,
               border: "none",
               cursor: "pointer",
@@ -280,12 +280,12 @@ export function UserActivityPage() {
                       User #{activity.userId} {activity.ipAddress && `• ${activity.ipAddress}`}
                     </div>
                     {activity.description && (
-                      <div style={{ fontSize: 12, color: COLORS.gray[500], marginTop: 4 }}>
+                      <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
                         {activity.description}
                       </div>
                     )}
                   </div>
-                  <div style={{ fontSize: 11, color: COLORS.gray[400], textAlign: "right", minWidth: 120 }}>
+                  <div style={{ fontSize: 11, color: COLORS.muted, textAlign: "right", minWidth: 120 }}>
                     {new Date(activity.createdAt).toLocaleString("tr-TR")}
                   </div>
                 </div>
@@ -317,7 +317,7 @@ export function UserActivityPage() {
                       <span style={{
                         display: "inline-block",
                         padding: "2px 8px",
-                        background: session.isActive ? COLORS.success.DEFAULT : COLORS.gray[300],
+                        background: session.isActive ? COLORS.success : COLORS.muted,
                         color: "white",
                         borderRadius: 4,
                         fontSize: 11,
@@ -329,7 +329,7 @@ export function UserActivityPage() {
                     <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
                       {session.deviceType || "Web"} • {session.ipAddress || "N/A"}
                     </div>
-                    <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 4 }}>
+                    <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>
                       Giriş: {new Date(session.loginAt).toLocaleString("tr-TR")}
                       {session.logoutAt && ` • Çıkış: ${new Date(session.logoutAt).toLocaleString("tr-TR")}`}
                     </div>
@@ -349,7 +349,7 @@ export function UserActivityPage() {
                         }}
                         style={{
                           padding: "6px 12px",
-                          background: COLORS.error.DEFAULT,
+                          background: COLORS.danger,
                           color: "white",
                           border: "none",
                           borderRadius: 4,
@@ -370,3 +370,5 @@ export function UserActivityPage() {
     </div>
   );
 }
+
+

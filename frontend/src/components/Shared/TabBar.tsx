@@ -43,13 +43,13 @@ export function TabBar({ tabs, activeTab, onTabChange, style }: TabBarProps) {
                               padding: "12px 24px",
                               fontSize: 14,
                               fontWeight: activeTab === tab.id ? 700 : 400,
-                              color: activeTab === tab.id ? COLORS.primary.DEFAULT : COLORS.muted,
+                              color: activeTab === tab.id ? COLORS.primary : COLORS.muted,
                               background: activeTab === tab.id
-                                   ? `${COLORS.primary.DEFAULT}08`
+                                   ? `${COLORS.primary}08`
                                    : "transparent",
                               border: "none",
                               borderBottom: activeTab === tab.id
-                                   ? `3px solid ${COLORS.primary.DEFAULT}`
+                                   ? `3px solid ${COLORS.primary}`
                                    : "3px solid transparent",
                               cursor: "pointer",
                               fontFamily: TYPOGRAPHY.fontFamily.base,
@@ -67,3 +67,4 @@ export function TabBar({ tabs, activeTab, onTabChange, style }: TabBarProps) {
 }
 
 export default TabBar;
+

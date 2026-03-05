@@ -236,122 +236,18 @@ export function IntegrationHealth() {
 
 
   function getStatusSurface(status: string) {
-
-
     switch (status) {
-
-
       case "HEALTHY":
-
-
-        return {
-
-
-          background: COLORS.success.light,
-
-
-          color: COLORS.success.DEFAULT,
-
-
-          border: `1px solid ${COLORS.success.dark}`,
-
-
-        };
-
-
+        return { background: "transparent", color: COLORS.success, border: `1px solid ${COLORS.border}` };
       case "DEGRADED":
-
-
-        return {
-
-
-          background: COLORS.warning.light,
-
-
-          color: COLORS.warning.DEFAULT,
-
-
-          border: `1px solid ${COLORS.warning.DEFAULT}`,
-
-
-        };
-
-
+        return { background: "transparent", color: COLORS.warning, border: `1px solid ${COLORS.warning}` };
       case "UNHEALTHY":
-
-
-        return {
-
-
-          background: COLORS.error.light,
-
-
-          color: COLORS.error.DEFAULT,
-
-
-          border: `1px solid ${COLORS.error.DEFAULT}`,
-
-
-        };
-
-
       case "ERROR":
-
-
-        return {
-
-
-          background: COLORS.error.light,
-
-
-          color: COLORS.error.DEFAULT,
-
-
-          border: `1px solid ${COLORS.error.DEFAULT}`,
-
-
-        };
-
-
+        return { background: "transparent", color: COLORS.danger, border: `1px solid ${COLORS.danger}` };
       case "DISABLED":
-
-
-        return {
-
-
-          background: COLORS.bg.subtle,
-
-
-          color: COLORS.muted,
-
-
-          border: `1px solid ${COLORS.border}`,
-
-
-        };
-
-
       default:
-
-
-        return {
-
-
-          background: COLORS.bg.subtle,
-
-
-          color: COLORS.muted,
-
-
-          border: `1px solid ${COLORS.border}`,
-
-
-        };
-
-
+        return { background: "transparent", color: COLORS.muted, border: `1px solid ${COLORS.border}` };
     }
-
-
   }
 
 
@@ -359,46 +255,18 @@ export function IntegrationHealth() {
 
 
   function getStatusBadgeStyle(status: string) {
-
-
     switch (status) {
-
-
       case "HEALTHY":
-
-
-        return { background: COLORS.success.light, color: COLORS.success.DEFAULT };
-
-
+        return { background: "transparent", color: COLORS.success, border: `1px solid ${COLORS.border}` };
       case "DEGRADED":
-
-
-        return { background: COLORS.warning.light, color: COLORS.warning.DEFAULT };
-
-
+        return { background: "transparent", color: COLORS.warning, border: `1px solid ${COLORS.warning}` };
       case "UNHEALTHY":
-      /* fallthrough */
       case "ERROR":
-
-
-        return { background: COLORS.error.light, color: COLORS.error.DEFAULT };
-
-
+        return { background: "transparent", color: COLORS.danger, border: `1px solid ${COLORS.danger}` };
       case "DISABLED":
-
-
-        return { background: COLORS.bg.elevated, color: COLORS.muted };
-
-
       default:
-
-
-        return { background: COLORS.bg.elevated, color: COLORS.muted };
-
-
+        return { background: "transparent", color: COLORS.muted, border: `1px solid ${COLORS.border}` };
     }
-
-
   }
 
 
@@ -417,13 +285,13 @@ export function IntegrationHealth() {
       case "HEALTHY":
 
 
-        return <CheckCircle2 {...iconProps} color={COLORS.success.DEFAULT} aria-label="Sağlıklı" />;
+        return <CheckCircle2 {...iconProps} color={COLORS.success} aria-label="Sağlıklı" />;
 
 
       case "DEGRADED":
 
 
-        return <AlertTriangle {...iconProps} color={COLORS.warning.DEFAULT} aria-label="Kısmi sorun" />;
+        return <AlertTriangle {...iconProps} color={COLORS.warning} aria-label="Kısmi sorun" />;
 
 
       case "UNHEALTHY":
@@ -431,7 +299,7 @@ export function IntegrationHealth() {
       case "ERROR":
 
 
-        return <XCircle {...iconProps} color={COLORS.error.DEFAULT} aria-label="Sorunlu" />;
+        return <XCircle {...iconProps} color={COLORS.danger} aria-label="Sorunlu" />;
 
 
       case "DISABLED":
@@ -528,15 +396,10 @@ export function IntegrationHealth() {
             style={{
 
               padding: 12,
-
               borderRadius: RADIUS.md,
-
-              background: COLORS.error.light,
-
-              color: COLORS.error.DEFAULT,
-
-              border: `1px solid ${COLORS.error.DEFAULT}`,
-
+              background: "transparent",
+              color: COLORS.danger,
+              border: `1px solid ${COLORS.danger}`,
             }}
 
           >
@@ -765,7 +628,7 @@ export function IntegrationHealth() {
                           fontWeight: TYPOGRAPHY.fontWeight.semibold,
 
 
-                          color: health.integrations.MIKRO.connection ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                          color: health.integrations.MIKRO.connection ? COLORS.success : COLORS.danger,
 
 
                         }}
@@ -885,10 +748,10 @@ export function IntegrationHealth() {
                           borderRadius: RADIUS.sm,
 
 
-                          background: COLORS.error.light,
+                          background: COLORS.danger,
 
 
-                          color: COLORS.error.DEFAULT,
+                          color: COLORS.danger,
 
 
                           fontSize: 11,
@@ -993,7 +856,7 @@ export function IntegrationHealth() {
                           fontWeight: TYPOGRAPHY.fontWeight.semibold,
 
 
-                          color: health.integrations.SMTP.connection ? COLORS.success.DEFAULT : COLORS.muted,
+                          color: health.integrations.SMTP.connection ? COLORS.success : COLORS.muted,
 
 
                         }}
@@ -1059,10 +922,10 @@ export function IntegrationHealth() {
                           borderRadius: RADIUS.sm,
 
 
-                          background: COLORS.error.light,
+                          background: COLORS.danger,
 
 
-                          color: COLORS.error.DEFAULT,
+                          color: COLORS.danger,
 
 
                           fontSize: 11,
@@ -1167,7 +1030,7 @@ export function IntegrationHealth() {
                           fontWeight: TYPOGRAPHY.fontWeight.semibold,
 
 
-                          color: health.integrations.SMS.connection ? COLORS.success.DEFAULT : COLORS.muted,
+                          color: health.integrations.SMS.connection ? COLORS.success : COLORS.muted,
 
 
                         }}
@@ -1233,10 +1096,10 @@ export function IntegrationHealth() {
                           borderRadius: RADIUS.sm,
 
 
-                          background: COLORS.error.light,
+                          background: COLORS.danger,
 
 
-                          color: COLORS.error.DEFAULT,
+                          color: COLORS.danger,
 
 
                           fontSize: 11,
@@ -1341,7 +1204,7 @@ export function IntegrationHealth() {
                           fontWeight: TYPOGRAPHY.fontWeight.semibold,
 
 
-                          color: health.integrations.EINVOICE.connection ? COLORS.success.DEFAULT : COLORS.muted,
+                          color: health.integrations.EINVOICE.connection ? COLORS.success : COLORS.muted,
 
 
                         }}
@@ -1443,7 +1306,7 @@ export function IntegrationHealth() {
                           fontWeight: TYPOGRAPHY.fontWeight.semibold,
 
 
-                          color: health.integrations.CARGO.connection ? COLORS.success.DEFAULT : COLORS.muted,
+                          color: health.integrations.CARGO.connection ? COLORS.success : COLORS.muted,
 
 
                         }}
@@ -1496,148 +1359,53 @@ export function IntegrationHealth() {
 
                       key={idx}
 
-
                       style={{
-
-
                         padding: 12,
-
-
-                        background: COLORS.error.light,
-
-
+                        background: "transparent",
                         borderRadius: RADIUS.md,
-
-
-                        border: `1px solid ${COLORS.error.DEFAULT}`,
-
-
+                        border: `1px solid ${COLORS.danger}`,
                       }}
-
-
                     >
-
-
                       <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-
-
                         <div style={{ flex: 1 }}>
-
-
                           <div
-
-
                             style={{
-
-
                               fontWeight: TYPOGRAPHY.fontWeight.semibold,
-
-
-                              color: COLORS.error.DEFAULT,
-
-
+                              color: COLORS.danger,
                             }}
-
-
                           >
-
-
                             {item.entityType ?? "UNKNOWN"} - {item.errorCode || "UNKNOWN"}
-
-
                           </div>
-
-
-                          <div style={{ fontSize: 12, color: COLORS.gray[500] }}>
-
-
+                          <div style={{ fontSize: 12, color: COLORS.muted }}>
                             {item.errorMessage ?? "Bilinmeyen hata"}
-
-
                           </div>
-
-
                           {item.entityId !== undefined && item.entityId !== null && (
-
-
-                            <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 2 }}>
-
-
+                            <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 2 }}>
                               Entity ID: {String(item.entityId)}
-
-
                             </div>
-
-
                           )}
-
-
                         </div>
-
-
-                        <div style={{ fontSize: 11, color: COLORS.error.DEFAULT, whiteSpace: "nowrap" }}>
-
-
+                        <div style={{ fontSize: 11, color: COLORS.danger, whiteSpace: "nowrap" }}>
                           {item.timestamp ? new Date(item.timestamp).toLocaleString("tr-TR") : "-"}
-
-
                         </div>
-
-
                       </div>
-
-
                     </div>
-
-
                   ))}
-
-
                 </div>
-
-
               </Card>
-
-
             )}
 
-
-
-
-
             {/* Hata yoksa */}
-
-
             {health.errors && health.errors.length === 0 && (
-
-
               <div
-
-
                 style={{
-
-
                   padding: 12,
-
-
                   borderRadius: RADIUS.md,
-
-
-                  background: COLORS.success.light,
-
-
-                  color: COLORS.success.DEFAULT,
-
-
-                  border: `1px solid ${COLORS.success.DEFAULT}`,
-
-
+                  background: "transparent",
+                  color: COLORS.success,
+                  border: `1px solid ${COLORS.success}`,
                   fontSize: 12,
-
-
                 }}
-
-
               >
 
 
@@ -1672,6 +1440,7 @@ export function IntegrationHealth() {
 
 
 export default IntegrationHealth;
+
 
 
 

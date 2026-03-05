@@ -192,7 +192,6 @@ ROLE_PERMISSIONS = {
         # Stations (barkod okutma için zorunlu)
         Permission.STATIONS_VIEW,
         # Monitoring
-        Permission.PAYMENT_VIEW,
         Permission.ACTIVITY_VIEW,
     ],
     # Kiosk: sadece üretim akışını görür, barkod okutabilir
@@ -201,7 +200,6 @@ ROLE_PERMISSIONS = {
         Permission.KANBAN_EDIT,
         # Stations (barkod okutma için zorunlu)
         Permission.STATIONS_VIEW,
-        Permission.PAYMENT_VIEW,
         Permission.ACTIVITY_VIEW,
     ],
     # Sales: müşteri/ürün arama + sipariş oluşturma
@@ -231,7 +229,6 @@ ROLE_PERMISSIONS = {
         Permission.STOCK_VIEW,
         Permission.PRODUCT_VIEW,
         Permission.PRICE_TRACKING_VIEW,
-        Permission.PAYMENT_VIEW,
         Permission.ACTIVITY_VIEW,
     ],
 }

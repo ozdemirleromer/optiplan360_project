@@ -82,7 +82,7 @@ export const QuickDefinitionPage: React.FC = () => {
           style={{
             marginBottom: '20px',
             padding: '10px 16px',
-            backgroundColor: COLORS.primary.DEFAULT,
+            backgroundColor: COLORS.primary,
             color: 'white',
             border: 'none',
             borderRadius: RADIUS.md,
@@ -124,7 +124,7 @@ export const QuickDefinitionPage: React.FC = () => {
           style={{
             padding: 24,
             backgroundColor: COLORS.bg.surface,
-            border: `2px solid ${COLORS.primary.DEFAULT}`,
+            border: `2px solid ${COLORS.primary}`,
             borderRadius: RADIUS.md,
             cursor: 'pointer',
             transition: 'all 0.2s',
@@ -144,9 +144,9 @@ export const QuickDefinitionPage: React.FC = () => {
             e.currentTarget.style.boxShadow = 'none';
           }}
         >
-          <Plus size={32} style={{ color: COLORS.primary.DEFAULT }} />
+          <Plus size={32} style={{ color: COLORS.primary }} />
           <div>
-            <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 16, color: COLORS.primary.DEFAULT }}>
+            <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 16, color: COLORS.primary }}>
               Yeni Tanımlama
             </div>
             <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
@@ -167,9 +167,9 @@ export const QuickDefinitionPage: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Package size={24} style={{ color: COLORS.primary.DEFAULT }} />
+            <Package size={24} style={{ color: COLORS.primary }} />
             <div>
-              <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 18, color: COLORS.primary.DEFAULT }}>
+              <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 18, color: COLORS.primary }}>
                 {definedItems.filter(i => i.type === 'stock').length}
               </div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>
@@ -191,9 +191,9 @@ export const QuickDefinitionPage: React.FC = () => {
           }}
         >
           <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <Users size={24} style={{ color: COLORS.success.DEFAULT }} />
+            <Users size={24} style={{ color: COLORS.success }} />
             <div>
-              <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 18, color: COLORS.success.DEFAULT }}>
+              <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 18, color: COLORS.success }}>
                 {definedItems.filter(i => i.type === 'customer').length}
               </div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>
@@ -230,8 +230,8 @@ export const QuickDefinitionPage: React.FC = () => {
                 key={item.id}
                 style={{
                   padding: 12,
-                  backgroundColor: item.type === 'stock' ? primaryRgba(0.08) : COLORS.success.light,
-                  border: `1px solid ${item.type === 'stock' ? COLORS.primary.DEFAULT : COLORS.success.DEFAULT}`,
+                  backgroundColor: item.type === 'stock' ? primaryRgba(0.08) : COLORS.success,
+                  border: `1px solid ${item.type === 'stock' ? COLORS.primary : COLORS.success}`,
                   borderRadius: RADIUS.sm,
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -241,7 +241,7 @@ export const QuickDefinitionPage: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   {item.type === 'stock' ? (
                     <>
-                      <div style={{ fontWeight: 'bold', fontSize: '13px', color: COLORS.primary.DEFAULT, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '13px', color: COLORS.primary, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Package size={14} aria-hidden /> {item.stock_code}
                       </div>
                       <div style={{ fontSize: '12px', color: COLORS.text }}>
@@ -249,14 +249,14 @@ export const QuickDefinitionPage: React.FC = () => {
                       </div>
                       <div style={{ fontSize: '11px', color: COLORS.muted, marginTop: '4px' }}>
                         {item.quantity} Adet × ₺{item.unit_price?.toFixed(2)} = 
-                        <span style={{ fontWeight: 'bold', color: COLORS.primary.DEFAULT }}>
+                        <span style={{ fontWeight: 'bold', color: COLORS.primary }}>
                           {' '}₺{item.total_price?.toFixed(2)}
                         </span>
                       </div>
                     </>
                   ) : (
                     <>
-                      <div style={{ fontWeight: 'bold', fontSize: '13px', color: COLORS.success.DEFAULT, display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '13px', color: COLORS.success, display: 'flex', alignItems: 'center', gap: 4 }}>
                         <Users size={14} aria-hidden /> {item.customer_name}
                       </div>
                       <div style={{ fontSize: '11px', color: COLORS.muted, marginTop: '4px', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -273,7 +273,7 @@ export const QuickDefinitionPage: React.FC = () => {
                   onClick={() => handleRemoveItem(item.id)}
                   style={{
                     padding: '4px 8px',
-                    backgroundColor: COLORS.danger.DEFAULT,
+                    backgroundColor: COLORS.danger,
                     color: 'white',
                     border: 'none',
                     borderRadius: RADIUS.sm,
@@ -309,7 +309,7 @@ export const QuickDefinitionPage: React.FC = () => {
             onClick={() => setIsModalOpen(true)}
             style={{
               padding: '10px 20px',
-              backgroundColor: COLORS.primary.DEFAULT,
+              backgroundColor: COLORS.primary,
               color: 'white',
               border: 'none',
               borderRadius: RADIUS.md,
@@ -337,3 +337,4 @@ export const QuickDefinitionPage: React.FC = () => {
 };
 
 export default QuickDefinitionPage;
+

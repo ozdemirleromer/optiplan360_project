@@ -368,10 +368,10 @@ export function ModularIntegrationsPage() {
                 padding: "12px 24px",
                 fontSize: 14,
                 fontWeight: activeCategory === category.id ? 700 : 400,
-                color: activeCategory === category.id ? COLORS.primary.DEFAULT : COLORS.muted,
-                background: activeCategory === category.id ? `${COLORS.primary.DEFAULT}08` : "transparent",
+                color: activeCategory === category.id ? COLORS.primary : COLORS.muted,
+                background: activeCategory === category.id ? `${COLORS.primary}08` : "transparent",
                 border: "none",
-                borderBottom: activeCategory === category.id ? `3px solid ${COLORS.primary.DEFAULT}` : "3px solid transparent",
+                borderBottom: activeCategory === category.id ? `3px solid ${COLORS.primary}` : "3px solid transparent",
                 cursor: "pointer",
                 fontFamily: TYPOGRAPHY.fontFamily.base,
                 marginBottom: "-1px",
@@ -412,9 +412,9 @@ export function ModularIntegrationsPage() {
                   color: COLORS.muted,
                   marginBottom: 16,
                   padding: "8px 12px",
-                  background: `${COLORS.success[500]}10`,
+                  background: `${COLORS.success}10`,
                   borderRadius: RADIUS.md,
-                  border: `1px solid ${COLORS.success[500]}20`
+                  border: `1px solid ${COLORS.success}20`
                 }}>
                   Son senkronizasyon: {integration.lastSync}
                 </div>
@@ -538,3 +538,5 @@ export function ModularIntegrationsPage() {
     </div>
   );
 }
+
+

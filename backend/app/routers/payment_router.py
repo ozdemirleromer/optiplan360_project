@@ -259,10 +259,30 @@ def update_invoice(
         return invoice
     except Exception as e:
         db.rollback()
-        raise BusinessRuleError(str(e))
-
-
-@router.delete("/invoices/{invoice_id}")
+        raise BusinessRuleError(str(e))
+
+
+@router.post("/invoices/{invoice_id}/remind", response_model=InvoiceOut)
+def send_invoice_reminder(
+    invoice_id: str,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_permissions(Permission.PAYMENT_EDIT)),
+):
+    """Fatura icin odeme hatirlatmasi gonder."""
+    try:
+        invoice = payment_service.send_invoice_reminder(db, invoice_id)
+        create_audit_log(
+            db,
+            str(current_user.id),
+            "SEND_INVOICE_REMINDER",
+            f"Fatura hatirlatmasi gonderildi: {invoice_id}",
+        )
+        return invoice
+    except Exception as e:
+        raise BusinessRuleError(str(e))
+
+
+@router.delete("/invoices/{invoice_id}")
 def delete_invoice(
     invoice_id: str,
     db: Session = Depends(get_db),

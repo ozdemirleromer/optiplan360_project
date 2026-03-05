@@ -314,7 +314,7 @@ const DataTableInner = <T extends { id: string | number }>(
                       textAlign: col.align || "left",
                       width: col.width,
                       fontWeight: TYPOGRAPHY.fontWeight.semibold,
-                      color: COLORS.gray[400],
+                      color: COLORS.muted,
                       fontSize: 11,
                       textTransform: "uppercase",
                       letterSpacing: "0.05em",
@@ -355,7 +355,7 @@ const DataTableInner = <T extends { id: string | number }>(
                       textAlign: "center",
                       width: 100,
                       fontWeight: TYPOGRAPHY.fontWeight.semibold,
-                      color: COLORS.gray[400],
+                      color: COLORS.muted,
                       fontSize: 11,
                       textTransform: "uppercase",
                       letterSpacing: "0.05em",
@@ -573,7 +573,7 @@ export const DataTableExample = () => {
           label: "Sipariş No",
           sortable: true,
           width: "100px",
-          render: (val) => <span style={{ color: COLORS.primary[500], fontFamily: "monospace" }}>{val}</span>,
+          render: (val) => <span style={{ color: COLORS.primary, fontFamily: "monospace" }}>{val}</span>,
         },
         {
           key: "customer",
@@ -645,3 +645,5 @@ export const DataTableExample = () => {
 };
 
 export default DataTable;
+
+

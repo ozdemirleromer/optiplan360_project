@@ -35,26 +35,26 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   > = {
     success: {
       bg: "rgba(43,212,167,.14)",
-      border: COLORS.success.DEFAULT,
-      text: COLORS.success.dark,
+      border: COLORS.success,
+      text: COLORS.success,
       icon: <CheckCircle2 size={18} />,
     },
     error: {
       bg: "rgba(255,90,106,.14)",
-      border: COLORS.error.DEFAULT,
-      text: COLORS.error.dark,
+      border: COLORS.danger,
+      text: COLORS.danger,
       icon: <XCircle size={18} />,
     },
     warning: {
       bg: "rgba(247,201,72,.14)",
-      border: COLORS.warning.DEFAULT,
-      text: COLORS.warning.dark,
+      border: COLORS.warning,
+      text: COLORS.warning,
       icon: <AlertTriangle size={18} />,
     },
     info: {
       bg: "rgba(99,179,255,.14)",
-      border: COLORS.info.DEFAULT,
-      text: COLORS.info.dark,
+      border: COLORS.primary,
+      text: COLORS.primary,
       icon: <Info size={18} />,
     },
   };
@@ -143,3 +143,4 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useToast = () => useContext(ToastContext);
+

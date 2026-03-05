@@ -90,19 +90,19 @@ export const Input = ({
 
   const variantStyles: Record<string, CSSProperties> = {
     outline: {
-      border: `1px solid ${error ? COLORS.error.DEFAULT : focused ? COLORS.primary[500] : COLORS.border}`,
+      border: `1px solid ${error ? COLORS.danger : focused ? COLORS.primary : COLORS.border}`,
       background: COLORS.panel,
       color: COLORS.text,
       transition: `all ${TRANSITIONS.fast}`,
     },
     filled: {
       border: "none",
-      borderBottom: `2px solid ${error ? COLORS.error.DEFAULT : focused ? COLORS.primary[500] : "rgba(255,255,255,.1)"}`,
+      borderBottom: `2px solid ${error ? COLORS.danger : focused ? COLORS.primary : "rgba(255,255,255,.1)"}`,
       background: "rgba(255,255,255,.04)",
       color: COLORS.text,
     },
     expanded: {
-      border: `2px solid ${error ? COLORS.error.DEFAULT : focused ? COLORS.primary[500] : "transparent"}`,
+      border: `2px solid ${error ? COLORS.danger : focused ? COLORS.primary : "transparent"}`,
       borderRadius: RADIUS.lg,
       background: focused ? "rgba(255,255,255,.08)" : "rgba(255,255,255,.04)",
       color: COLORS.text,
@@ -126,7 +126,7 @@ export const Input = ({
           }}
         >
           {label}
-          {required && <span style={{ color: COLORS.error.DEFAULT, fontSize: 16 }}>*</span>}
+          {required && <span style={{ color: COLORS.danger, fontSize: 16 }}>*</span>}
         </label>
       )}
 
@@ -238,7 +238,7 @@ export const Input = ({
           role="alert"
           style={{
             fontSize: 12,
-            color: COLORS.error.DEFAULT,
+            color: COLORS.danger,
             fontWeight: TYPOGRAPHY.fontWeight.medium,
           }}
         >
@@ -424,7 +424,7 @@ export const Select = ({
           style={{ fontSize: 13, fontWeight: TYPOGRAPHY.fontWeight.semibold, color: COLORS.text }}
         >
           {label}
-          {required && <span style={{ color: COLORS.error.DEFAULT }}>*</span>}
+          {required && <span style={{ color: COLORS.danger }}>*</span>}
         </label>
       )}
 
@@ -440,7 +440,7 @@ export const Select = ({
           style={{
             width: "100%",
             ...sizeStyles[size],
-            border: `1px solid ${error ? COLORS.error.DEFAULT : focused ? COLORS.primary[500] : COLORS.border}`,
+            border: `1px solid ${error ? COLORS.danger : focused ? COLORS.primary : COLORS.border}`,
             background: COLORS.panel,
             color: COLORS.text,
             borderRadius: RADIUS.md,
@@ -511,8 +511,8 @@ export const Select = ({
                   width: "100%",
                   padding: "10px 12px",
                   border: "none",
-                  background: value === opt.value ? `${COLORS.primary[500]}20` : "transparent",
-                  color: value === opt.value ? COLORS.primary[500] : COLORS.text,
+                  background: value === opt.value ? `${COLORS.primary}20` : "transparent",
+                  color: value === opt.value ? COLORS.primary : COLORS.text,
                   textAlign: "left",
                   cursor: opt.disabled ? "not-allowed" : "pointer",
                   opacity: opt.disabled ? 0.5 : 1,
@@ -526,7 +526,7 @@ export const Select = ({
                   }
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = value === opt.value ? `${COLORS.primary[500]}20` : "transparent";
+                  e.currentTarget.style.background = value === opt.value ? `${COLORS.primary}20` : "transparent";
                 }}
               >
                 {opt.label}
@@ -563,7 +563,7 @@ export const Select = ({
       </div>
 
       {error && (
-        <span role="alert" style={{ fontSize: 12, color: COLORS.error.DEFAULT }}>
+        <span role="alert" style={{ fontSize: 12, color: COLORS.danger }}>
           {error}
         </span>
       )}
@@ -602,7 +602,7 @@ export const FormField = ({
         <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
           <label style={{ fontSize: 13, fontWeight: TYPOGRAPHY.fontWeight.semibold, color: COLORS.text }}>
             {label}
-            {required && <span style={{ color: COLORS.error.DEFAULT }}>*</span>}
+            {required && <span style={{ color: COLORS.danger }}>*</span>}
           </label>
           {tooltip && (
             <span
@@ -622,7 +622,7 @@ export const FormField = ({
       {children}
 
       {error && (
-        <span role="alert" style={{ fontSize: 12, color: COLORS.error.DEFAULT }}>
+        <span role="alert" style={{ fontSize: 12, color: COLORS.danger }}>
           {error}
         </span>
       )}
@@ -679,9 +679,9 @@ export const Checkbox = ({
           style={{
             width: 20,
             height: 20,
-            border: `2px solid ${error ? COLORS.error.DEFAULT : focused ? COLORS.primary[500] : COLORS.border}`,
+            border: `2px solid ${error ? COLORS.danger : focused ? COLORS.primary : COLORS.border}`,
             borderRadius: RADIUS.md,
-            background: checked ? COLORS.primary[500] : "transparent",
+            background: checked ? COLORS.primary : "transparent",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -711,7 +711,7 @@ export const Checkbox = ({
         {label && <span style={{ fontSize: 14, color: COLORS.text }}>{label}</span>}
       </label>
 
-      {error && <span style={{ fontSize: 12, color: COLORS.error.DEFAULT }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: COLORS.danger }}>{error}</span>}
     </div>
   );
 };
@@ -754,7 +754,7 @@ export const RadioGroup = ({
       {label && (
         <label style={{ fontSize: 13, fontWeight: TYPOGRAPHY.fontWeight.semibold, color: COLORS.text }}>
           {label}
-          {required && <span style={{ color: COLORS.error.DEFAULT }}>*</span>}
+          {required && <span style={{ color: COLORS.danger }}>*</span>}
         </label>
       )}
 
@@ -780,7 +780,7 @@ export const RadioGroup = ({
                 width: 20,
                 height: 20,
                 borderRadius: "50%",
-                border: `2px solid ${error ? COLORS.error.DEFAULT : focused === opt.value ? COLORS.primary[500] : COLORS.border}`,
+                border: `2px solid ${error ? COLORS.danger : focused === opt.value ? COLORS.primary : COLORS.border}`,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -794,7 +794,7 @@ export const RadioGroup = ({
                     width: 8,
                     height: 8,
                     borderRadius: "50%",
-                    background: COLORS.primary[500],
+                    background: COLORS.primary,
                   }}
                 />
               )}
@@ -816,7 +816,7 @@ export const RadioGroup = ({
         ))}
       </div>
 
-      {error && <span style={{ fontSize: 12, color: COLORS.error.DEFAULT }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: COLORS.danger }}>{error}</span>}
     </div>
   );
 };
@@ -869,7 +869,7 @@ export const DateInput = ({
       {label && (
         <label style={{ fontSize: 13, fontWeight: TYPOGRAPHY.fontWeight.semibold, color: COLORS.text }}>
           {label}
-          {required && <span style={{ color: COLORS.error.DEFAULT }}>*</span>}
+          {required && <span style={{ color: COLORS.danger }}>*</span>}
         </label>
       )}
 
@@ -883,7 +883,7 @@ export const DateInput = ({
         disabled={disabled}
         style={{
           padding: "9px 12px",
-          border: `1px solid ${error ? COLORS.error.DEFAULT : COLORS.border}`,
+          border: `1px solid ${error ? COLORS.danger : COLORS.border}`,
           borderRadius: RADIUS.md,
           background: COLORS.panel,
           color: COLORS.text,
@@ -895,7 +895,7 @@ export const DateInput = ({
         }}
       />
 
-      {error && <span style={{ fontSize: 12, color: COLORS.error.DEFAULT }}>{error}</span>}
+      {error && <span style={{ fontSize: 12, color: COLORS.danger }}>{error}</span>}
       {helperText && !error && <span style={{ fontSize: 12, color: COLORS.muted }}>{helperText}</span>}
     </div>
   );
@@ -958,3 +958,5 @@ export default {
   DateInput,
   Validators,
 };
+
+

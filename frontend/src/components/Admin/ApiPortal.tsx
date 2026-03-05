@@ -289,7 +289,7 @@ export const ApiPortal = () => {
 
               padding: '6px 12px', borderRadius: RADIUS.md,
 
-              background: `${COLORS.success.DEFAULT}15`, color: COLORS.success.DEFAULT,
+              background: `${COLORS.success}15`, color: COLORS.success,
 
               fontSize: 12, fontWeight: 600,
 
@@ -303,7 +303,7 @@ export const ApiPortal = () => {
 
               padding: '6px 12px', borderRadius: RADIUS.md,
 
-              background: `${COLORS.info.DEFAULT}15`, color: COLORS.info.DEFAULT,
+              background: `${COLORS.primary}15`, color: COLORS.primary,
 
               fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 4,
 
@@ -327,9 +327,9 @@ export const ApiPortal = () => {
 
           padding: 16, borderRadius: RADIUS.lg,
 
-          border: `1px solid ${COLORS.info.DEFAULT}30`,
+          border: `1px solid ${COLORS.primary}30`,
 
-          background: `${COLORS.info.DEFAULT}08`,
+          background: `${COLORS.primary}08`,
 
           marginBottom: 24,
 
@@ -337,7 +337,7 @@ export const ApiPortal = () => {
 
         }}>
 
-          <Lock size={18} style={{ color: COLORS.info.DEFAULT, flexShrink: 0 }} />
+          <Lock size={18} style={{ color: COLORS.primary, flexShrink: 0 }} />
 
           <div>
 
@@ -383,13 +383,13 @@ export const ApiPortal = () => {
 
                 fontWeight: selectedCategory === cat ? 700 : 400,
 
-                color: selectedCategory === cat ? COLORS.primary.DEFAULT : COLORS.muted,
+                color: selectedCategory === cat ? COLORS.primary : COLORS.muted,
 
-                background: selectedCategory === cat ? `${COLORS.primary.DEFAULT}08` : "transparent",
+                background: selectedCategory === cat ? `${COLORS.primary}08` : "transparent",
 
                 border: "none",
 
-                borderBottom: selectedCategory === cat ? `3px solid ${COLORS.primary.DEFAULT}` : "3px solid transparent",
+                borderBottom: selectedCategory === cat ? `3px solid ${COLORS.primary}` : "3px solid transparent",
 
                 cursor: "pointer",
 
@@ -433,7 +433,7 @@ export const ApiPortal = () => {
 
                 borderRadius: RADIUS.lg,
 
-                border: `1px solid ${isExpanded ? COLORS.primary.DEFAULT + '40' : COLORS.border}`,
+                border: `1px solid ${isExpanded ? COLORS.primary + '40' : COLORS.border}`,
 
                 background: COLORS.bg.surface,
 
@@ -517,7 +517,7 @@ export const ApiPortal = () => {
 
                   >
 
-                    {copiedPath === endpoint.path ? <Check size={14} style={{ color: COLORS.success.DEFAULT }} /> : <Copy size={14} />}
+                    {copiedPath === endpoint.path ? <Check size={14} style={{ color: COLORS.success }} /> : <Copy size={14} />}
 
                   </button>
 
@@ -573,7 +573,7 @@ export const ApiPortal = () => {
 
                                   <td style={{ padding: '8px 12px' }}>
 
-                                    <code style={{ color: COLORS.primary.DEFAULT, fontFamily: 'monospace', fontSize: 12 }}>{param.name}</code>
+                                    <code style={{ color: COLORS.primary, fontFamily: 'monospace', fontSize: 12 }}>{param.name}</code>
 
                                   </td>
 
@@ -583,7 +583,7 @@ export const ApiPortal = () => {
 
                                     {param.required ? (
 
-                                      <span style={{ color: COLORS.danger.DEFAULT, fontWeight: 600 }}>Evet</span>
+                                      <span style={{ color: COLORS.danger, fontWeight: 600 }}>Evet</span>
 
                                     ) : (
 
@@ -625,7 +625,7 @@ export const ApiPortal = () => {
 
                           background: COLORS.bg.main, border: `1px solid ${COLORS.border}`,
 
-                          fontSize: 12, color: COLORS.success.DEFAULT,
+                          fontSize: 12, color: COLORS.success,
 
                           fontFamily: 'monospace', overflow: 'auto',
 
@@ -669,7 +669,7 @@ export const ApiPortal = () => {
 
           <div>
 
-            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.primary.DEFAULT }}>{API_ENDPOINTS.length}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.primary }}>{API_ENDPOINTS.length}</div>
 
             <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Toplam Endpoint</div>
 
@@ -677,7 +677,7 @@ export const ApiPortal = () => {
 
           <div>
 
-            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.success.DEFAULT }}>{categories.length - 1}</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.success }}>{categories.length - 1}</div>
 
             <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Kategori</div>
 
@@ -685,7 +685,7 @@ export const ApiPortal = () => {
 
           <div>
 
-            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.warning.DEFAULT }}>Bearer</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.warning }}>Bearer</div>
 
             <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Auth Tipi</div>
 
@@ -693,7 +693,7 @@ export const ApiPortal = () => {
 
           <div>
 
-            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.info.DEFAULT }}>1000/h</div>
+            <div style={{ fontSize: 20, fontWeight: 700, color: COLORS.primary }}>1000/h</div>
 
             <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Rate Limit</div>
 
@@ -712,4 +712,5 @@ export const ApiPortal = () => {
 
 
 export default ApiPortal;
+
 

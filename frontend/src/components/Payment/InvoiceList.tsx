@@ -41,13 +41,13 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
   const getStatusIcon = (status: string) => {
     switch (status) {
       case PaymentStatus.PAID:
-        return <CheckCircle size={16} color={COLORS.success.DEFAULT} />;
+        return <CheckCircle size={16} color={COLORS.success} />;
       case PaymentStatus.PENDING:
-        return <Clock size={16} color={COLORS.accent[400]} />;
+        return <Clock size={16} color={COLORS.accent} />;
       case PaymentStatus.PARTIAL:
-        return <Eye size={16} color={COLORS.info.DEFAULT} />;
+        return <Eye size={16} color={COLORS.primary} />;
       case PaymentStatus.OVERDUE:
-        return <AlertCircle size={16} color={COLORS.error.DEFAULT} />;
+        return <AlertCircle size={16} color={COLORS.danger} />;
       case PaymentStatus.CANCELLED:
         return <XCircle size={16} color={COLORS.muted} />;
       default:
@@ -64,10 +64,10 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
   }[status] || status);
 
   const getStatusColor = (status: string) => ({
-    [PaymentStatus.PAID]: COLORS.success.DEFAULT,
-    [PaymentStatus.PENDING]: COLORS.accent[400],
-    [PaymentStatus.PARTIAL]: COLORS.info.DEFAULT,
-    [PaymentStatus.OVERDUE]: COLORS.error.DEFAULT,
+    [PaymentStatus.PAID]: COLORS.success,
+    [PaymentStatus.PENDING]: COLORS.accent,
+    [PaymentStatus.PARTIAL]: COLORS.primary,
+    [PaymentStatus.OVERDUE]: COLORS.danger,
   }[status] || COLORS.muted);
 
   const getReminderBadge = (invoice: Invoice) => {
@@ -99,8 +99,8 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
           </select>
         </div>
         <div style={{ display: "flex", gap: 6 }}>
-          <button onClick={() => exportInvoicesToPDF(filteredInvoices)} style={{ padding: "8px 12px", background: COLORS.error.DEFAULT, color: "white", border: "none", borderRadius: RADIUS.md, cursor: "pointer", fontSize: TYPOGRAPHY.fontSize.xs, fontWeight: "600", display: "flex", alignItems: "center", gap: 4 }}><Download size={14} /> PDF</button>
-          <button onClick={() => exportInvoicesToExcel(filteredInvoices)} style={{ padding: "8px 12px", background: COLORS.success.DEFAULT, color: "white", border: "none", borderRadius: RADIUS.md, cursor: "pointer", fontSize: TYPOGRAPHY.fontSize.xs, fontWeight: "600", display: "flex", alignItems: "center", gap: 4 }}><Download size={14} /> Excel</button>
+          <button onClick={() => exportInvoicesToPDF(filteredInvoices)} style={{ padding: "8px 12px", background: COLORS.danger, color: "white", border: "none", borderRadius: RADIUS.md, cursor: "pointer", fontSize: TYPOGRAPHY.fontSize.xs, fontWeight: "600", display: "flex", alignItems: "center", gap: 4 }}><Download size={14} /> PDF</button>
+          <button onClick={() => exportInvoicesToExcel(filteredInvoices)} style={{ padding: "8px 12px", background: COLORS.success, color: "white", border: "none", borderRadius: RADIUS.md, cursor: "pointer", fontSize: TYPOGRAPHY.fontSize.xs, fontWeight: "600", display: "flex", alignItems: "center", gap: 4 }}><Download size={14} /> Excel</button>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
       <div style={{ overflowX: "auto" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: TYPOGRAPHY.fontSize.sm }}>
           <thead>
-            <tr style={{ borderBottom: `1px solid ${COLORS.border}`, background: COLORS.bg.subtle }}>
+            <tr style={{ borderBottom: `1px solid ${COLORS.border}`, background: COLORS.bg.elevated }}>
               <th style={{ padding: 12, textAlign: "left", fontWeight: "600" }}>Fatura No</th>
               <th style={{ padding: 12, textAlign: "left", fontWeight: "600" }}>Hesap</th>
               <th style={{ padding: 12, textAlign: "right", fontWeight: "600" }}>Tutar</th>
@@ -131,8 +131,8 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
                 <td style={{ padding: 12, textAlign: "right", color: COLORS.muted }}>{invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString("tr-TR") : "—"}</td>
                 <td style={{ padding: 12, textAlign: "center" }}>
                   <div style={{ display: "flex", gap: 8, justifyContent: "center" }}>
-                    <button onClick={() => onEdit(invoice)} style={{ border: "none", background: "transparent", cursor: "pointer", color: COLORS.info.DEFAULT, padding: 4 }} title="Düzenle"><Edit2 size={16} /></button>
-                    <button onClick={() => handleDelete(invoice)} style={{ border: "none", background: "transparent", cursor: "pointer", color: COLORS.error.DEFAULT, padding: 4 }} title="Sil"><Trash2 size={16} /></button>
+                    <button onClick={() => onEdit(invoice)} style={{ border: "none", background: "transparent", cursor: "pointer", color: COLORS.primary, padding: 4 }} title="Düzenle"><Edit2 size={16} /></button>
+                    <button onClick={() => handleDelete(invoice)} style={{ border: "none", background: "transparent", cursor: "pointer", color: COLORS.danger, padding: 4 }} title="Sil"><Trash2 size={16} /></button>
                   </div>
                 </td>
               </tr>
@@ -143,3 +143,5 @@ export default function InvoiceList({ invoices, loading, onEdit, onDelete, onRef
     </Card>
   );
 }
+
+

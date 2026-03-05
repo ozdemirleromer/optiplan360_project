@@ -149,9 +149,9 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
               alignItems: "center",
               justifyContent: "space-between",
               padding: 12,
-              background: `${COLORS.primary[500]}10`,
+              background: `${COLORS.primary}10`,
               borderRadius: RADIUS.md,
-              border: `1px solid ${COLORS.primary[500]}30`,
+              border: `1px solid ${COLORS.primary}30`,
             }}
           >
             <div>
@@ -167,7 +167,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
                 cursor: "pointer",
                 fontSize: 13,
                 fontWeight: 500,
-                background: config.enabled ? COLORS.success.DEFAULT : COLORS.muted,
+                background: config.enabled ? COLORS.success : COLORS.muted,
                 color: "white",
               }}
             >
@@ -178,7 +178,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
           {/* IMAP Host */}
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-              IMAP Sunucu <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+              IMAP Sunucu <span style={{ color: COLORS.danger }}>*</span>
             </label>
             <input
               type="text"
@@ -234,8 +234,8 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
                   border: `1px solid ${COLORS.border}`,
                   fontSize: 14,
                   fontFamily: TYPOGRAPHY.fontFamily.base,
-                  background: config.useSsl ? `${COLORS.success.DEFAULT}20` : "transparent",
-                  color: config.useSsl ? COLORS.success.DEFAULT : COLORS.text,
+                  background: config.useSsl ? `${COLORS.success}20` : "transparent",
+                  color: config.useSsl ? COLORS.success : COLORS.text,
                   cursor: "pointer",
                   fontWeight: 500,
                 }}
@@ -248,7 +248,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
           {/* IMAP User */}
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-              Email Adresi <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+              Email Adresi <span style={{ color: COLORS.danger }}>*</span>
             </label>
             <input
               type="email"
@@ -271,7 +271,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
           {/* IMAP Password */}
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-              Şifre / Uygulama Şifresi <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+              Şifre / Uygulama Şifresi <span style={{ color: COLORS.danger }}>*</span>
             </label>
             <input
               type="password"
@@ -324,16 +324,16 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
                 padding: 12,
                 borderRadius: RADIUS.md,
                 background: testResult.success
-                  ? `${COLORS.success.DEFAULT}15`
-                  : `${COLORS.error.DEFAULT}15`,
-                border: `1px solid ${testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT}30`,
+                  ? `${COLORS.success}15`
+                  : `${COLORS.danger}15`,
+                border: `1px solid ${testResult.success ? COLORS.success : COLORS.danger}30`,
               }}
             >
               <div
                 style={{
                   fontSize: 13,
                   fontWeight: 500,
-                  color: testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                  color: testResult.success ? COLORS.success : COLORS.danger,
                   display: "flex",
                   alignItems: "center",
                   gap: 8,
@@ -372,3 +372,5 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
     </div>
   );
 }
+
+

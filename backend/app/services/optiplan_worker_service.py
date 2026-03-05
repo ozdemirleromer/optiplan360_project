@@ -30,8 +30,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from ..database import SessionLocal
-from ..models import OptiAuditEvent, OptiJob, OptiJobStateEnum
-from . import tracking_folder_service as tracking
+from ..models import OptiJob, OptiJobStateEnum
+from ..models.enums import JobErrorCode
+from . import tracking_folder_service as tracking
+from .orchestrator_service import OrchestratorService
 
 logger = logging.getLogger(__name__)
 
@@ -73,41 +75,80 @@ SUBPROCESS_TIMEOUT_S = int(os.environ.get("OPTIPLAN_WORKER_TIMEOUT_S", "180"))
 WORKER_ENGINE = "ui_automation"
 
 # -- Circuit Breaker --
-MAX_CONSECUTIVE_FAILURES = 3
-_lock = threading.Lock()
-_consecutive_failures = 0
-_circuit_open = False
-_last_run_at: Optional[datetime] = None
-_last_error: Optional[str] = None
+MAX_CONSECUTIVE_FAILURES = 3
+CIRCUIT_OPEN_COOLDOWN_S = int(os.environ.get("OPTIPLAN_WORKER_BREAKER_COOLDOWN_S", "300"))
+CIRCUIT_STATE_CLOSED = "CLOSED"
+CIRCUIT_STATE_OPEN = "OPEN"
+CIRCUIT_STATE_HALF_OPEN = "HALF_OPEN"
+_lock = threading.Lock()
+_consecutive_failures = 0
+_circuit_state = CIRCUIT_STATE_CLOSED
+_circuit_opened_at: Optional[datetime] = None
+_half_open_probe_in_progress = False
+_last_run_at: Optional[datetime] = None
+_last_error: Optional[str] = None
+
+
+def _get_circuit_snapshot(now: Optional[datetime] = None) -> dict:
+    current = now or datetime.now(tz=timezone.utc)
+    cooldown_remaining_s = 0
+    if _circuit_state == CIRCUIT_STATE_OPEN and _circuit_opened_at:
+        elapsed = (current - _circuit_opened_at).total_seconds()
+        cooldown_remaining_s = max(0, int(CIRCUIT_OPEN_COOLDOWN_S - elapsed))
+
+    return {
+        "circuit_state": _circuit_state,
+        "circuit_open": _circuit_state == CIRCUIT_STATE_OPEN,
+        "consecutive_failures": _consecutive_failures,
+        "max_consecutive_failures": MAX_CONSECUTIVE_FAILURES,
+        "cooldown_seconds": CIRCUIT_OPEN_COOLDOWN_S,
+        "cooldown_remaining_seconds": cooldown_remaining_s,
+        "opened_at": _circuit_opened_at.isoformat() if _circuit_opened_at else None,
+        "half_open_probe_in_progress": _half_open_probe_in_progress,
+    }
+
+
+def _transition_circuit_if_ready(now: Optional[datetime] = None) -> str:
+    global _circuit_state, _half_open_probe_in_progress
+
+    current = now or datetime.now(tz=timezone.utc)
+    if _circuit_state != CIRCUIT_STATE_OPEN or _circuit_opened_at is None:
+        return _circuit_state
+
+    if (current - _circuit_opened_at).total_seconds() < CIRCUIT_OPEN_COOLDOWN_S:
+        return _circuit_state
+
+    _circuit_state = CIRCUIT_STATE_HALF_OPEN
+    _half_open_probe_in_progress = False
+    logger.warning(
+        "Worker circuit breaker HALF_OPEN: cooldown bitti, tek probe calismasi serbest."
+    )
+    return _circuit_state
+
+
+def _release_half_open_probe():
+    global _half_open_probe_in_progress
+    with _lock:
+        if _circuit_state == CIRCUIT_STATE_HALF_OPEN:
+            _half_open_probe_in_progress = False
 
 
-def _add_audit(
-    db: Session, job_id: str, event_type: str, message: str, details: dict | None = None
-):
-    event = OptiAuditEvent(
-        job_id=job_id,
-        event_type=event_type,
-        message=message,
-        details_json=json.dumps(details, default=str) if details else None,
-    )
-    db.add(event)
-
-
-def _claim_job(db: Session, job: OptiJob) -> bool:
-    """
-    OPTI_IMPORTED -> OPTI_RUNNING atomik gecis.
-    DB'de unique partial index (uq_single_opti_running) varsa,
-    ayni anda sadece 1 job OPTI_RUNNING olabilir.
-    IntegrityError -> baska bir worker zaten calisiyor.
-    """
-    job.state = OptiJobStateEnum.OPTI_RUNNING
-    _add_audit(
-        db,
-        job.id,
-        "STATE_OPTI_RUNNING",
-        "Worker tarafindan claim edildi",
-        {"engine": WORKER_ENGINE},
-    )
+def _claim_job(db: Session, job: OptiJob) -> bool:
+    """
+    OPTI_IMPORTED -> OPTI_RUNNING atomik gecis.
+    DB'de unique partial index (uq_single_opti_running) varsa,
+    ayni anda sadece 1 job OPTI_RUNNING olabilir.
+    IntegrityError -> baska bir worker zaten calisiyor.
+    """
+    OrchestratorService(db).update_job_state(
+        job,
+        OptiJobStateEnum.OPTI_RUNNING,
+        audit_event_type="STATE_OPTI_RUNNING",
+        audit_message="Worker tarafindan claim edildi",
+        audit_details={"engine": WORKER_ENGINE},
+        commit=False,
+        refresh=False,
+    )
     try:
         db.commit()
         # Tracking: OPTI_RUNNING klasorune tasi
@@ -203,51 +244,46 @@ def _run_professional(xlsx_path: str, timeout_s: int = SUBPROCESS_TIMEOUT_S) -> 
         return False, f"Subprocess hatasi: {exc}"
 
 
-def _hold_job(db: Session, job: OptiJob, reason: str):
-    """Calisma ortami uygun degilse job'i HOLD durumuna al."""
-    job.state = OptiJobStateEnum.HOLD
-    job.error_code = "E_WORKER_ENV_UNSUPPORTED"
-    job.error_message = reason[:500] if reason else "Worker ortami uygun degil"
-    _add_audit(
-        db,
-        job.id,
-        "STATE_HOLD",
-        "Worker ortami uygun degil, job HOLD'a alindi",
-        {"engine": WORKER_ENGINE, "reason": reason[:300] if reason else ""},
-    )
-    logger.warning("Job %s: OPTI_RUNNING -> HOLD: %s", job.id, reason)
-    db.commit()
+def _hold_job(db: Session, job: OptiJob, reason: str):
+    """Calisma ortami uygun degilse job'i HOLD durumuna al."""
+    OrchestratorService(db).update_job_state(
+        job,
+        OptiJobStateEnum.HOLD,
+        audit_event_type="STATE_HOLD",
+        audit_message="Worker ortami uygun degil, job HOLD'a alindi",
+        audit_details={"engine": WORKER_ENGINE, "reason": reason[:300] if reason else ""},
+        error_code=JobErrorCode.WORKER_ENV_UNSUPPORTED,
+        error_message=reason[:500] if reason else "Worker ortami uygun degil",
+    )
+    logger.warning("Job %s: OPTI_RUNNING -> HOLD: %s", job.id, reason)
 
 
-def _finalize_job(db: Session, job: OptiJob, success: bool, log: str):
-    """OPTI_DONE veya FAILED + audit event yazar."""
-    if success:
-        job.state = OptiJobStateEnum.OPTI_DONE
-        job.error_code = None
-        job.error_message = None
-        _add_audit(
-            db,
-            job.id,
-            "STATE_OPTI_DONE",
-            "OptiPlanning arka plan calismasi tamamlandi, XML bekleniyor",
-            {"engine": WORKER_ENGINE, "log_tail": log[-300:] if log else ""},
-        )
-        logger.info("Job %s: OPTI_RUNNING -> OPTI_DONE", job.id)
-    else:
-        job.state = OptiJobStateEnum.FAILED
-        job.error_code = "E_OPTI_WORKER_FAILED"
-        job.error_message = log[-500:] if log else "Bilinmeyen hata"
-        _add_audit(
-            db,
-            job.id,
-            "STATE_FAILED",
-            "Worker hatasi",
-            {"engine": WORKER_ENGINE, "log_tail": log[-300:] if log else ""},
-        )
-        logger.error("Job %s: OPTI_RUNNING -> FAILED: %s", job.id, log[-200:])
-    db.commit()
-
-    # Tracking: dosyayi ilgili takip klasorune tasi
+def _finalize_job(db: Session, job: OptiJob, success: bool, log: str):
+    """OPTI_DONE veya FAILED + audit event yazar."""
+    if success:
+        OrchestratorService(db).update_job_state(
+            job,
+            OptiJobStateEnum.OPTI_DONE,
+            audit_event_type="STATE_OPTI_DONE",
+            audit_message="OptiPlanning arka plan calismasi tamamlandi, XML bekleniyor",
+            audit_details={"engine": WORKER_ENGINE, "log_tail": log[-300:] if log else ""},
+            error_code=None,
+            error_message=None,
+        )
+        logger.info("Job %s: OPTI_RUNNING -> OPTI_DONE", job.id)
+    else:
+        OrchestratorService(db).update_job_state(
+            job,
+            OptiJobStateEnum.FAILED,
+            audit_event_type="STATE_FAILED",
+            audit_message="Worker hatasi",
+            audit_details={"engine": WORKER_ENGINE, "log_tail": log[-300:] if log else ""},
+            error_code=JobErrorCode.OPTI_WORKER_FAILED,
+            error_message=log[-500:] if log else "Bilinmeyen hata",
+        )
+        logger.error("Job %s: OPTI_RUNNING -> FAILED: %s", job.id, log[-200:])
+
+    # Tracking: dosyayi ilgili takip klasorune tasi
     new_state = "OPTI_DONE" if success else "FAILED"
     xlsx_path = getattr(job, "xlsx_file_path", None)
     tracking.on_state_change(
@@ -261,21 +297,27 @@ def _finalize_job(db: Session, job: OptiJob, success: bool, log: str):
     )
 
 
-def poll_and_run_once() -> dict:
-    """
-    APScheduler tarafindan cagrilir. Tek bir OPTI_IMPORTED job isler.
-
-    Returns:
-        {"status": "idle"|"processed"|"failed"|"circuit_open", ...}
-    """
-    global _consecutive_failures, _circuit_open, _last_run_at, _last_error
-
-    _last_run_at = datetime.now(tz=timezone.utc)
-
-    # Circuit breaker kontrolu
-    with _lock:
-        if _circuit_open:
-            return {"status": "circuit_open", "consecutive_failures": _consecutive_failures}
+def poll_and_run_once() -> dict:
+    """
+    APScheduler tarafindan cagrilir. Tek bir OPTI_IMPORTED job isler.
+
+    Returns:
+        {"status": "idle"|"processed"|"failed"|"circuit_open", ...}
+    """
+    global _half_open_probe_in_progress, _last_run_at
+
+    now = datetime.now(tz=timezone.utc)
+    _last_run_at = now
+
+    # Circuit breaker kontrolu
+    with _lock:
+        _transition_circuit_if_ready(now)
+        if _circuit_state == CIRCUIT_STATE_OPEN:
+            return {"status": "circuit_open", **_get_circuit_snapshot(now)}
+        if _circuit_state == CIRCUIT_STATE_HALF_OPEN:
+            if _half_open_probe_in_progress:
+                return {"status": "circuit_half_open", **_get_circuit_snapshot(now)}
+            _half_open_probe_in_progress = True
 
     db: Session = SessionLocal()
     try:
@@ -285,14 +327,16 @@ def poll_and_run_once() -> dict:
             .filter(OptiJob.state == OptiJobStateEnum.OPTI_IMPORTED)
             .order_by(OptiJob.created_at.asc())
             .first()
-        )
-
-        if not job:
-            return {"status": "idle"}
-
-        # Job'i claim et (OPTI_RUNNING)
-        if not _claim_job(db, job):
-            return {"status": "claim_failed", "job_id": job.id}
+        )
+
+        if not job:
+            _release_half_open_probe()
+            return {"status": "idle"}
+
+        # Job'i claim et (OPTI_RUNNING)
+        if not _claim_job(db, job):
+            _release_half_open_probe()
+            return {"status": "claim_failed", "job_id": job.id}
 
         # XLSX hazirla
         try:
@@ -314,15 +358,16 @@ def poll_and_run_once() -> dict:
             # Windows + pywinauto: otomatik Stage1+Stage2
             success, log = _run_professional(xlsx_path)
 
-            if not success and (
-                "HOLD'a alinacak" in log
-                or "Script bulunamadi" in log
-                or "Worker sadece Windows ortaminda" in log
-            ):
-                _hold_job(db, job, log)
-                return {
-                    "status": "held",
-                    "job_id": job.id,
+            if not success and (
+                "HOLD'a alinacak" in log
+                or "Script bulunamadi" in log
+                or "Worker sadece Windows ortaminda" in log
+            ):
+                _hold_job(db, job, log)
+                _release_half_open_probe()
+                return {
+                    "status": "held",
+                    "job_id": job.id,
                     "error": log[:200],
                     "engine": WORKER_ENGINE,
                 }
@@ -365,58 +410,71 @@ def poll_and_run_once() -> dict:
         db.close()
 
 
-def _record_success():
-    global _consecutive_failures
-    with _lock:
-        _consecutive_failures = 0
+def _record_success():
+    global _consecutive_failures, _circuit_state, _circuit_opened_at, _half_open_probe_in_progress, _last_error
+    with _lock:
+        _consecutive_failures = 0
+        _circuit_state = CIRCUIT_STATE_CLOSED
+        _circuit_opened_at = None
+        _half_open_probe_in_progress = False
+        _last_error = None
+
+
+def _record_failure(error_msg: str):
+    global _consecutive_failures, _circuit_state, _circuit_opened_at, _half_open_probe_in_progress, _last_error
+    with _lock:
+        if _circuit_state == CIRCUIT_STATE_HALF_OPEN:
+            _consecutive_failures = max(_consecutive_failures + 1, MAX_CONSECUTIVE_FAILURES)
+        else:
+            _consecutive_failures += 1
+        _last_error = error_msg
+        _half_open_probe_in_progress = False
+        if _consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
+            _circuit_state = CIRCUIT_STATE_OPEN
+            _circuit_opened_at = datetime.now(tz=timezone.utc)
+            logger.critical(
+                "Worker circuit breaker ACIK: %d ardisik hata. Admin reset gerekli.",
+                _consecutive_failures,
+            )
 
 
-def _record_failure(error_msg: str):
-    global _consecutive_failures, _circuit_open, _last_error
-    with _lock:
-        _consecutive_failures += 1
-        _last_error = error_msg
-        if _consecutive_failures >= MAX_CONSECUTIVE_FAILURES:
-            _circuit_open = True
-            logger.critical(
-                "Worker circuit breaker ACIK: %d ardisik hata. Admin reset gerekli.",
-                _consecutive_failures,
-            )
-
-
-def get_worker_status() -> dict:
-    """Worker durumu: circuit breaker, son calisma, kuyruk uzunlugu."""
-    db: Session = SessionLocal()
-    try:
-        queue_count = (
+def get_worker_status() -> dict:
+    """Worker durumu: circuit breaker, son calisma, kuyruk uzunlugu."""
+    db: Session = SessionLocal()
+    try:
+        queue_count = (
             db.query(OptiJob).filter(OptiJob.state == OptiJobStateEnum.OPTI_IMPORTED).count()
         )
         running_count = (
             db.query(OptiJob).filter(OptiJob.state == OptiJobStateEnum.OPTI_RUNNING).count()
         )
-    finally:
-        db.close()
+    finally:
+        db.close()
+
+    with _lock:
+        _transition_circuit_if_ready()
+        snapshot = _get_circuit_snapshot()
+
+    return {
+        **snapshot,
+        "last_run_at": _last_run_at.isoformat() if _last_run_at else None,
+        "last_error": _last_error,
+        "engine": WORKER_ENGINE,
+        "supported_engines": [WORKER_ENGINE],
+        "queue_count": queue_count,
+        "running_count": running_count,
+        "script_path": PROFESSIONAL_RUN_SCRIPT,
+        "script_exists": os.path.exists(PROFESSIONAL_RUN_SCRIPT),
+    }
 
-    return {
-        "circuit_open": _circuit_open,
-        "consecutive_failures": _consecutive_failures,
-        "max_consecutive_failures": MAX_CONSECUTIVE_FAILURES,
-        "last_run_at": _last_run_at.isoformat() if _last_run_at else None,
-        "last_error": _last_error,
-        "engine": WORKER_ENGINE,
-        "supported_engines": [WORKER_ENGINE],
-        "queue_count": queue_count,
-        "running_count": running_count,
-        "script_path": PROFESSIONAL_RUN_SCRIPT,
-        "script_exists": os.path.exists(PROFESSIONAL_RUN_SCRIPT),
-    }
 
-
-def reset_circuit_breaker():
-    """Admin: circuit breaker'i sifirlar, worker tekrar calisir."""
-    global _consecutive_failures, _circuit_open, _last_error
-    with _lock:
-        _consecutive_failures = 0
-        _circuit_open = False
-        _last_error = None
-    logger.info("Worker circuit breaker sifirlandi (admin)")
+def reset_circuit_breaker():
+    """Admin: circuit breaker'i sifirlar, worker tekrar calisir."""
+    global _consecutive_failures, _circuit_state, _circuit_opened_at, _half_open_probe_in_progress, _last_error
+    with _lock:
+        _consecutive_failures = 0
+        _circuit_state = CIRCUIT_STATE_CLOSED
+        _circuit_opened_at = None
+        _half_open_probe_in_progress = False
+        _last_error = None
+    logger.info("Worker circuit breaker sifirlandi (admin)")

@@ -208,6 +208,7 @@ const fieldLabelStyle: React.CSSProperties = {
 
 const errorTextStyle: React.CSSProperties = {
   fontSize: 12,
-  color: COLORS.error.DEFAULT,
+  color: COLORS.danger,
   marginTop: 4,
 };
+

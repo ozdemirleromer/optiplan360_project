@@ -89,15 +89,15 @@ export function LogsPage() {
   const getLogLevelColor = (level: LogLevel): string => {
     switch (level) {
       case "ERROR":
-        return COLORS.error.DEFAULT;
+        return COLORS.danger;
       case "WARNING":
-        return COLORS.warning.DEFAULT;
+        return COLORS.warning;
       case "INFO":
         return "#06b6d4";
       case "DEBUG":
-        return COLORS.gray[400];
+        return COLORS.muted;
       default:
-        return COLORS.gray[400];
+        return COLORS.muted;
     }
   };
 
@@ -141,21 +141,21 @@ export function LogsPage() {
           </Card>
           <Card
             style={{
-              background: `linear-gradient(135deg, ${COLORS.error.DEFAULT}22, ${COLORS.error.DEFAULT}11)`,
-              borderLeft: `4px solid ${COLORS.error.DEFAULT}`,
+              background: `linear-gradient(135deg, ${COLORS.danger}22, ${COLORS.danger}11)`,
+              borderLeft: `4px solid ${COLORS.danger}`,
             }}
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Hatalar</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.error.DEFAULT }}>{stats.errors}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.danger }}>{stats.errors}</div>
           </Card>
           <Card
             style={{
-              background: `linear-gradient(135deg, ${COLORS.warning.DEFAULT}22, ${COLORS.warning.DEFAULT}11)`,
-              borderLeft: `4px solid ${COLORS.warning.DEFAULT}`,
+              background: `linear-gradient(135deg, ${COLORS.warning}22, ${COLORS.warning}11)`,
+              borderLeft: `4px solid ${COLORS.warning}`,
             }}
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Uyarılar</div>
-            <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning.DEFAULT }}>{stats.warnings}</div>
+            <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning }}>{stats.warnings}</div>
           </Card>
           <Card
             style={{
@@ -170,9 +170,9 @@ export function LogsPage() {
 
         {/* Error Display */}
         {error && (
-          <Card style={{ background: `${COLORS.error.DEFAULT}15`, borderLeft: `4px solid ${COLORS.error.DEFAULT}` }}>
+          <Card style={{ background: `${COLORS.danger}15`, borderLeft: `4px solid ${COLORS.danger}` }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: COLORS.error.DEFAULT, fontSize: 13 }}>
+              <span style={{ color: COLORS.danger, fontSize: 13 }}>
                 <strong>Hata:</strong> {error}
               </span>
               <button
@@ -181,7 +181,7 @@ export function LogsPage() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: COLORS.error.DEFAULT,
+                  color: COLORS.danger,
                   fontSize: 18,
                 }}
               >
@@ -364,8 +364,8 @@ export function LogsPage() {
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     disabled={page === 1 || loading}
                     style={{
-                      background: page === 1 || loading ? COLORS.gray[300] : COLORS.gray[200],
-                      color: page === 1 || loading ? COLORS.gray[400] : COLORS.gray[700],
+                      background: page === 1 || loading ? COLORS.muted : COLORS.muted,
+                      color: page === 1 || loading ? COLORS.muted : COLORS.muted,
                       border: "none",
                       padding: "6px 12px",
                       borderRadius: RADIUS.sm,
@@ -379,8 +379,8 @@ export function LogsPage() {
                     onClick={() => setPage((p) => p + 1)}
                     disabled={page >= totalPages || loading}
                     style={{
-                      background: page >= totalPages || loading ? COLORS.gray[300] : COLORS.gray[200],
-                      color: page >= totalPages || loading ? COLORS.gray[400] : COLORS.gray[700],
+                      background: page >= totalPages || loading ? COLORS.muted : COLORS.muted,
+                      color: page >= totalPages || loading ? COLORS.muted : COLORS.muted,
                       border: "none",
                       padding: "6px 12px",
                       borderRadius: RADIUS.sm,
@@ -399,3 +399,4 @@ export function LogsPage() {
     </div>
   );
 }
+

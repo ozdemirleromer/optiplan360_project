@@ -129,7 +129,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                          {/* Host */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   SMTP Host <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   SMTP Host <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="text"
@@ -151,7 +151,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                               {/* Port */}
                               <div>
                                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                        Port <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                        Port <span style={{ color: COLORS.danger }}>*</span>
                                    </label>
                                    <input
                                         type="number"
@@ -182,8 +182,8 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                                              border: `1px solid ${COLORS.border}`,
                                              fontSize: 14,
                                              fontFamily: TYPOGRAPHY.fontFamily.base,
-                                             background: config.useTls ? `${COLORS.success.DEFAULT}20` : "transparent",
-                                             color: config.useTls ? COLORS.success.DEFAULT : COLORS.text,
+                                             background: config.useTls ? `${COLORS.success}20` : "transparent",
+                                             color: config.useTls ? COLORS.success : COLORS.text,
                                              cursor: "pointer",
                                              fontWeight: 500,
                                         }}
@@ -196,7 +196,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                          {/* Username */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   Kullanıcı Adı <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   Kullanıcı Adı <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="text"
@@ -217,7 +217,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                          {/* Password */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   Şifre <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   Şifre <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="password"
@@ -261,11 +261,11 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                                    style={{
                                         padding: 12,
                                         borderRadius: RADIUS.md,
-                                        background: `${COLORS.error.DEFAULT}15`,
-                                        border: `1px solid ${COLORS.error.DEFAULT}30`,
+                                        background: `${COLORS.danger}15`,
+                                        border: `1px solid ${COLORS.danger}30`,
                                         fontSize: 13,
                                         fontWeight: 500,
-                                        color: COLORS.error.DEFAULT,
+                                        color: COLORS.danger,
                                    }}
                               >
                                    [HATA] {errorMsg}
@@ -291,3 +291,4 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
           </div>
      );
 }
+

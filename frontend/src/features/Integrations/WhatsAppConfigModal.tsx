@@ -119,7 +119,7 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
                          {/* Phone Number ID */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   Telefon Numarası ID <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   Telefon Numarası ID <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="text"
@@ -140,7 +140,7 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
                          {/* Business Account ID */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   İşletme Hesabı ID <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   İşletme Hesabı ID <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="text"
@@ -161,7 +161,7 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
                          {/* Access Token */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   Geçici/Kalıcı Erişim Tokeni <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   Geçici/Kalıcı Erişim Tokeni <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <textarea
                                    value={config.accessToken}
@@ -206,11 +206,11 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
                                    style={{
                                         padding: 12,
                                         borderRadius: RADIUS.md,
-                                        background: `${COLORS.error.DEFAULT}15`,
-                                        border: `1px solid ${COLORS.error.DEFAULT}30`,
+                                        background: `${COLORS.danger}15`,
+                                        border: `1px solid ${COLORS.danger}30`,
                                         fontSize: 13,
                                         fontWeight: 500,
-                                        color: COLORS.error.DEFAULT,
+                                        color: COLORS.danger,
                                    }}
                               >
                                    [HATA] {errorMsg}
@@ -236,3 +236,4 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
           </div>
      );
 }
+

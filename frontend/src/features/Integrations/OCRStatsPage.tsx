@@ -202,8 +202,8 @@ export function OCRStatsPage() {
       </div>
 
       {error && (
-        <Card style={{ marginBottom: 16, background: `${COLORS.error.DEFAULT}10`, border: `1px solid ${COLORS.error.DEFAULT}30` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: COLORS.error.DEFAULT }}>
+        <Card style={{ marginBottom: 16, background: `${COLORS.danger}10`, border: `1px solid ${COLORS.danger}30` }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, color: COLORS.danger }}>
             <Activity size={16} />
             <span>{error}</span>
           </div>
@@ -217,7 +217,7 @@ export function OCRStatsPage() {
           <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
             {loading ? "..." : formatNumber(stats?.totalJobs ?? 0)}
           </div>
-          <div style={{ fontSize: 12, color: COLORS.success.DEFAULT, marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: COLORS.success, marginTop: 4 }}>
             +{formatNumber(stats?.last24hJobs ?? 0)} son 24s
           </div>
         </Card>
@@ -227,7 +227,7 @@ export function OCRStatsPage() {
           <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
             {loading ? "..." : `%${stats?.successfulJobs && stats?.totalJobs ? Math.round((stats.successfulJobs / stats.totalJobs) * 100) : 0}`}
           </div>
-          <div style={{ fontSize: 12, color: COLORS.success.DEFAULT, marginTop: 4 }}>
+          <div style={{ fontSize: 12, color: COLORS.success, marginTop: 4 }}>
             {formatNumber(stats?.successfulJobs ?? 0)} başarılı
           </div>
         </Card>
@@ -300,7 +300,7 @@ export function OCRStatsPage() {
 
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontSize: 12, color: COLORS.muted }}>Başarı</div>
-                <div style={{ fontWeight: 600, color: service.successRate > 80 ? COLORS.success.DEFAULT : COLORS.warning.DEFAULT }}>
+                <div style={{ fontWeight: 600, color: service.successRate > 80 ? COLORS.success : COLORS.warning }}>
                   %{service.successRate}
                 </div>
               </div>
@@ -329,7 +329,7 @@ export function OCRStatsPage() {
                 style={{
                   padding: 12,
                   borderRadius: RADIUS.md,
-                  background: `${COLORS.primary[500]}08`,
+                  background: `${COLORS.primary}08`,
                   border: `1px solid ${COLORS.border}`,
                 }}
               >
@@ -346,3 +346,5 @@ export function OCRStatsPage() {
     </div>
   );
 }
+
+

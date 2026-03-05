@@ -141,7 +141,7 @@ export function OrderNotesPanel({ orderId, onClose }: OrderNotesPanelProps) {
         {onClose && (
           <button
             onClick={onClose}
-            aria-label="Nolar panelini kapat"
+            aria-label="Notlar panelini kapat"
             style={{
               marginLeft: "auto",
               background: "none",

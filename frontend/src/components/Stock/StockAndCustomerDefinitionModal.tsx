@@ -234,10 +234,10 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
               padding: '16px',
               backgroundColor: activeTab === 'stock' ? COLORS.bg.surface : COLORS.bg.main,
               border: 'none',
-              borderBottom: activeTab === 'stock' ? `2px solid ${COLORS.primary.DEFAULT}` : 'none',
+              borderBottom: activeTab === 'stock' ? `2px solid ${COLORS.primary}` : 'none',
               cursor: 'pointer',
               fontWeight: TYPOGRAPHY.fontWeight.bold,
-              color: activeTab === 'stock' ? COLORS.primary.DEFAULT : COLORS.muted,
+              color: activeTab === 'stock' ? COLORS.primary : COLORS.muted,
               transition: 'all 0.2s',
               display: 'flex',
               alignItems: 'center',
@@ -254,10 +254,10 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
               padding: '16px',
               backgroundColor: activeTab === 'customer' ? COLORS.bg.surface : COLORS.bg.main,
               border: 'none',
-              borderBottom: activeTab === 'customer' ? `2px solid ${COLORS.primary.DEFAULT}` : 'none',
+              borderBottom: activeTab === 'customer' ? `2px solid ${COLORS.primary}` : 'none',
               cursor: 'pointer',
               fontWeight: TYPOGRAPHY.fontWeight.bold,
-              color: activeTab === 'customer' ? COLORS.primary.DEFAULT : COLORS.muted,
+              color: activeTab === 'customer' ? COLORS.primary : COLORS.muted,
               transition: 'all 0.2s',
               display: 'flex',
               alignItems: 'center',
@@ -311,7 +311,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                         style={{
                           padding: '12px',
                           border: selectedStock?.stock_code === stock.stock_code 
-                            ? `2px solid ${COLORS.primary.DEFAULT}` 
+                            ? `2px solid ${COLORS.primary}` 
                             : `1px solid ${COLORS.border}`,
                           borderRadius: RADIUS.sm,
                           backgroundColor: selectedStock?.stock_code === stock.stock_code ? primaryRgba(0.08) : COLORS.bg.main,
@@ -331,7 +331,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '6px' }}>
                           <div>
-                            <div style={{ fontWeight: 'bold', color: COLORS.primary.DEFAULT, fontSize: '13px' }}>
+                            <div style={{ fontWeight: 'bold', color: COLORS.primary, fontSize: '13px' }}>
                               {stock.stock_code}
                             </div>
                             <div style={{ fontSize: '12px', color: COLORS.text }}>
@@ -340,7 +340,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                           </div>
                           <div style={{ textAlign: 'right', fontSize: '12px' }}>
                             <div style={{ color: COLORS.muted }}>Fiyat</div>
-                            <div style={{ fontWeight: 'bold', color: COLORS.primary.DEFAULT }}>
+                            <div style={{ fontWeight: 'bold', color: COLORS.primary }}>
                               ₺{stock.unit_price.toFixed(2)}
                             </div>
                           </div>
@@ -360,7 +360,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                               marginTop: '8px',
                               padding: '4px 8px',
                               fontSize: '11px',
-                              backgroundColor: COLORS.success.DEFAULT,
+                              backgroundColor: COLORS.success,
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
@@ -386,11 +386,11 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                     backgroundColor: primaryRgba(0.08),
                     padding: 16,
                     borderRadius: RADIUS.md,
-                    border: `2px solid ${COLORS.primary.DEFAULT}`,
+                    border: `2px solid ${COLORS.primary}`,
                     marginBottom: 24
                   }}
                 >
-                  <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 14, color: COLORS.primary.DEFAULT, marginBottom: 12 }}>
+                  <div style={{ fontWeight: TYPOGRAPHY.fontWeight.bold, fontSize: 14, color: COLORS.primary, marginBottom: 12 }}>
                     [OK] Seçili Stok: {selectedStock.stock_code}
                   </div>
 
@@ -448,7 +448,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                     }}
                   >
                     <span style={{ fontSize: 13, color: COLORS.muted }}>Toplam Tutar:</span>
-                    <span style={{ fontSize: 16, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary.DEFAULT }}>
+                    <span style={{ fontSize: 16, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary }}>
                       ₺{(stockQuantity * stockUnitPrice).toFixed(2)}
                     </span>
                   </div>
@@ -458,7 +458,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                     style={{
                       width: '100%',
                       padding: 10,
-                      backgroundColor: COLORS.success.DEFAULT,
+                      backgroundColor: COLORS.success,
                       color: 'white',
                       border: 'none',
                       borderRadius: RADIUS.md,
@@ -523,10 +523,10 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                         style={{
                           padding: '14px',
                           border: selectedCustomer?.customer_id === customer.customer_id 
-                            ? `2px solid ${COLORS.success.DEFAULT}` 
+                            ? `2px solid ${COLORS.success}` 
                             : `1px solid ${COLORS.border}`,
                           borderRadius: '6px',
-                          backgroundColor: selectedCustomer?.customer_id === customer.customer_id ? COLORS.success.light : COLORS.bg.main,
+                          backgroundColor: selectedCustomer?.customer_id === customer.customer_id ? COLORS.success : COLORS.bg.main,
                           cursor: 'pointer',
                           transition: 'all 0.2s',
                           display: 'flex',
@@ -545,7 +545,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                         }}
                       >
                         <div>
-                          <div style={{ fontWeight: 'bold', color: COLORS.primary.DEFAULT, fontSize: '13px', marginBottom: '4px' }}>
+                          <div style={{ fontWeight: 'bold', color: COLORS.primary, fontSize: '13px', marginBottom: '4px' }}>
                             {customer.customer_name}
                           </div>
                           <div style={{ display: 'flex', gap: '16px', fontSize: '11px', color: COLORS.muted }}>
@@ -563,7 +563,7 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
                             style={{
                               padding: '6px 12px',
                               fontSize: '12px',
-                              backgroundColor: COLORS.success.DEFAULT,
+                              backgroundColor: COLORS.success,
                               color: 'white',
                               border: 'none',
                               borderRadius: '4px',
@@ -624,3 +624,4 @@ export const StockAndCustomerDefinitionModal: React.FC<Props> = ({
 };
 
 export default StockAndCustomerDefinitionModal;
+

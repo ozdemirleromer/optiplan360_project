@@ -78,7 +78,7 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
       {/* Pipeline Stats */}
       <Card title="Pipeline Değeri" subtitle="Toplam fırsat değeri">
         <div style={{ padding: "12px 0" }}>
-          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.primary.DEFAULT, marginBottom: "8px" }}>
+          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.primary, marginBottom: "8px" }}>
             ₺{pipelineValue.toLocaleString("tr-TR")}
           </div>
           <div style={{ fontSize: 13, color: COLORS.muted }}>
@@ -93,7 +93,7 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
       {/* Accounts */}
       <Card title="Cari Hesaplar" subtitle="Aktif müşteri sayısı">
         <div style={{ padding: "12px 0" }}>
-          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.success.DEFAULT, marginBottom: "8px" }}>
+          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.success, marginBottom: "8px" }}>
             {activeAccounts}
           </div>
           <div style={{ fontSize: 13, color: COLORS.muted }}>
@@ -105,7 +105,7 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
       {/* Opportunities */}
       <Card title="Fırsatlar" subtitle="Açık fırsat sayısı">
         <div style={{ padding: "12px 0" }}>
-          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.warning.DEFAULT, marginBottom: "8px" }}>
+          <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.warning, marginBottom: "8px" }}>
             {stats?.totalOpportunities || 0}
           </div>
           <div style={{ fontSize: 13, color: COLORS.muted }}>Pipeline'da</div>
@@ -150,7 +150,7 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
                 <div style={{ fontSize: 11, fontWeight: 600, color: COLORS.muted, marginBottom: "4px" }}>
                   {stage.replace("_", " ")}
                 </div>
-                <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary.DEFAULT }}>{count}</div>
+                <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary }}>{count}</div>
               </div>
             ))}
           </div>
@@ -161,7 +161,12 @@ export function DashboardTab({ stats, health }: { stats: CRMStats | null; health
 }
 
 // ── Accounts Tab ──
-export function AccountsTab() {
+interface AccountsTabProps {
+  openCreateOnMount?: boolean;
+  onCreateOpenHandled?: () => void;
+}
+
+export function AccountsTab({ openCreateOnMount = false, onCreateOpenHandled }: AccountsTabProps = {}) {
   const [accounts, setAccounts] = useState<CRMAccount[]>([]);
   const [selectedAccount, setSelectedAccount] = useState<CRMAccount | null>(null);
   const [contacts, setContacts] = useState<CRMContact[]>([]);
@@ -201,7 +206,17 @@ export function AccountsTab() {
     void loadAccounts();
   }, []);
 
-  async function loadAccounts() {
+  useEffect(() => {
+    if (!openCreateOnMount) {
+      return;
+    }
+
+    setCreateError(null);
+    setCreateOpen(true);
+    onCreateOpenHandled?.();
+  }, [openCreateOnMount, onCreateOpenHandled]);
+
+  async function loadAccounts() {
     try {
       setLoading(true);
       const data = await crmService.listAccounts({ is_active: true });
@@ -327,7 +342,7 @@ export function AccountsTab() {
                       style={{
                         fontSize: 13,
                         fontWeight: 600,
-                        color: account.balance > 0 ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT,
+                        color: account.balance > 0 ? COLORS.success : COLORS.danger,
                         marginTop: "6px",
                       }}
                     >
@@ -439,7 +454,7 @@ export function AccountsTab() {
         >
           {/* Sol Kolon */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary.DEFAULT, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
+            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
               Firma ve İletişim Bilgileri
             </h4>
             <Input
@@ -472,7 +487,7 @@ export function AccountsTab() {
 
           {/* Sağ Kolon */}
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary.DEFAULT, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
+            <h4 style={{ margin: 0, fontSize: 14, fontWeight: 600, color: COLORS.primary, borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
               Mali ve Bölgesel Bilgiler
             </h4>
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
@@ -527,7 +542,7 @@ export function AccountsTab() {
             </div>
           </div>
 
-          {createError && <div style={{ gridColumn: "1 / -1", color: COLORS.error.DEFAULT, fontSize: 13 }}>{createError}</div>}
+          {createError && <div style={{ gridColumn: "1 / -1", color: COLORS.danger, fontSize: 13 }}>{createError}</div>}
 
           {/* Alt Kısım - Butonlar */}
           <div style={{ gridColumn: "1 / -1", display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "12px", paddingTop: "16px", borderTop: `1px solid ${COLORS.border}` }}>
@@ -600,11 +615,11 @@ export function OpportunitiesTab() {
 
   const stageColors: Record<string, string> = {
     PROSPECTING: COLORS.muted,
-    QUALIFICATION: COLORS.info.DEFAULT,
-    PROPOSAL: COLORS.warning.DEFAULT,
-    NEGOTIATION: COLORS.accent.DEFAULT,
-    CLOSED_WON: COLORS.success.DEFAULT,
-    CLOSED_LOST: COLORS.error.DEFAULT
+    QUALIFICATION: COLORS.primary,
+    PROPOSAL: COLORS.warning,
+    NEGOTIATION: COLORS.accent,
+    CLOSED_WON: COLORS.success,
+    CLOSED_LOST: COLORS.danger
   };
 
   if (loading) return <Card title="Fırsat Pipeline"><div style={{ padding: 20 }}>Yükleniyor...</div></Card>;
@@ -634,7 +649,7 @@ export function OpportunitiesTab() {
                   </div>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ fontWeight: 700, color: COLORS.primary.DEFAULT }}>₺{(opp.amount ?? 0).toLocaleString()}</div>
+                      <div style={{ fontWeight: 700, color: COLORS.primary }}>₺{(opp.amount ?? 0).toLocaleString()}</div>
                       <Badge style={{ background: stageColors[opp.stage] }}>{opp.stage}</Badge>
                     </div>
                     {opp.stage !== "CLOSED_WON" && opp.stage !== "CLOSED_LOST" && (
@@ -743,10 +758,10 @@ export function QuotesTab() {
 
   const statusColors: Record<string, string> = {
     DRAFT: COLORS.muted,
-    SENT: COLORS.info.DEFAULT,
-    ACCEPTED: COLORS.success.DEFAULT,
-    REJECTED: COLORS.error.DEFAULT,
-    EXPIRED: COLORS.warning.DEFAULT
+    SENT: COLORS.primary,
+    ACCEPTED: COLORS.success,
+    REJECTED: COLORS.danger,
+    EXPIRED: COLORS.warning
   };
 
   if (loading) return <Card title="Teklifler"><div style={{ padding: 20 }}>Yükleniyor...</div></Card>;
@@ -775,7 +790,7 @@ export function QuotesTab() {
                     <div style={{ fontSize: 12, color: COLORS.muted }}>{quote.accountId}</div>
                   </div>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontWeight: 700, color: COLORS.primary.DEFAULT }}>₺{(quote.total ?? 0).toLocaleString()}</div>
+                    <div style={{ fontWeight: 700, color: COLORS.primary }}>₺{(quote.total ?? 0).toLocaleString()}</div>
                     <Badge style={{ background: statusColors[quote.status] }}>{quote.status}</Badge>
                   </div>
                 </div>
@@ -915,11 +930,11 @@ export function ErrorsTab() {
           {errors.map((err, idx) => (
             <div key={idx} style={{
               padding: "16px",
-              border: `1px solid ${COLORS.error.DEFAULT}30`,
+              border: `1px solid ${COLORS.danger}30`,
               borderRadius: RADIUS.md,
-              background: `${COLORS.error.DEFAULT}08`
+              background: `${COLORS.danger}08`
             }}>
-              <div style={{ fontWeight: 600, color: COLORS.error.DEFAULT }}>{err.errorCode}</div>
+              <div style={{ fontWeight: 600, color: COLORS.danger }}>{err.errorCode}</div>
               <div style={{ fontSize: 13, color: COLORS.text, marginTop: 4 }}>{err.errorMessage}</div>
               <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 8 }}>
                 {new Date(err.createdAt).toLocaleString('tr-TR')}
@@ -987,3 +1002,4 @@ export function AuditTab() {
     </Card>
   );
 }
+

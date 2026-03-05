@@ -149,7 +149,7 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
                          {/* Model */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   Varsayılan Model <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   Varsayılan Model <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="text"
@@ -170,7 +170,7 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
                          {/* API Key */}
                          <div>
                               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-                                   API Anahtarı <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                                   API Anahtarı <span style={{ color: COLORS.danger }}>*</span>
                               </label>
                               <input
                                    type="password"
@@ -240,11 +240,11 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
                                    style={{
                                         padding: 12,
                                         borderRadius: RADIUS.md,
-                                        background: `${COLORS.error.DEFAULT}15`,
-                                        border: `1px solid ${COLORS.error.DEFAULT}30`,
+                                        background: `${COLORS.danger}15`,
+                                        border: `1px solid ${COLORS.danger}30`,
                                         fontSize: 13,
                                         fontWeight: 500,
-                                        color: COLORS.error.DEFAULT,
+                                        color: COLORS.danger,
                                    }}
                               >
                                    [HATA] {errorMsg}
@@ -270,3 +270,4 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
           </div>
      );
 }
+
