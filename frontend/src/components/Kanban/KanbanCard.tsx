@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 
 
 
@@ -114,7 +114,7 @@ export const KanbanCard = ({ order, onEdit, onDragStart, isDragging }: KanbanCar
 
 
 
-        border: `1px solid ${hov ? COLORS.border2 : COLORS.border}`,
+        border: `1px solid ${hov ? COLORS.border : COLORS.border}`,
 
 
 
@@ -166,7 +166,7 @@ export const KanbanCard = ({ order, onEdit, onDragStart, isDragging }: KanbanCar
 
 
 
-            color: COLORS.primary[500],
+            color: COLORS.primary,
 
 
 
@@ -214,7 +214,7 @@ export const KanbanCard = ({ order, onEdit, onDragStart, isDragging }: KanbanCar
 
 
 
-        <span style={{ fontSize: 10, color: COLORS.gray[400] }}>{order.upd}</span>
+        <span style={{ fontSize: 10, color: COLORS.muted }}>{order.upd}</span>
 
 
 
@@ -254,7 +254,7 @@ export const KanbanCard = ({ order, onEdit, onDragStart, isDragging }: KanbanCar
 
 
 
-            color: COLORS.gray[400],
+            color: COLORS.muted,
 
 
 
@@ -299,6 +299,8 @@ export const KanbanCard = ({ order, onEdit, onDragStart, isDragging }: KanbanCar
 
 
 };
+
+
 
 
 

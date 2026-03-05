@@ -407,12 +407,12 @@ export const ordersService = {
       const r = n as Record<string, unknown>;
       return {
         id: Number(r.id),
-        orderId: Number(r.order_id ?? r.orderId),
-        userId: Number(r.user_id ?? r.userId),
-        noteText: String(r.note_text ?? r.noteText ?? ""),
-        createdByUsername: r.created_by_username != null ? String(r.created_by_username) : undefined,
-        createdAt: r.created_at != null ? String(r.created_at) : undefined,
-        updatedAt: r.updated_at != null ? String(r.updated_at) : undefined,
+        orderId: Number(r.orderId ?? r.id),
+        userId: Number(r.userId ?? 0),
+        noteText: String(r.noteText ?? ""),
+        createdByUsername: r.createdByUsername != null ? String(r.createdByUsername) : undefined,
+        createdAt: r.createdAt != null ? String(r.createdAt) : undefined,
+        updatedAt: r.updatedAt != null ? String(r.updatedAt) : undefined,
       } satisfies OrderNote;
     });
   },
@@ -424,12 +424,12 @@ export const ordersService = {
     });
     return {
       id: Number(r.id),
-      orderId: Number(r.order_id ?? r.orderId),
-      userId: Number(r.user_id ?? r.userId),
-      noteText: String(r.note_text ?? r.noteText ?? ""),
-      createdByUsername: r.created_by_username != null ? String(r.created_by_username) : undefined,
-      createdAt: r.created_at != null ? String(r.created_at) : undefined,
-      updatedAt: r.updated_at != null ? String(r.updated_at) : undefined,
+      orderId: Number(r.orderId ?? r.id),
+      userId: Number(r.userId ?? 0),
+      noteText: String(r.noteText ?? ""),
+      createdByUsername: r.createdByUsername != null ? String(r.createdByUsername) : undefined,
+      createdAt: r.createdAt != null ? String(r.createdAt) : undefined,
+      updatedAt: r.updatedAt != null ? String(r.updatedAt) : undefined,
     };
   },
 

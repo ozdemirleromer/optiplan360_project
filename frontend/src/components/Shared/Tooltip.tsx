@@ -28,7 +28,7 @@ export const Tooltip = ({ text, children }: TooltipProps) => {
             fontSize: 11,
             whiteSpace: "nowrap",
             background: "rgba(9,9,11,.92)",
-            border: `1px solid ${COLORS.border2}`,
+            border: `1px solid ${COLORS.border}`,
             color: COLORS.text,
             boxShadow: SHADOWS.md,
             zIndex: Z_INDEX.tooltip,
@@ -64,3 +64,4 @@ export const Tooltip = ({ text, children }: TooltipProps) => {
     </span>
   );
 };
+

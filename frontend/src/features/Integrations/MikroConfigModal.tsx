@@ -66,7 +66,7 @@ const labelStyle: React.CSSProperties = {
 
 const errorTextStyle: React.CSSProperties = {
   fontSize: 11,
-  color: COLORS.error.DEFAULT,
+  color: COLORS.danger,
   marginTop: 4,
 };
 
@@ -218,10 +218,10 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{
               width: 40, height: 40, borderRadius: RADIUS.md,
-              background: `${COLORS.primary[500]}15`,
+              background: `${COLORS.primary}15`,
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <Database size={20} color={COLORS.primary[500]} aria-hidden />
+              <Database size={20} color={COLORS.primary} aria-hidden />
             </div>
             <div>
               <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: COLORS.text }}>
@@ -258,12 +258,12 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
           display: "flex", alignItems: "center", gap: 8,
           marginBottom: 20, padding: "10px 14px",
           borderRadius: RADIUS.md,
-          background: config.configured ? `${COLORS.success.DEFAULT}10` : `${COLORS.warning.DEFAULT}10`,
-          border: `1px solid ${config.configured ? COLORS.success.DEFAULT : COLORS.warning.DEFAULT}25`,
+          background: config.configured ? `${COLORS.success}10` : `${COLORS.warning}10`,
+          border: `1px solid ${config.configured ? COLORS.success : COLORS.warning}25`,
         }}>
           <div style={{
             width: 8, height: 8, borderRadius: "50%",
-            background: loading ? COLORS.muted : (config.configured ? COLORS.success.DEFAULT : COLORS.warning.DEFAULT),
+            background: loading ? COLORS.muted : (config.configured ? COLORS.success : COLORS.warning),
           }} />
           <span style={{ fontSize: 13, fontWeight: 500, color: COLORS.text }}>
             {loading
@@ -318,7 +318,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   {/* Host */}
                   <div>
                     <label htmlFor="mikro-host" style={labelStyle}>
-                      SQL Server Adresi (IP / Hostname) <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                      SQL Server Adresi (IP / Hostname) <span style={{ color: COLORS.danger }}>*</span>
                     </label>
                     <input
                       id="mikro-host"
@@ -327,7 +327,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                       placeholder="192.168.1.100 veya mikro-server.local"
                       style={{
                         ...inputStyle,
-                        borderColor: touched.has("host") && errors.host ? COLORS.error.DEFAULT : COLORS.border,
+                        borderColor: touched.has("host") && errors.host ? COLORS.danger : COLORS.border,
                       }}
                     />
                     {touched.has("host") && errors.host && <div style={errorTextStyle}>{errors.host}</div>}
@@ -344,7 +344,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         onChange={(e) => handleChange("port", Number(e.target.value))}
                         style={{
                           ...inputStyle,
-                          borderColor: touched.has("port") && errors.port ? COLORS.error.DEFAULT : COLORS.border,
+                          borderColor: touched.has("port") && errors.port ? COLORS.danger : COLORS.border,
                         }}
                       />
                       {touched.has("port") && errors.port && <div style={errorTextStyle}>{errors.port}</div>}
@@ -369,7 +369,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   {/* Database */}
                   <div>
                     <label htmlFor="mikro-database" style={labelStyle}>
-                      Veritabanı Adı <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                      Veritabanı Adı <span style={{ color: COLORS.danger }}>*</span>
                     </label>
                     <input
                       id="mikro-database"
@@ -378,7 +378,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                       placeholder="MikroDB_V16"
                       style={{
                         ...inputStyle,
-                        borderColor: touched.has("database") && errors.database ? COLORS.error.DEFAULT : COLORS.border,
+                        borderColor: touched.has("database") && errors.database ? COLORS.danger : COLORS.border,
                       }}
                     />
                     {touched.has("database") && errors.database && <div style={errorTextStyle}>{errors.database}</div>}
@@ -388,7 +388,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                     <div>
                       <label htmlFor="mikro-username" style={labelStyle}>
-                        Kullanıcı Adı <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                        Kullanıcı Adı <span style={{ color: COLORS.danger }}>*</span>
                       </label>
                       <input
                         id="mikro-username"
@@ -398,14 +398,14 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         autoComplete="username"
                         style={{
                           ...inputStyle,
-                          borderColor: touched.has("username") && errors.username ? COLORS.error.DEFAULT : COLORS.border,
+                          borderColor: touched.has("username") && errors.username ? COLORS.danger : COLORS.border,
                         }}
                       />
                       {touched.has("username") && errors.username && <div style={errorTextStyle}>{errors.username}</div>}
                     </div>
                     <div>
                       <label htmlFor="mikro-password" style={labelStyle}>
-                        Şifre <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+                        Şifre <span style={{ color: COLORS.danger }}>*</span>
                       </label>
                       <input
                         id="mikro-password"
@@ -417,7 +417,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         style={{
                           ...inputStyle,
                           borderColor: touched.has("password") && errors.password && !isPasswordOptional
-                            ? COLORS.error.DEFAULT : COLORS.border,
+                            ? COLORS.danger : COLORS.border,
                         }}
                       />
                       {config.configured && (
@@ -461,7 +461,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         cursor: "pointer",
                         fontSize: 13,
                         fontWeight: 500,
-                        background: config.encrypt ? COLORS.success.DEFAULT : COLORS.gray[400],
+                        background: config.encrypt ? COLORS.success : COLORS.muted,
                         color: "white",
                         minWidth: 60,
                         minHeight: 44,
@@ -500,7 +500,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         cursor: "pointer",
                         fontSize: 13,
                         fontWeight: 500,
-                        background: config.trustServerCertificate ? COLORS.warning.DEFAULT : COLORS.gray[400],
+                        background: config.trustServerCertificate ? COLORS.warning : COLORS.muted,
                         color: "white",
                         minWidth: 60,
                         minHeight: 44,
@@ -514,8 +514,8 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   <div style={{
                     padding: "12px 14px",
                     borderRadius: RADIUS.md,
-                    background: `${COLORS.info.DEFAULT}08`,
-                    border: `1px solid ${COLORS.info.DEFAULT}20`,
+                    background: `${COLORS.primary}08`,
+                    border: `1px solid ${COLORS.primary}20`,
                     fontSize: 12,
                     color: COLORS.muted,
                     lineHeight: 1.6,
@@ -546,7 +546,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                       style={{
                         ...inputStyle,
                         maxWidth: 160,
-                        borderColor: touched.has("timeoutSeconds") && errors.timeoutSeconds ? COLORS.error.DEFAULT : COLORS.border,
+                        borderColor: touched.has("timeoutSeconds") && errors.timeoutSeconds ? COLORS.danger : COLORS.border,
                       }}
                     />
                     {touched.has("timeoutSeconds") && errors.timeoutSeconds && (
@@ -587,8 +587,8 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   <div style={{
                     padding: "12px 14px",
                     borderRadius: RADIUS.md,
-                    background: `${COLORS.info.DEFAULT}08`,
-                    border: `1px solid ${COLORS.info.DEFAULT}20`,
+                    background: `${COLORS.primary}08`,
+                    border: `1px solid ${COLORS.primary}20`,
                     fontSize: 12,
                     color: COLORS.muted,
                     lineHeight: 1.6,
@@ -606,20 +606,20 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                   style={{
                     padding: "12px 14px",
                     borderRadius: RADIUS.md,
-                    background: testResult.success ? `${COLORS.success.DEFAULT}10` : `${COLORS.error.DEFAULT}10`,
-                    border: `1px solid ${testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT}25`,
+                    background: testResult.success ? `${COLORS.success}10` : `${COLORS.danger}10`,
+                    border: `1px solid ${testResult.success ? COLORS.success : COLORS.danger}25`,
                     display: "flex",
                     alignItems: "center",
                     gap: 10,
                   }}
                 >
                   {testResult.success
-                    ? <CheckCircle size={18} color={COLORS.success.DEFAULT} aria-hidden />
-                    : <AlertCircle size={18} color={COLORS.error.DEFAULT} aria-hidden />}
+                    ? <CheckCircle size={18} color={COLORS.success} aria-hidden />
+                    : <AlertCircle size={18} color={COLORS.danger} aria-hidden />}
                   <div>
                     <div style={{
                       fontSize: 13, fontWeight: 600,
-                      color: testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                      color: testResult.success ? COLORS.success : COLORS.danger,
                     }}>
                       {testResult.success ? "Bağlantı Başarılı" : "Bağlantı Başarısız"}
                     </div>
@@ -678,3 +678,5 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
     </div>
   );
 }
+
+

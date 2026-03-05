@@ -102,17 +102,17 @@ export function AuditRecordsPage() {
   const getOperationColor = (op: string): string => {
     switch (op) {
       case "CREATE":
-        return COLORS.success.DEFAULT;
+        return COLORS.success;
       case "UPDATE":
-        return COLORS.warning.DEFAULT;
+        return COLORS.warning;
       case "DELETE":
-        return COLORS.error.DEFAULT;
+        return COLORS.danger;
       case "LOGIN":
         return "#06b6d4";
       case "EXPORT":
         return "#06b6d4";
       default:
-        return COLORS.gray[400];
+        return COLORS.muted;
     }
   };
 
@@ -150,34 +150,34 @@ export function AuditRecordsPage() {
             </Card>
             <Card
               style={{
-                background: `linear-gradient(135deg, ${COLORS.success.DEFAULT}22, ${COLORS.success.DEFAULT}11)`,
-                borderLeft: `4px solid ${COLORS.success.DEFAULT}`,
+                background: `linear-gradient(135deg, ${COLORS.success}22, ${COLORS.success}11)`,
+                borderLeft: `4px solid ${COLORS.success}`,
               }}
             >
               <div style={{ fontSize: 12, color: COLORS.muted }}>Oluşturma</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success.DEFAULT }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success }}>
                 {stats.byOperation["CREATE"] || 0}
               </div>
             </Card>
             <Card
               style={{
-                background: `linear-gradient(135deg, ${COLORS.warning.DEFAULT}22, ${COLORS.warning.DEFAULT}11)`,
-                borderLeft: `4px solid ${COLORS.warning.DEFAULT}`,
+                background: `linear-gradient(135deg, ${COLORS.warning}22, ${COLORS.warning}11)`,
+                borderLeft: `4px solid ${COLORS.warning}`,
               }}
             >
               <div style={{ fontSize: 12, color: COLORS.muted }}>Güncelleme</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning.DEFAULT }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning }}>
                 {stats.byOperation["UPDATE"] || 0}
               </div>
             </Card>
             <Card
               style={{
-                background: `linear-gradient(135deg, ${COLORS.error.DEFAULT}22, ${COLORS.error.DEFAULT}11)`,
-                borderLeft: `4px solid ${COLORS.error.DEFAULT}`,
+                background: `linear-gradient(135deg, ${COLORS.danger}22, ${COLORS.danger}11)`,
+                borderLeft: `4px solid ${COLORS.danger}`,
               }}
             >
               <div style={{ fontSize: 12, color: COLORS.muted }}>Silme</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.error.DEFAULT }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.danger }}>
                 {stats.byOperation["DELETE"] || 0}
               </div>
             </Card>
@@ -270,8 +270,8 @@ export function AuditRecordsPage() {
                 setFilter({ entity_type: "", operation: "", user_id: "", entity_id: "", date_from: "", date_to: "" });
               }}
               style={{
-                background: COLORS.gray[200],
-                color: COLORS.gray[600],
+                background: COLORS.muted,
+                color: COLORS.muted,
                 border: "none",
                 padding: "8px 16px",
                 borderRadius: 4,
@@ -286,8 +286,8 @@ export function AuditRecordsPage() {
 
         {/* Error Display */}
         {error && (
-          <Card style={{ background: `${COLORS.error.DEFAULT}15`, borderLeft: `4px solid ${COLORS.error.DEFAULT}` }}>
-            <div style={{ color: COLORS.error.DEFAULT, fontSize: 13 }}>
+          <Card style={{ background: `${COLORS.danger}15`, borderLeft: `4px solid ${COLORS.danger}` }}>
+            <div style={{ color: COLORS.danger, fontSize: 13 }}>
               <strong>Hata:</strong> {error}
             </div>
           </Card>
@@ -354,10 +354,10 @@ export function AuditRecordsPage() {
                         <div style={{ fontSize: 10, color: COLORS.muted }}>{r.entityId}</div>
                       </td>
                       <td style={{ padding: 10, fontSize: 11, color: COLORS.muted }}>{r.fieldName || "—"}</td>
-                      <td style={{ padding: 10, fontSize: 11, color: COLORS.gray[400], maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <td style={{ padding: 10, fontSize: 11, color: COLORS.muted, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {r.oldValue || "—"}
                       </td>
-                      <td style={{ padding: 10, fontSize: 11, color: COLORS.gray[400], maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      <td style={{ padding: 10, fontSize: 11, color: COLORS.muted, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                         {r.newValue || "—"}
                       </td>
                       <td style={{ padding: 10, fontSize: 10, color: COLORS.muted }}>
@@ -370,7 +370,7 @@ export function AuditRecordsPage() {
                             width: 8,
                             height: 8,
                             borderRadius: "50%",
-                            background: r.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                            background: r.success ? COLORS.success : COLORS.danger,
                           }}
                           title={r.success ? "Başarılı" : r.errorMessage || "Başarısız"}
                         />
@@ -397,8 +397,8 @@ export function AuditRecordsPage() {
                 }
                 disabled={pagination.offset === 0}
                 style={{
-                  background: pagination.offset === 0 ? COLORS.gray[300] : COLORS.gray[200],
-                  color: pagination.offset === 0 ? COLORS.gray[400] : COLORS.gray[700],
+                  background: pagination.offset === 0 ? COLORS.muted : COLORS.muted,
+                  color: pagination.offset === 0 ? COLORS.muted : COLORS.muted,
                   border: "none",
                   padding: "6px 12px",
                   borderRadius: 4,
@@ -417,8 +417,8 @@ export function AuditRecordsPage() {
                 }
                 disabled={filteredRecords.length < pagination.limit}
                 style={{
-                  background: filteredRecords.length < pagination.limit ? COLORS.gray[300] : COLORS.gray[200],
-                  color: filteredRecords.length < pagination.limit ? COLORS.gray[400] : COLORS.gray[700],
+                  background: filteredRecords.length < pagination.limit ? COLORS.muted : COLORS.muted,
+                  color: filteredRecords.length < pagination.limit ? COLORS.muted : COLORS.muted,
                   border: "none",
                   padding: "6px 12px",
                   borderRadius: 4,
@@ -477,10 +477,10 @@ export function AuditRecordsPage() {
                   <div>
                     <div style={{ fontSize: 10, color: COLORS.muted }}>Alan: {selectedRecord.fieldName}</div>
                     <div style={{ fontSize: 12, marginTop: 4 }}>
-                      <strong style={{ color: COLORS.error.DEFAULT }}>Eski:</strong> {selectedRecord.oldValue || "—"}
+                      <strong style={{ color: COLORS.danger }}>Eski:</strong> {selectedRecord.oldValue || "—"}
                     </div>
                     <div style={{ fontSize: 12, marginTop: 2 }}>
-                      <strong style={{ color: COLORS.success.DEFAULT }}>Yeni:</strong> {selectedRecord.newValue || "—"}
+                      <strong style={{ color: COLORS.success }}>Yeni:</strong> {selectedRecord.newValue || "—"}
                     </div>
                   </div>
                 </div>
@@ -502,7 +502,7 @@ export function AuditRecordsPage() {
                     <div
                       style={{
                         fontSize: 12,
-                        color: selectedRecord.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                        color: selectedRecord.success ? COLORS.success : COLORS.danger,
                         fontWeight: 600,
                       }}
                     >
@@ -518,3 +518,4 @@ export function AuditRecordsPage() {
     </div>
   );
 }
+

@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OptiPlan 360 - Sipariş ve Optimizasyon Yönetim Paneli</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            overflow-x: hidden;
+        }
+
+        /* Top Navigation - 64px */
+        .top-nav {
+            background: #252525;
+            border-bottom: 2px solid #333;
+            height: 64px;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00bcd4;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            font-size: 14px;
+        }
+
+        .nav-menu li {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .nav-menu li:hover {
+            background: #333;
+        }
+
+        .nav-menu li.active {
+            background: #00bcd4;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        /* Action Bar - 48px */
+        .action-bar {
+            background: #2a2a2a;
+            height: 48px;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #333;
+        }
+
+        .action-btn {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover {
+            background: #404040;
+            border-color: #00bcd4;
+        }
+
+        .action-btn.primary {
+            background: #00bcd4;
+            border-color: #00bcd4;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .action-btn.primary:hover {
+            background: #00a0b8;
+        }
+
+        /* Project Info Bar - 45-50px */
+        .project-bar {
+            background: #2d2d2d;
+            height: 48px;
+            padding: 0 2rem;
+            display: flex;
+            align-items: center;
+            gap: 3rem;
+            border-bottom: 1px solid #333;
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .project-label {
+            font-size: 11px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .project-value {
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .project-plaka {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-left: auto;
+        }
+
+        .plaka-value {
+            font-size: 18px;
+            font-weight: 700;
+            color: #00bcd4;
+        }
+
+        /* Cards Layout - 320px card, 20px gutter */
+        .cards-container {
+            padding: 20px 32px;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(450px, 1fr));
+            gap: 20px;
+            background: #1e1e1e;
+        }
+
+        .card {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 320px;
+        }
+
+        .card-header {
+            font-size: 15px;
+            font-weight: 700;
+            color: #00bcd4;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #333;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .form-input,
+        .form-select {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            padding: 8px 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            height: 36px;
+            transition: border-color 0.2s;
+        }
+
+        textarea.form-input {
+            height: auto;
+            min-height: 70px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #00bcd4;
+        }
+
+        .form-select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 8px center;
+            background-size: 16px;
+            padding-right: 32px;
+        }
+
+        .form-select option {
+            background: #252525;
+            color: #e0e0e0;
+        }
+
+        /* Dropdown Options Visible */
+        .dropdown-visible {
+            background: #1a1a1a;
+            border: 1px solid #00bcd4;
+            border-radius: 4px;
+            margin-top: 6px;
+            max-height: 140px;
+            overflow-y: auto;
+        }
+
+        .dropdown-option {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #333;
+            transition: background 0.2s;
+            font-size: 13px;
+        }
+
+        .dropdown-option:hover {
+            background: #333;
+        }
+
+        .dropdown-option:last-child {
+            border-bottom: none;
+        }
+
+        /* Status Badge */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.new {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .status-badge.pending {
+            background: #f59e0b;
+            color: #fff;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid #333;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .info-value {
+            font-weight: 600;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .mini-map {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .export-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .export-btn {
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            height: 36px;
+            padding: 0 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+
+        .export-btn:hover {
+            background: #404040;
+            border-color: #10b981;
+        }
+
+        .chart-placeholder {
+            background: #1a1a1a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .grain-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* Table Section */
+        .table-section {
+            padding: 20px 32px;
+            background: #1e1e1e;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .table-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .add-row-btn {
+            background: #10b981;
+            color: #fff;
+            border: none;
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            transition: background 0.2s;
+        }
+
+        .add-row-btn:hover {
+            background: #0ea574;
+        }
+
+        .table-wrapper {
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #2d2d2d;
+        }
+
+        th {
+            padding: 12px 10px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #333;
+            height: 40px;
+        }
+
+        th:first-child {
+            width: 50px;
+            text-align: center;
+        }
+
+        /* Sütun genişlikleri - Standardize */
+        th:nth-child(2) { min-width: 250px; width: 250px; } /* MALZEME */
+        th:nth-child(3),
+        th:nth-child(4),
+        th:nth-child(5) { width: 90px; } /* EN, BOY, ADET */
+        th:nth-child(6) { width: 70px; } /* GRAIN */
+        th:nth-child(7) { width: 120px; } /* BİLGİ */
+        th:nth-child(8),
+        th:nth-child(9),
+        th:nth-child(10),
+        th:nth-child(11) { width: 70px; } /* UZUN-1 (U1), UZUN-2 (E1), KISA-1, KISA-2 */
+        th:nth-child(12),
+        th:nth-child(13) { width: 70px; } /* DELİK-1, DELİK-2 */
+        th:nth-child(14) { width: 100px; } /* DURUM */
+
+        tbody tr {
+            border-bottom: 1px solid #2f2f2f;
+            transition: background 0.2s;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #232323;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #282828;
+        }
+
+        tbody tr:hover {
+            background: #303030;
+        }
+
+        tbody tr.active {
+            border: 2px solid #00bcd4;
+            background: #2a3a42;
+        }
+
+        td {
+            padding: 8px 10px;
+            font-size: 13px;
+            color: #e0e0e0;
+            height: 40px;
+        }
+
+        td:first-child {
+            text-align: center;
+            font-weight: 700;
+            color: #00bcd4;
+        }
+
+        .cell-input {
+            background: transparent;
+            border: 1px solid transparent;
+            color: #e0e0e0;
+            padding: 8px 6px;
+            width: 100%;
+            border-radius: 3px;
+            font-size: 13px;
+            height: 36px;
+        }
+
+        .cell-input:focus {
+            outline: none;
+            border-color: #00bcd4;
+            background: #1a1a1a;
+            box-shadow: 0 0 0 1px rgba(33, 150, 243, 0.35);
+        }
+
+        .edge-label {
+            background: #333;
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            text-align: center;
+            min-width: 40px;
+        }
+
+        .grain-controls {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .grain-btn {
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .grain-btn:hover {
+            background: #404040;
+            border-color: #00bcd4;
+        }
+
+        .grain-btn.active {
+            background: #00bcd4;
+            border-color: #00bcd4;
+            color: #fff;
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+
+        td:last-child {
+            text-align: right;
+        }
+
+        .icon-btn {
+            background: #333;
+            border: 1px solid #444;
+            color: #e0e0e0;
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            font-size: 13px;
+        }
+
+        .icon-btn:hover {
+            background: #404040;
+            border-color: #f59e0b;
+        }
+
+        .icon-btn.delete:hover {
+            border-color: #ef4444;
+        }
+
+        /* Footer - 60px */
+        .footer {
+            background: #252525;
+            border-top: 2px solid #333;
+            height: 60px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .footer-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .footer-btn {
+            background: #333;
+            color: #e0e0e0;
+            border: 1px solid #444;
+            height: 45px;
+            padding: 0 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-btn:hover {
+            background: #404040;
+        }
+
+        .footer-btn.save {
+            background: #10b981;
+            border-color: #10b981;
+            color: #fff;
+            min-width: 180px;
+        }
+
+        .footer-btn.save:hover {
+            background: #0ea574;
+        }
+
+        .footer-btn.optimize {
+            background: #00bcd4;
+            border-color: #00bcd4;
+            color: #fff;
+            font-size: 15px;
+            padding: 0 32px;
+            min-width: 180px;
+            height: 45px;
+        }
+
+        .footer-btn.optimize:hover {
+            background: #00a0b8;
+        }
+
+        /* Quick Add Column */
+        .quick-add-column {
+            position: fixed;
+            left: 32px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #252525;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 12px 8px;
+        }
+
+        .quick-add-icon {
+            width: 40px;
+            height: 40px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+            color: #e0e0e0;
+        }
+
+        .quick-add-icon:hover {
+            background: #00bcd4;
+            border-color: #00bcd4;
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        /* Responsive adjustments for 1920x1080 base */
+        @media (max-width: 1600px) {
+            .cards-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-add-column {
+                left: 10px;
+            }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Bottom padding for fixed footer - 60px */
+        body {
+            padding-bottom: 60px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <div class="logo">OptiPlan 360</div>
+        <ul class="nav-menu">
+            <li>Dosya</li>
+            <li>Cari</li>
+            <li class="active">Sipariş</li>
+            <li>Raporlar</li>
+        </ul>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+        <button class="action-btn">➕ Yeni</button>
+        <button class="action-btn">🗑️ Sil</button>
+        <button class="action-btn">📋 Kopyala</button>
+        <button class="action-btn">✓ Doğrula</button>
+        <button class="action-btn primary">🚀 Optimizasyona Gönder</button>
+    </div>
+
+    <!-- Project Info Bar -->
+    <div class="project-bar">
+        <div class="project-info">
+            <span class="project-label">CARİ UNVAN</span>
+            <span class="project-value">Firma Adı | 5XXXXXXX</span>
+        </div>
+        <div class="project-info">
+            <span class="project-label">SİPARİŞ NO</span>
+            <span class="project-value">SIP-000088</span>
+        </div>
+        <div class="project-info">
+            <span class="project-label">TERMİN</span>
+            <span class="project-value">04.03.2026</span>
+            <span>📅</span>
+        </div>
+        <div class="project-plaka">
+            <span class="project-label">PLAKA BOYUTU</span>
+            <span class="plaka-value">2,100.00</span>
+            <span class="plaka-value">2,800.00</span>
+        </div>
+    </div>
+
+    <!-- Cards Container -->
+    <div class="cards-container">
+        <!-- Card 1: Müşteri Bilgileri -->
+        <div class="card">
+            <div class="card-header">Müşteri Bilgileri</div>
+            <div class="form-group">
+                <label class="form-label">Müşteri</label>
+                <input type="text" class="form-input" placeholder="Müşteri adı">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Müşteri Adı</label>
+                <input type="text" class="form-input" placeholder="Firma Adı">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Telefon</label>
+                <input type="tel" class="form-input" placeholder="+90 5xx xxx xx xx">
+            </div>
+            <div class="form-group">
+                <label class="form-label">E-Mail</label>
+                <input type="email" class="form-input" placeholder="email@example.com">
+            </div>
+        </div>
+
+        <!-- Card 2: Malzeme ve Ebat Seçici -->
+        <div class="card">
+            <div class="card-header">Malzeme ve Ebat Seçici</div>
+            <div class="form-group">
+                <label class="form-label">Malzeme</label>
+                <select class="form-select">
+                    <option>Belirtilmedi</option>
+                    <option>Suntalam - Yıldız Entegre Beyaz</option>
+                    <option>MDF</option>
+                    <option>Kontrplak</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Kalınlık</label>
+                <select class="form-select">
+                    <option>--</option>
+                    <option>3mm</option>
+                    <option>8mm</option>
+                    <option>18mm</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Plaka Ebatı</label>
+                <select class="form-select">
+                    <option>--</option>
+                    <option>3MM | 1700x2100 mm (Standard)</option>
+                    <option selected>4MM | 2100x2800 mm (Large)</option>
+                    <option>5MM | 2500x3000 mm (XLarge)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Öncelik</label>
+                <select class="form-select">
+                    <option>--</option>
+                    <option>Normal</option>
+                    <option>Yüksek</option>
+                    <option>Acil</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Grain (Damar)</label>
+                <div class="grain-icon">⟲</div>
+            </div>
+        </div>
+
+        <!-- Card 3: Sipariş Özeti -->
+        <div class="card">
+            <div class="card-header">Sipariş Özeti</div>
+            <div class="info-row">
+                <span class="info-label">Durum</span>
+                <span class="status-badge new">YENİ</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Parça</span>
+                <span class="info-value">1</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Alan</span>
+                <span class="info-value">0.00 m2</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Doğrulama</span>
+                <span class="status-badge pending">Doğrulama bekleniyor</span>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Operasyon Notu</label>
+                <textarea class="form-input" rows="3" placeholder="Yeni / Admin"></textarea>
+            </div>
+            <div class="mini-map">Parça Yerleşim Haritası</div>
+        </div>
+
+        <!-- Card 4: Dosya ve Çıktı -->
+        <div class="card">
+            <div class="card-header">Dosya ve Çıktı</div>
+            <div class="export-buttons">
+                <button class="export-btn">📊 İce Aktar</button>
+                <button class="export-btn">📄 Excel</button>
+                <button class="export-btn">📄 CSV</button>
+                <button class="export-btn">🖨️ Yazdır</button>
+                <button class="export-btn">📋 Sablon</button>
+            </div>
+            <div class="chart-placeholder">Fire Oranı Grafiği</div>
+        </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-section">
+        <div class="table-header">
+            <h2 class="table-title">Sipariş Satırları | Satır 1 | Boy Uyarısı: Yeni / Admin</h2>
+            <button class="add-row-btn">➕ Satır</button>
+        </div>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>MALZEME</th>
+                        <th>EN</th>
+                        <th>BOY</th>
+                        <th>ADET</th>
+                        <th>GRAIN</th>
+                        <th>BİLGİ</th>
+                        <th>UZUN-1</th>
+                        <th>UZUN-2</th>
+                        <th>KISA-1</th>
+                        <th>KISA-2</th>
+                        <th>DELİK-1</th>
+                        <th>DELİK-2</th>
+                        <th>DURUM</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="active">
+                        <td>1</td>
+                        <td>
+                            <input type="text" class="cell-input" value="Belirtilmedi">
+                        </td>
+                        <td>
+                            <input type="number" class="cell-input" value="100">
+                        </td>
+                        <td>
+                            <input type="number" class="cell-input" value="300">
+                        </td>
+                        <td>
+                            <input type="number" class="cell-input" value="8">
+                        </td>
+                        <td>
+                            <div class="grain-controls">
+                                <button class="grain-btn">↑↓</button>
+                                <button class="grain-btn active">⟲</button>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="text" class="cell-input" placeholder="-">
+                        </td>
+                        <td><span class="edge-label">U1</span></td>
+                        <td><span class="edge-label">U2</span></td>
+                        <td><span class="edge-label">K1</span></td>
+                        <td><span class="edge-label">K2</span></td>
+                        <td><input type="text" class="cell-input" placeholder="0"></td>
+                        <td><input type="text" class="cell-input" placeholder="0"></td>
+                        <td>
+                            <div class="action-icons">
+                                <button class="icon-btn">📋</button>
+                                <button class="icon-btn">🔄</button>
+                                <button class="icon-btn delete">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Additional empty rows can be added here -->
+                    <tr>
+                        <td>2</td>
+                        <td><input type="text" class="cell-input" placeholder="Belirtilmedi"></td>
+                        <td><input type="number" class="cell-input" placeholder="0"></td>
+                        <td><input type="number" class="cell-input" placeholder="0"></td>
+                        <td><input type="number" class="cell-input" placeholder="0"></td>
+                        <td>
+                            <div class="grain-controls">
+                                <button class="grain-btn">↑↓</button>
+                                <button class="grain-btn">⟲</button>
+                            </div>
+                        </td>
+                        <td><input type="text" class="cell-input" placeholder="-"></td>
+                        <td><span class="edge-label">U1</span></td>
+                        <td><span class="edge-label">U2</span></td>
+                        <td><span class="edge-label">K1</span></td>
+                        <td><span class="edge-label">K2</span></td>
+                        <td><input type="text" class="cell-input" placeholder="0"></td>
+                        <td><input type="text" class="cell-input" placeholder="0"></td>
+                        <td>
+                            <div class="action-icons">
+                                <button class="icon-btn">📋</button>
+                                <button class="icon-btn">🔄</button>
+                                <button class="icon-btn delete">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Quick Add Column (Left Side) -->
+    <div class="quick-add-column">
+        <button class="quick-add-icon" title="Standart Parça">A</button>
+        <button class="quick-add-icon" title="Sigma Parça">Σ</button>
+        <button class="quick-add-icon" title="Lambda Parça">Λ</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-left">
+            <button class="footer-btn">✓ Doğrula</button>
+        </div>
+        <div class="footer-right">
+            <button class="footer-btn save">💾 Kaydet</button>
+            <button class="footer-btn optimize">🚀 Optimizasyona Gönder</button>
+        </div>
+    </div>
+
+    <script>
+        // Interactive behaviors can be added here
+        document.querySelectorAll('.grain-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active from siblings
+                this.parentElement.querySelectorAll('.grain-btn').forEach(b => b.classList.remove('active'));
+                // Add active to clicked
+                this.classList.add('active');
+            });
+        });
+
+        // Add row functionality
+        document.querySelector('.add-row-btn').addEventListener('click', function() {
+            alert('Yeni satır ekleme özelliği aktif edilecek');
+        });
+
+        // Action buttons
+        document.querySelectorAll('.action-btn, .footer-btn, .export-btn').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                if (!this.textContent.includes('Satır') && !this.classList.contains('grain-btn')) {
+                    console.log('Buton tıklandı:', this.textContent.trim());
+                }
+            });
+        });
+    </script>
+</body>
+</html>

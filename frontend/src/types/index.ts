@@ -465,13 +465,18 @@ export interface ReceiptInvoice {
   notes: string | null;
 }
 
-export interface WorkerStatus {
-  circuitOpen: boolean;
-  consecutiveFailures: number;
-  maxConsecutiveFailures: number;
-  lastRunAt: string | null;
-  lastError: string | null;
-  engine: string;
+export interface WorkerStatus {
+  circuitState: "OPEN" | "CLOSED" | "HALF_OPEN";
+  circuitOpen: boolean;
+  consecutiveFailures: number;
+  maxConsecutiveFailures: number;
+  cooldownSeconds: number;
+  cooldownRemainingSeconds: number;
+  openedAt: string | null;
+  halfOpenProbeInProgress: boolean;
+  lastRunAt: string | null;
+  lastError: string | null;
+  engine: string;
   supportedEngines: string[];
   queueCount: number;
   runningCount: number;

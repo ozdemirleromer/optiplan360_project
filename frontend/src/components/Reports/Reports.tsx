@@ -51,7 +51,7 @@ export function Reports() {
       .map(([name, count]) => ({
         name,
         orders: count,
-        color: [COLORS.info.DEFAULT, COLORS.accent[400], COLORS.success.DEFAULT, COLORS.primary[500]][Object.keys(grouped).indexOf(name) % 4],
+        color: [COLORS.primary, COLORS.accent, COLORS.success, COLORS.primary][Object.keys(grouped).indexOf(name) % 4],
       }))
       .sort((a, b) => b.orders - a.orders)
       .slice(0, 3);
@@ -74,7 +74,7 @@ export function Reports() {
                 cursor: "pointer",
                 fontSize: 12,
                 background: dateRange === d.k ? primaryRgba(0.15) : "transparent",
-                color: dateRange === d.k ? COLORS.primary[500] : COLORS.muted,
+                color: dateRange === d.k ? COLORS.primary : COLORS.muted,
                 fontWeight: dateRange === d.k ? TYPOGRAPHY.fontWeight.semibold : TYPOGRAPHY.fontWeight.normal,
               }}
             >
@@ -105,10 +105,10 @@ export function Reports() {
 
       <div style={{ padding: 24, maxWidth: 1320, margin: "0 auto", display: "grid", gap: 20 }}>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: 16 }}>
-          <KPICard icon="SP" label="Toplam Sipariş" value={totalOrders} color={COLORS.primary[500]} sparkData={stats?.weeklyValues ?? []} />
-          <KPICard icon="SR" label="Ortalama Süre" value={orders.length > 0 ? `${(orders.length / 7).toFixed(1)}/gün` : "—"} color={COLORS.accent[400]} />
-          <KPICard icon="PR" label="Toplam Parça" value={totalParts} color={COLORS.info.DEFAULT} sparkData={stats?.weeklyValues ?? []} />
-          <KPICard icon="IP" label="İptal Oranı" value={`%${cancellationRate}`} color={COLORS.error.DEFAULT} />
+          <KPICard icon="SP" label="Toplam Sipariş" value={totalOrders} color={COLORS.primary} sparkData={stats?.weeklyValues ?? []} />
+          <KPICard icon="SR" label="Ortalama Süre" value={orders.length > 0 ? `${(orders.length / 7).toFixed(1)}/gün` : "—"} color={COLORS.accent} />
+          <KPICard icon="PR" label="Toplam Parça" value={totalParts} color={COLORS.primary} sparkData={stats?.weeklyValues ?? []} />
+          <KPICard icon="IP" label="İptal Oranı" value={`%${cancellationRate}`} color={COLORS.danger} />
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(360px,1fr))", gap: 16 }}>
@@ -141,7 +141,7 @@ export function Reports() {
                 const total = (stats.materialValues ?? []).reduce((a, b) => a + b, 0);
                 return stats.materialLabels.map((label, i) => {
                   const pct = total > 0 ? (((stats.materialValues?.[i] ?? 0) / total) * 100).toFixed(0) : "0";
-                  const colors = [COLORS.accent[400], COLORS.primary[500], COLORS.info.DEFAULT, COLORS.success.DEFAULT, COLORS.gray[400]];
+                  const colors = [COLORS.accent, COLORS.primary, COLORS.primary, COLORS.success, COLORS.muted];
                   return (
                     <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "8px 0", borderBottom: i < stats.materialLabels.length - 1 ? `1px solid ${COLORS.border}` : "none" }}>
                       <span style={{ width: 10, height: 10, borderRadius: 2, background: colors[i % colors.length], flexShrink: 0 }} />
@@ -160,3 +160,5 @@ export function Reports() {
     </div>
   );
 }
+
+

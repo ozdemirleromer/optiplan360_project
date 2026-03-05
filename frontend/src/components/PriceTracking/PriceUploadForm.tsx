@@ -118,7 +118,7 @@ export function PriceUploadForm({ uploading, onUpload }: PriceUploadFormProps) {
               fontWeight: TYPOGRAPHY.fontWeight.semibold,
             }}
           >
-            Tedarikçi <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+            Tedarikçi <span style={{ color: COLORS.danger }}>*</span>
           </label>
           <input
             id="supplier-input"
@@ -150,7 +150,7 @@ export function PriceUploadForm({ uploading, onUpload }: PriceUploadFormProps) {
           onDrop={handleDrop}
           onKeyDown={handleKeyDown}
           style={{
-            border: `1px dashed ${dragOver ? COLORS.primary.DEFAULT : COLORS.border}`,
+            border: `1px dashed ${dragOver ? COLORS.primary : COLORS.border}`,
             borderRadius: RADIUS.lg,
             minHeight: 120,
             display: "grid",
@@ -165,7 +165,7 @@ export function PriceUploadForm({ uploading, onUpload }: PriceUploadFormProps) {
           aria-label="Dosya yüklemek için tıklayın veya sürükleyip bırakın"
         >
           <div>
-            <FileUp size={24} color={COLORS.primary.DEFAULT} style={{ margin: "0 auto" }} />
+            <FileUp size={24} color={COLORS.primary} style={{ margin: "0 auto" }} />
             <div style={{ marginTop: 8, fontSize: 13, color: COLORS.text, fontWeight: 500 }}>
               Dosyayı buraya bırakın veya seçmek için tıklayın
             </div>
@@ -219,7 +219,7 @@ export function PriceUploadForm({ uploading, onUpload }: PriceUploadFormProps) {
         )}
 
         {validationError && (
-          <div style={{ fontSize: 13, color: COLORS.error.DEFAULT, fontWeight: 500 }}>
+          <div style={{ fontSize: 13, color: COLORS.danger, fontWeight: 500 }}>
             {validationError}
           </div>
         )}
@@ -241,3 +241,4 @@ export function PriceUploadForm({ uploading, onUpload }: PriceUploadFormProps) {
 }
 
 export default PriceUploadForm;
+

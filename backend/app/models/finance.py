@@ -1,16 +1,17 @@
 from app.database import Base
-from sqlalchemy import (
-    TIMESTAMP,
-    Boolean,
-    Column,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    LargeBinary,
-    Numeric,
-    String,
-    Text,
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    LargeBinary,
+    Numeric,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -28,10 +29,14 @@ from .enums import (
 # ═══════════════════════════════════════════════════════════════
 
 
-class Invoice(Base):
+class Invoice(Base):
     """Fatura Tablosu"""
 
-    __tablename__ = "invoices"
+    __tablename__ = "invoices"
+    __table_args__ = (
+        Index("ix_invoice_account_status", "account_id", "status"),
+        Index("ix_invoice_due_date", "due_date"),
+    )
 
     id = Column(String, primary_key=True, index=True)
     invoice_number = Column(String, unique=True, nullable=False, index=True)
@@ -152,7 +157,8 @@ class PaymentPromise(Base):
 
     # Hatırlatma
     reminder_sent = Column(Boolean, default=False)
-    reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    reminder_sent_at = Column(TIMESTAMP(timezone=True), nullable=True)
+    reminder_count = Column(Integer, default=0, nullable=False)
 
     # İletişim Notları
     contact_person = Column(String, nullable=True)  # Görüşülen kişi

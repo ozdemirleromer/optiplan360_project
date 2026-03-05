@@ -5,576 +5,296 @@
  */
 
 import { Order } from "../../../../types";
-
 import { MeasureRow } from "./types";
 
-
-
 const CSV_HEADERS = [
-
-  "boy",
-
-  "en",
-
-  "adet",
-
-  "grain",
-
-  "u1",
-
-  "u2",
-
-  "k1",
-
-  "k2",
-
-  "delik-1",
-
-  "delik-2",
-
-  "bilgi",
-
+  "Malzeme",
+  "EN",
+  "BOY",
+  "ADET",
+  "GRAİN",
+  "BİLGİ",
+  "UZUN-1",
+  "UZUN-2",
+  "KISA-1",
+  "KISA-2",
+  "DELİK-1",
+  "DELİK-2",
 ];
-
-
 
 type Delimiter = "," | ";" | "\t";
 
-
-
 interface ParsedImport {
-
   rows: MeasureRow[];
-
   warnings: string[];
-
   meta?: {
-
     thickness?: number;
-
     plateSize?: string;
-
     material?: string;
-
   };
-
 }
 
-
-
 export const buildOrderPayload = (
-
   orderId: string | number,
-
   customerName: string,
-
   customerPhone: string,
-
   plateSize: string,
-
   thickness: number,
-
   selectedGrain: string,
-
   rows: MeasureRow[],
-
   order: Order | null
-
 ): Order => {
-
   const normalizedRows = rows.map((row) => ({
-
     ...row,
-
     grain: row.grain || selectedGrain,
-
   }));
-
-
 
   const totalParts = normalizedRows.reduce((sum, row) => sum + (parseInt(row.adet, 10) || 0), 0);
 
-
-
   return {
-
     id: String(orderId),
-
     cust: customerName || order?.cust || "Yeni Musteri",
-
     phone: customerPhone || order?.phone || "",
-
     mat: order?.mat || "Belirtilmedi",
-
     plate: plateSize || "2100x2800",
-
     thick: thickness,
-
     parts: totalParts,
-
     status: order?.status || "NEW",
-
     date: order?.date || new Date().toLocaleString("tr-TR"),
-
     upd: "az once",
-
     grp: order?.grp || "GOVDE",
-
     priority: order?.priority || "normal",
-
   };
-
 };
-
-
 
 export const calculateTotalParts = (rows: MeasureRow[]): number => {
-
   return rows.reduce((sum, row) => sum + (parseInt(row.adet, 10) || 0), 0);
-
 };
-
-
 
 export const calculateEstimatedArea = (rows: MeasureRow[]): string => {
-
   const totalSquareMm = rows.reduce((sum, row) => {
-
     const length = parseFloat(row.boy) || 0;
-
     const width = parseFloat(row.en) || 0;
-
     const count = parseInt(row.adet, 10) || 0;
-
     return sum + length * width * count;
-
   }, 0);
 
-
-
   return (totalSquareMm / 1_000_000).toFixed(2);
-
 };
-
-
 
 const escapeCsv = (value: string): string => {
-
   if (!value) return "";
-
   const escaped = value.replace(/"/g, '""');
-
   return /[",\n]/.test(escaped) ? `"${escaped}"` : escaped;
-
 };
-
-
 
 const sanitizeNumber = (value: string): string => {
-
   if (!value) return "";
-
   const normalized = value.trim().replace(",", ".");
-
   const parsed = Number.parseFloat(normalized);
-
   return Number.isFinite(parsed) ? String(parsed) : "";
-
 };
-
-
 
 const sanitizeInteger = (value: string, fallback = "1"): string => {
-
   const parsed = Number.parseInt(value, 10);
-
   if (!Number.isFinite(parsed) || parsed <= 0) {
-
     return fallback;
-
   }
-
   return String(parsed);
-
 };
-
-
 
 const parseFlag = (value: string): boolean => {
-
   if (!value) return false;
-
   const normalized = value
-
     .trim()
-
     .toLowerCase()
-
     .replace(/[\u0131\u0130]/g, "i")
-
     .replace(/[\u015f\u015e]/g, "s")
-
     .replace(/[\u011f\u011e]/g, "g")
-
     .replace(/[\u00fc\u00dc]/g, "u")
-
     .replace(/[\u00f6\u00d6]/g, "o")
-
     .replace(/[\u00e7\u00c7]/g, "c");
-
   // Dogaclama yok: Hucre doluysa ve negatif bir ifade (0, yok, hayir) icermiyorsa direkt isaretle
-
   if (
-
     normalized === "" ||
-
     normalized === "0" ||
-
     normalized === "yok" ||
-
     normalized === "hayir" ||
-
     normalized === "false" ||
-
     normalized === "no" ||
-
     normalized === "n"
-
   ) {
-
     return false;
-
   }
-
   return true;
-
 };
-
-
 
 const normalizeHeader = (header: string): string => {
-
   return header
-
     .trim()
-
     .toLowerCase()
-
     .replace(/[\u0131\u0130]/g, "i")
-
     .replace(/[\u015f\u015e]/g, "s")
-
     .replace(/[\u011f\u011e]/g, "g")
-
     .replace(/[\u00fc\u00dc]/g, "u")
-
     .replace(/[\u00f6\u00d6]/g, "o")
-
     .replace(/[\u00e7\u00c7]/g, "c")
-
     .replace(/[^a-z0-9]/g, "");
-
 };
-
-
 
 const mapHeaderToKey = (normalizedHeader: string): keyof MeasureRow | null => {
-
-  if (["boy", "length", "plength"].includes(normalizedHeader)) return "boy";
-
+  if (["malzeme", "material", "mat", "p_code_mat"].includes(normalizedHeader)) return "material";
+  if (["boy", "length", "plength", "p_length"].includes(normalizedHeader)) return "boy";
   if (["en", "width", "pwidth"].includes(normalizedHeader)) return "en";
-
   if (["adet", "qty", "quantity", "count", "minq", "pminq"].includes(normalizedHeader)) return "adet";
-
   if (["grain", "graini", "damar", "pgrain", "pgraini"].includes(normalizedHeader)) return "grain";
-
-  if (["u1", "ust1", "ustkenar1", "upperstripmat", "pedgematup"].includes(normalizedHeader)) return "u1";
-
-  if (["u2", "ust2", "ustkenar2", "lowerstripmat", "pedgematlo", "pegdematlo"].includes(normalizedHeader)) return "u2";
-
-  if (["k1", "kenar1", "altkenar1", "leftstripmat", "pedgematsx"].includes(normalizedHeader)) return "k1";
-
-  if (["k2", "kenar2", "altkenar2", "rightstripmat", "pedgematdx"].includes(normalizedHeader)) return "k2";
-
+  if (["u1", "ust1", "ustkenar1", "upperstripmat", "pedgematup", "uzun1", "uzun-1"].includes(normalizedHeader)) return "u1";
+  if (["u2", "ust2", "ustkenar2", "lowerstripmat", "pedgematlo", "pegdematlo", "uzun2", "uzun-2"].includes(normalizedHeader)) return "u2";
+  if (["k1", "kenar1", "altkenar1", "leftstripmat", "pedgematsx", "kisa1", "kisa-1"].includes(normalizedHeader)) return "k1";
+  if (["k2", "kenar2", "altkenar2", "rightstripmat", "pedgematdx", "kisa2", "kisa-2"].includes(normalizedHeader)) return "k2";
   if (["delik1", "delik01", "hole1", "piidesc", "iidescription"].includes(normalizedHeader)) return "delik1";
-
   if (["delik2", "delik02", "hole2", "pdesc1", "description1"].includes(normalizedHeader)) return "delik2";
-
   if (["bilgi", "not", "aciklama", "info", "description", "pidesc"].includes(normalizedHeader)) return "info";
-
   return null;
-
 };
-
-
 
 const parseDelimitedLine = (line: string, delimiter: Delimiter): string[] => {
-
   const values: string[] = [];
-
   let current = "";
-
   let inQuotes = false;
 
-
-
   for (let i = 0; i < line.length; i += 1) {
-
     const char = line[i];
 
-
-
     if (char === '"') {
-
       if (inQuotes && line[i + 1] === '"') {
-
         current += '"';
-
         i += 1;
-
       } else {
-
         inQuotes = !inQuotes;
-
       }
-
       continue;
-
     }
-
-
 
     if (char === delimiter && !inQuotes) {
-
       values.push(current.trim());
-
       current = "";
-
       continue;
-
     }
 
-
-
     current += char;
-
   }
 
-
-
   values.push(current.trim());
-
   return values;
-
 };
-
-
 
 const detectDelimiter = (line: string): Delimiter => {
-
   const candidates: Delimiter[] = [",", ";", "\t"];
-
   const counts = candidates.map((delimiter) => ({
-
     delimiter,
-
     count: line.split(delimiter).length - 1,
-
   }));
 
-
-
   counts.sort((a, b) => b.count - a.count);
-
   return counts[0].delimiter;
-
 };
-
-
 
 const mapColumnsToMeasure = (
-
   columns: string[],
-
   indexByKey: Partial<Record<keyof MeasureRow, number>>,
-
   id: number
-
 ): MeasureRow => {
-
   const read = (key: keyof MeasureRow): string => {
-
     const index = indexByKey[key];
-
     if (index === undefined || index < 0 || index >= columns.length) return "";
-
     return columns[index] ?? "";
-
   };
-
-
 
   return {
-
     id,
-
+    material: read("material"),
     boy: sanitizeNumber(read("boy")),
-
     en: sanitizeNumber(read("en")),
-
     adet: sanitizeInteger(read("adet"), "1"),
-
     grain: sanitizeInteger(read("grain"), "0"),
-
-    u1: parseFlag(read("u1")),
-
-    u2: parseFlag(read("u2")),
-
-    k1: parseFlag(read("k1")),
-
-    k2: parseFlag(read("k2")),
-
-    delik1: sanitizeNumber(read("delik1")),
-
-    delik2: sanitizeNumber(read("delik2")),
-
     info: read("info"),
-
+    u1: parseFlag(read("u1")),
+    u2: parseFlag(read("u2")),
+    k1: parseFlag(read("k1")),
+    k2: parseFlag(read("k2")),
+    delik1: sanitizeNumber(read("delik1")),
+    delik2: sanitizeNumber(read("delik2")),
   };
-
 };
 
-
-
 const parseHtmlTableImport = (rawText: string): MeasureRow[] => {
-
   if (typeof DOMParser === "undefined") return [];
 
-
-
   const parser = new DOMParser();
-
   const html = parser.parseFromString(rawText, "text/html");
-
   const tableRows = Array.from(html.querySelectorAll("table tr"));
-
   if (tableRows.length === 0) return [];
 
-
-
   const rowCells = tableRows
-
     .map((row) => Array.from(row.querySelectorAll("th,td")).map((cell) => (cell.textContent || "").trim()))
-
     .filter((cells) => cells.some((cell) => cell.length > 0));
-
-
 
   if (rowCells.length === 0) return [];
 
-
-
   const firstRowKeys = rowCells[0].map((cell) => mapHeaderToKey(normalizeHeader(cell)));
-
   const hasHeader = firstRowKeys.some((key) => key !== null);
-
   const indexByKey: Partial<Record<keyof MeasureRow, number>> = {};
 
-
-
   if (hasHeader) {
-
     firstRowKeys.forEach((key, index) => {
-
       if (key) indexByKey[key] = index;
-
     });
-
   } else {
-
-    indexByKey.boy = 0;
-
+    // Fallback to exactly 12 columns of the template
+    indexByKey.material = 0;
     indexByKey.en = 1;
-
-    indexByKey.adet = 2;
-
-    indexByKey.grain = 3;
-
-    indexByKey.u1 = 4;
-
-    indexByKey.u2 = 5;
-
-    indexByKey.k1 = 6;
-
-    indexByKey.k2 = 7;
-
-    indexByKey.delik1 = 8;
-
-    indexByKey.delik2 = 9;
-
-    indexByKey.info = 10;
-
+    indexByKey.boy = 2;
+    indexByKey.adet = 3;
+    indexByKey.grain = 4;
+    indexByKey.info = 5;
+    indexByKey.u1 = 6;
+    indexByKey.u2 = 7;
+    indexByKey.k1 = 8;
+    indexByKey.k2 = 9;
+    indexByKey.delik1 = 10;
+    indexByKey.delik2 = 11;
   }
 
-
-
   const dataRows = hasHeader ? rowCells.slice(1) : rowCells;
-
   return dataRows
-
     .map((columns, rowIndex) => mapColumnsToMeasure(columns, indexByKey, rowIndex + 1))
-
     .filter((row) => row.boy || row.en || row.info);
-
 };
 
-
-
 export const buildMeasuresCsv = (rows: MeasureRow[]): string => {
-
   const lines = [CSV_HEADERS.join(",")];
 
-
-
   rows.forEach((row) => {
-
     lines.push(
-
       [
-
-        row.boy,
-
+        row.material,
         row.en,
-
+        row.boy,
         row.adet,
-
         row.grain,
-
-        row.u1 ? "1" : "0",
-
-        row.u2 ? "1" : "0",
-
-        row.k1 ? "1" : "0",
-
-        row.k2 ? "1" : "0",
-
-        row.delik1,
-
-        row.delik2,
-
         row.info,
-
+        row.u1 ? "1" : "0",
+        row.u2 ? "1" : "0",
+        row.k1 ? "1" : "0",
+        row.k2 ? "1" : "0",
+        row.delik1,
+        row.delik2,
       ]
-
         .map((value) => escapeCsv(String(value ?? "")))
-
         .join(",")
-
     );
-
   });
-
-
 
   return lines.join("\n");
 
@@ -877,6 +597,8 @@ export const parseImportedArray = (dataRows: any[][]): ParsedImport => {
   }
 
 
+
+  let dataStartIndex = 0;
 
   let thickness: number | undefined;
 

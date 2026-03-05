@@ -145,9 +145,9 @@ function JobCard({
 
         {/* Siparis No */}
         <div style={{ minWidth: 80 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.primary.DEFAULT }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: COLORS.primary }}>
             #{job.orderId}
-          </div>
+          </div>
           <div style={{ fontSize: 10, color: COLORS.muted, fontFamily: "monospace" }}>
             {job.id.substring(0, 8)}
           </div>
@@ -172,7 +172,7 @@ function JobCard({
           >
             {job.errorMessage.substring(0, 80)}
           </div>
-        )}
+        )}
 
         {/* Zaman */}
         <div style={{ fontSize: 11, color: COLORS.muted, marginLeft: "auto", whiteSpace: "nowrap" }}>
@@ -195,7 +195,7 @@ function JobCard({
                 borderRadius: RADIUS.md,
                 fontSize: 11,
                 fontWeight: 600,
-                background: COLORS.primary.DEFAULT,
+                background: COLORS.primary,
                 color: "#fff",
                 textDecoration: "none",
               }}
@@ -614,18 +614,48 @@ export default function OrchestratorPage() {
         )}
 
         {/* Worker Status */}
-        {workerStatus && (
+        {workerStatus && (
           <div style={{
             marginBottom: 16, padding: "8px 16px", borderRadius: RADIUS.md,
-            backgroundColor: workerStatus.circuitOpen ? "#ef444415" : COLORS.bg.elevated,
-            border: `1px solid ${workerStatus.circuitOpen ? "#ef444444" : COLORS.border}`,
+            backgroundColor:
+              workerStatus.circuitState === "OPEN"
+                ? "#ef444415"
+                : workerStatus.circuitState === "HALF_OPEN"
+                  ? "#f59e0b15"
+                  : COLORS.bg.elevated,
+            border: `1px solid ${
+              workerStatus.circuitState === "OPEN"
+                ? "#ef444444"
+                : workerStatus.circuitState === "HALF_OPEN"
+                  ? "#f59e0b44"
+                  : COLORS.border
+            }`,
             display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", fontSize: 12,
           }}>
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <Activity size={14} color={workerStatus.circuitOpen ? "#ef4444" : "#22c55e"} />
-              <span style={{ fontWeight: 600, color: workerStatus.circuitOpen ? "#ef4444" : "#22c55e" }}>
-                Worker: {workerStatus.circuitOpen ? "DEVRE DISI" : "AKTIF"}
-              </span>
+              <Activity
+                size={14}
+                color={
+                  workerStatus.circuitState === "OPEN"
+                    ? "#ef4444"
+                    : workerStatus.circuitState === "HALF_OPEN"
+                      ? "#f59e0b"
+                      : "#22c55e"
+                }
+              />
+              <span
+                style={{
+                  fontWeight: 600,
+                  color:
+                    workerStatus.circuitState === "OPEN"
+                      ? "#ef4444"
+                      : workerStatus.circuitState === "HALF_OPEN"
+                        ? "#f59e0b"
+                        : "#22c55e",
+                }}
+              >
+                Worker: {workerStatus.circuitState === "HALF_OPEN" ? "YARI ACIK" : workerStatus.circuitOpen ? "DEVRE DISI" : "AKTIF"}
+              </span>
             </div>
             <span style={{ color: COLORS.muted }}>
               Kuyruk: <strong style={{ color: COLORS.text }}>{workerStatus.queueCount}</strong>
@@ -633,7 +663,27 @@ export default function OrchestratorPage() {
             <span style={{ color: COLORS.muted }}>
               Calisiyor: <strong style={{ color: COLORS.text }}>{workerStatus.runningCount}</strong>
             </span>
-            {workerStatus.circuitOpen && (
+            {workerStatus.circuitState === "OPEN" && (
+
+              <span style={{ color: "#ef4444" }}>
+
+                Bekleme: <strong>{workerStatus.cooldownRemainingSeconds}s</strong>
+
+              </span>
+
+            )}
+
+            {workerStatus.circuitState === "HALF_OPEN" && (
+
+              <span style={{ color: "#f59e0b" }}>
+
+                Probe: <strong>{workerStatus.halfOpenProbeInProgress ? "CALISIYOR" : "BEKLEMEDE"}</strong>
+
+              </span>
+
+            )}
+
+            {workerStatus.circuitOpen && (
               <Button
                 size="sm"
                 variant="danger"
@@ -661,9 +711,9 @@ export default function OrchestratorPage() {
               display: "flex", alignItems: "center", gap: 5,
               padding: "6px 12px", borderRadius: RADIUS.md, fontSize: 12,
               fontWeight: stateFilter === "" ? 700 : 400,
-              border: `1px solid ${stateFilter === "" ? COLORS.primary.DEFAULT + "66" : COLORS.border}`,
-              backgroundColor: stateFilter === "" ? COLORS.primary.DEFAULT + "15" : "transparent",
-              color: stateFilter === "" ? COLORS.primary.DEFAULT : COLORS.muted,
+              border: `1px solid ${stateFilter === "" ? COLORS.primary + "66" : COLORS.border}`,
+              backgroundColor: stateFilter === "" ? COLORS.primary + "15" : "transparent",
+              color: stateFilter === "" ? COLORS.primary : COLORS.muted,
               cursor: "pointer",
             }}
           >
@@ -804,9 +854,9 @@ export default function OrchestratorPage() {
           {selectedOrderIds.size > 0 && (
             <div style={{
               padding: "8px 12px", borderRadius: RADIUS.md,
-              backgroundColor: COLORS.primary.DEFAULT + "15",
-              border: `1px solid ${COLORS.primary.DEFAULT}44`,
-              fontSize: 12, color: COLORS.primary.DEFAULT, fontWeight: 600,
+              backgroundColor: COLORS.primary + "15",
+              border: `1px solid ${COLORS.primary}44`,
+              fontSize: 12, color: COLORS.primary, fontWeight: 600,
             }}>
               {selectedOrderIds.size} siparis secildi
             </div>
@@ -839,15 +889,15 @@ export default function OrchestratorPage() {
                       padding: "10px 14px",
                       borderBottom: `1px solid ${COLORS.border}`,
                       cursor: "pointer",
-                      backgroundColor: isSelected ? COLORS.primary.DEFAULT + "12" : "transparent",
+                      backgroundColor: isSelected ? COLORS.primary + "12" : "transparent",
                       transition: "background 0.1s",
                     }}
                   >
                     {/* Checkbox */}
                     <div style={{
                       width: 18, height: 18, borderRadius: 4, flexShrink: 0,
-                      border: `2px solid ${isSelected ? COLORS.primary.DEFAULT : COLORS.border}`,
-                      backgroundColor: isSelected ? COLORS.primary.DEFAULT : "transparent",
+                      border: `2px solid ${isSelected ? COLORS.primary : COLORS.border}`,
+                      backgroundColor: isSelected ? COLORS.primary : "transparent",
                       display: "flex", alignItems: "center", justifyContent: "center",
                     }}>
                       {isSelected && <CheckCircle size={12} color="#fff" />}
@@ -906,3 +956,4 @@ export default function OrchestratorPage() {
     </div>
   );
 }
+

@@ -146,10 +146,10 @@ export function ConfigPage() {
                 padding: "12px 24px",
                 fontSize: 14,
                 fontWeight: activeSection === key ? 700 : 400,
-                color: activeSection === key ? COLORS.primary.DEFAULT : COLORS.muted,
-                background: activeSection === key ? `${COLORS.primary.DEFAULT}08` : "transparent",
+                color: activeSection === key ? COLORS.primary : COLORS.muted,
+                background: activeSection === key ? `${COLORS.primary}08` : "transparent",
                 border: "none",
-                borderBottom: activeSection === key ? `3px solid ${COLORS.primary.DEFAULT}` : "3px solid transparent",
+                borderBottom: activeSection === key ? `3px solid ${COLORS.primary}` : "3px solid transparent",
                 cursor: "pointer",
                 fontFamily: TYPOGRAPHY.fontFamily.base,
                 marginBottom: "-1px",
@@ -165,7 +165,7 @@ export function ConfigPage() {
 
         {activeSection === "theme" && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))", gap: "12px" }}>
-            {THEME_LIST.map((theme) => {
+            {THEME_LIST.filter((theme) => theme.name === "industrialGrid").map((theme) => {
               const isActive = currentTheme === theme.name;
               return (
                 <div
@@ -191,7 +191,7 @@ export function ConfigPage() {
                     transition: "all 0.18s ease",
                     transform: isActive ? "translateY(-2px)" : "none",
                     boxShadow: isActive
-                      ? `0 6px 20px ${primaryRgba(0.35)}, 0 0 0 2px ${COLORS.primary.DEFAULT}`
+                      ? `0 6px 20px ${primaryRgba(0.35)}, 0 0 0 2px ${COLORS.primary}`
                       : `0 2px 8px ${primaryRgba(0.14)}`,
                   }}
                 >
@@ -261,7 +261,7 @@ export function ConfigPage() {
                     }}
                   >
                     <div style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, marginBottom: "12px", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <Shield size={16} color={COLORS.primary.DEFAULT} />
+                      <Shield size={16} color={COLORS.primary} />
                       {group.category}
                     </div>
                     <div style={{ display: "grid", gap: "8px" }}>
@@ -291,7 +291,7 @@ export function ConfigPage() {
                                 width: "16px",
                                 height: "16px",
                                 borderRadius: "50%",
-                                background: COLORS.success.DEFAULT,
+                                background: COLORS.success,
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
@@ -352,7 +352,7 @@ export function ConfigPage() {
                     >
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-                          <Plug size={14} color={flag.enabled ? COLORS.success.DEFAULT : COLORS.muted} />
+                          <Plug size={14} color={flag.enabled ? COLORS.success : COLORS.muted} />
                           <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>{info.label}</span>
                         </div>
                         <div style={{ fontSize: 12, color: COLORS.muted, lineHeight: 1.4 }}>{info.description}</div>
@@ -363,7 +363,7 @@ export function ConfigPage() {
                               padding: "2px 8px",
                               borderRadius: RADIUS.sm,
                               background: flag.enabled ? "rgba(34,197,94,0.12)" : "rgba(239,68,68,0.08)",
-                              color: flag.enabled ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                              color: flag.enabled ? COLORS.success : COLORS.danger,
                               fontWeight: 500,
                             }}
                           >
@@ -381,7 +381,7 @@ export function ConfigPage() {
                           borderRadius: 12,
                           border: "none",
                           cursor: isToggling ? "wait" : "pointer",
-                          background: flag.enabled ? COLORS.success.DEFAULT : COLORS.gray[400],
+                          background: flag.enabled ? COLORS.success : COLORS.muted,
                           position: "relative",
                           transition: "background 0.2s",
                           flexShrink: 0,
@@ -412,3 +412,4 @@ export function ConfigPage() {
     </div>
   );
 }
+

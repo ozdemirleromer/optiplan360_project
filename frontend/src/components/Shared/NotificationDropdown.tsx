@@ -14,7 +14,7 @@ interface Notification {
 const NOTIFICATIONS_DATA: Notification[] = [
   { id: 1, icon: <ClipboardList size={16} aria-hidden />, text: "Yeni sipariş: OP-2026-0848 oluşturuldu", time: "2 dk önce", read: false },
   { id: 2, icon: <Factory size={16} aria-hidden />, text: "OP-2026-0845 üretime alındı", time: "15 dk önce", read: false },
-  { id: 3, icon: <CheckCircle2 size={16} color={COLORS.success.DEFAULT} aria-hidden />, text: "OP-2026-0842 kesim tamamlandı", time: "1 saat önce", read: true },
+  { id: 3, icon: <CheckCircle2 size={16} color={COLORS.success} aria-hidden />, text: "OP-2026-0842 kesim tamamlandı", time: "1 saat önce", read: true },
   { id: 4, icon: <MessageSquare size={16} aria-hidden />, text: "Ege Mutfak'a WhatsApp gönderildi", time: "2 saat önce", read: true },
   { id: 5, icon: <Camera size={16} aria-hidden />, text: "OCR: siparis_04.jpg işlendi", time: "3 saat önce", read: true },
 ];
@@ -50,7 +50,7 @@ export const NotificationDropdown = () => {
               minWidth: 16,
               height: 16,
               borderRadius: "50%",
-              background: COLORS.danger.DEFAULT,
+              background: COLORS.danger,
               color: "#fff",
               fontSize: 9,
               fontWeight: TYPOGRAPHY.fontWeight.bold,
@@ -79,7 +79,7 @@ export const NotificationDropdown = () => {
               width: 340,
               background: "rgba(9,9,11,.96)",
               backdropFilter: "blur(16px)",
-              border: `1px solid ${COLORS.border2}`,
+              border: `1px solid ${COLORS.border}`,
               borderRadius: RADIUS.xl,
               boxShadow: SHADOWS.lg,
               zIndex: Z_INDEX.dropdown,
@@ -102,7 +102,7 @@ export const NotificationDropdown = () => {
                 <span
                   style={{
                     fontSize: 11,
-                    color: COLORS.primary[500],
+                    color: COLORS.primary,
                     cursor: "pointer",
                   }}
                 >
@@ -135,7 +135,7 @@ export const NotificationDropdown = () => {
                     >
                       {n.text}
                     </div>
-                    <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 3 }}>
+                    <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 3 }}>
                       {n.time}
                     </div>
                   </div>
@@ -154,3 +154,5 @@ export const NotificationDropdown = () => {
     </div>
   );
 };
+
+

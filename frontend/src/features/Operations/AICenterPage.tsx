@@ -43,10 +43,10 @@ export function AICenterPage() {
               onClick={() => setActiveTab(tab.id)}
               style={{
                 padding: "12px 24px",
-                background: activeTab === tab.id ? `${COLORS.primary.DEFAULT}08` : "transparent",
+                background: activeTab === tab.id ? `${COLORS.primary}08` : "transparent",
                 border: "none",
-                borderBottom: activeTab === tab.id ? `3px solid ${COLORS.primary.DEFAULT}` : "3px solid transparent",
-                color: activeTab === tab.id ? COLORS.primary.DEFAULT : COLORS.muted,
+                borderBottom: activeTab === tab.id ? `3px solid ${COLORS.primary}` : "3px solid transparent",
+                color: activeTab === tab.id ? COLORS.primary : COLORS.muted,
                 fontWeight: activeTab === tab.id ? 700 : 400,
                 fontSize: 14,
                 cursor: "pointer",
@@ -71,3 +71,4 @@ export function AICenterPage() {
 }
 
 export default AICenterPage;
+

@@ -78,7 +78,7 @@ export const Kanban: React.FC<KanbanProps> = ({ onEdit }) => {
                 title={`${column.title} (${columnOrders.length})`}
                 style={{
                   background: isOverColumn ? primaryRgba(0.15) : undefined,
-                  borderColor: isOverColumn ? COLORS.primary[500] : undefined,
+                  borderColor: isOverColumn ? COLORS.primary : undefined,
                   transition: "all .2s ease",
                 }}
               >
@@ -113,7 +113,7 @@ export const Kanban: React.FC<KanbanProps> = ({ onEdit }) => {
                       style={{
                         textAlign: "center",
                         padding: "20px 10px",
-                        border: `1px dashed ${COLORS.border2}`,
+                        border: `1px dashed ${COLORS.border}`,
                         borderRadius: RADIUS.md,
                         color: COLORS.muted,
                         fontSize: 12,
@@ -133,3 +133,5 @@ export const Kanban: React.FC<KanbanProps> = ({ onEdit }) => {
     </div>
   );
 };
+
+

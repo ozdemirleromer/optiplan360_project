@@ -190,17 +190,35 @@ export const orchestratorService = {
 
   // -- Worker Status --
 
-  async getWorkerStatus(): Promise<WorkerStatus> {
-    const raw = (await apiRequest(`/orchestrator/jobs/worker/status`, {
-      method: "GET",
-    })) as Record<string, unknown>;
-    return {
-      circuitOpen: Boolean(raw.circuitOpen ?? raw.circuit_open ?? false),
-      consecutiveFailures: Number(raw.consecutiveFailures ?? raw.consecutive_failures ?? 0),
-      maxConsecutiveFailures: Number(raw.maxConsecutiveFailures ?? raw.max_consecutive_failures ?? 3),
-      lastRunAt: raw.lastRunAt != null ? String(raw.lastRunAt) : (raw.last_run_at != null ? String(raw.last_run_at) : null),
-      lastError: raw.lastError != null ? String(raw.lastError) : (raw.last_error != null ? String(raw.last_error) : null),
-      engine: String(raw.engine ?? ""),
+  async getWorkerStatus(): Promise<WorkerStatus> {
+    const raw = (await apiRequest(`/orchestrator/jobs/worker/status`, {
+      method: "GET",
+    })) as Record<string, unknown>;
+    return {
+      circuitState: String(
+        raw.circuitState ??
+          raw.circuit_state ??
+          (raw.circuitOpen ?? raw.circuit_open ? "OPEN" : "CLOSED"),
+      ) as WorkerStatus["circuitState"],
+      circuitOpen: Boolean(raw.circuitOpen ?? raw.circuit_open ?? false),
+      consecutiveFailures: Number(raw.consecutiveFailures ?? raw.consecutive_failures ?? 0),
+      maxConsecutiveFailures: Number(raw.maxConsecutiveFailures ?? raw.max_consecutive_failures ?? 3),
+      cooldownSeconds: Number(raw.cooldownSeconds ?? raw.cooldown_seconds ?? 0),
+      cooldownRemainingSeconds: Number(
+        raw.cooldownRemainingSeconds ?? raw.cooldown_remaining_seconds ?? 0,
+      ),
+      openedAt:
+        raw.openedAt != null
+          ? String(raw.openedAt)
+          : raw.opened_at != null
+            ? String(raw.opened_at)
+            : null,
+      halfOpenProbeInProgress: Boolean(
+        raw.halfOpenProbeInProgress ?? raw.half_open_probe_in_progress ?? false,
+      ),
+      lastRunAt: raw.lastRunAt != null ? String(raw.lastRunAt) : (raw.last_run_at != null ? String(raw.last_run_at) : null),
+      lastError: raw.lastError != null ? String(raw.lastError) : (raw.last_error != null ? String(raw.last_error) : null),
+      engine: String(raw.engine ?? ""),
       supportedEngines: Array.isArray(raw.supportedEngines ?? raw.supported_engines) ? (raw.supportedEngines ?? raw.supported_engines) as string[] : [],
       queueCount: Number(raw.queueCount ?? raw.queue_count ?? 0),
       runningCount: Number(raw.runningCount ?? raw.running_count ?? 0),

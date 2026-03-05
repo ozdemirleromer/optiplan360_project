@@ -210,8 +210,8 @@ export default function AIAssistantPage() {
 
   const feedbackBg =
     feedback?.type === "success"
-      ? { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)", color: COLORS.success.DEFAULT }
-      : { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.35)",  color: COLORS.error.DEFAULT };
+      ? { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)", color: COLORS.success }
+      : { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.35)",  color: COLORS.danger };
 
   return (
     <div className="electric-page">
@@ -268,8 +268,8 @@ export default function AIAssistantPage() {
                   fontWeight: active ? 600 : 400,
                   background: "none",
                   border: "none",
-                  borderBottom: active ? `2px solid ${COLORS.primary.DEFAULT}` : "2px solid transparent",
-                  color: active ? COLORS.primary.DEFAULT : COLORS.muted,
+                  borderBottom: active ? `2px solid ${COLORS.primary}` : "2px solid transparent",
+                  color: active ? COLORS.primary : COLORS.muted,
                   cursor: "pointer",
                   marginBottom: -1,
                 }}
@@ -321,7 +321,7 @@ export default function AIAssistantPage() {
                       borderRadius: RADIUS.lg,
                       padding: "8px 12px",
                       fontSize: 13,
-                      background: msg.role === "user" ? COLORS.primary.DEFAULT : COLORS.bg.elevated,
+                      background: msg.role === "user" ? COLORS.primary : COLORS.bg.elevated,
                       color: msg.role === "user" ? "#fff" : COLORS.text,
                     }}
                   >
@@ -564,3 +564,4 @@ export default function AIAssistantPage() {
     </div>
   );
 }
+

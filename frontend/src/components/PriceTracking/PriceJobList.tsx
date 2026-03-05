@@ -22,11 +22,11 @@ function formatDateTime(value: string): string {
 function statusStyle(status: PriceUploadJob["status"]) {
   switch (status) {
     case "COMPLETED":
-      return { background: "rgba(16,185,129,0.14)", color: COLORS.success.DEFAULT };
+      return { background: "rgba(16,185,129,0.14)", color: COLORS.success };
     case "FAILED":
-      return { background: "rgba(239,68,68,0.14)", color: COLORS.error.DEFAULT };
+      return { background: "rgba(239,68,68,0.14)", color: COLORS.danger };
     case "PROCESSING":
-      return { background: "rgba(59,130,246,0.14)", color: COLORS.primary.DEFAULT };
+      return { background: "rgba(59,130,246,0.14)", color: COLORS.primary };
     default:
       return { background: "rgba(148,163,184,0.18)", color: COLORS.muted };
   }
@@ -167,3 +167,4 @@ export function PriceJobList({
 }
 
 export default PriceJobList;
+

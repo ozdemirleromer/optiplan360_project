@@ -4,7 +4,7 @@
  * 
  * Usage:
  * import { Icon } from '@/components/Shared/Icon'
- * <Icon name="edit" size="md" color={COLORS.primary[500]} />
+ * <Icon name="edit" size="md" color={COLORS.primary} />
  */
 
 import * as Icons from 'lucide-react';
@@ -78,3 +78,4 @@ export const IconWithLabel = ({
     </span>
   );
 };
+

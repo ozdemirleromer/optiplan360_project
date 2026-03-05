@@ -101,7 +101,7 @@ export const MobileHeader = ({
           width: 40,
           height: 40,
           borderRadius: "50%",
-          background: `linear-gradient(135deg, ${COLORS.primary.DEFAULT}, #8b5cf6)`,
+          background: `linear-gradient(135deg, ${COLORS.primary}, #8b5cf6)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -127,3 +127,4 @@ export const MobileHeader = ({
 };
 
 export default MobileHeader;
+

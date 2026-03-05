@@ -1,15 +1,16 @@
 from app.database import Base
-from sqlalchemy import (
-    TIMESTAMP,
-    Boolean,
-    Column,
-    Enum,
-    Float,
-    ForeignKey,
-    Integer,
-    Numeric,
-    String,
-    Text,
+from sqlalchemy import (
+    TIMESTAMP,
+    Boolean,
+    Column,
+    Enum,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -28,10 +29,11 @@ from .enums import (
 # ═══════════════════════════════════════════════════════════════
 
 
-class CRMAccount(Base):
+class CRMAccount(Base):
     """Cari hesap (firma/bireysel müşteri)"""
 
-    __tablename__ = "crm_accounts"
+    __tablename__ = "crm_accounts"
+    __table_args__ = (Index("ux_crm_account_mikro_cari_kod", "mikro_cari_kod", unique=True),)
 
     id = Column(String, primary_key=True, index=True)
     customer_id = Column(Integer, ForeignKey("customers.id"), nullable=True, index=True)
@@ -53,7 +55,7 @@ class CRMAccount(Base):
     notes = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     is_active = Column(Boolean, default=True)
-    mikro_cari_kod = Column(String, nullable=True, index=True)  # Mikro cari kodu
+    mikro_cari_kod = Column(String, nullable=True)  # Mikro cari kodu
 
     # Mobilya Üretimi İçin Özel Alanlar
     dealer_type = Column(Enum(DealerTypeEnum), nullable=True)  # Bayi tipi

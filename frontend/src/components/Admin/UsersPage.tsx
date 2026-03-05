@@ -224,17 +224,17 @@ export function UsersPage() {
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           {/* İstatistik Kartları */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px", marginBottom: "20px" }}>
-            <Card style={{ background: `${COLORS.primary[500]}08`, borderLeft: `4px solid ${COLORS.primary[500]}` }}>
+            <Card style={{ background: `${COLORS.primary}08`, borderLeft: `4px solid ${COLORS.primary}` }}>
               <div style={{ fontSize: "13px", color: COLORS.muted, marginBottom: "8px" }}>Toplam Kullanıcı</div>
-              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.primary[500] }}>{stats.total}</div>
+              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.primary }}>{stats.total}</div>
             </Card>
-            <Card style={{ background: `${COLORS.success.DEFAULT}08`, borderLeft: `4px solid ${COLORS.success.DEFAULT}` }}>
+            <Card style={{ background: `${COLORS.success}08`, borderLeft: `4px solid ${COLORS.success}` }}>
               <div style={{ fontSize: "13px", color: COLORS.muted, marginBottom: "8px" }}>Aktif</div>
-              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.success.DEFAULT }}>{stats.active}</div>
+              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.success }}>{stats.active}</div>
             </Card>
-            <Card style={{ background: `${COLORS.gray[400]}08`, borderLeft: `4px solid ${COLORS.gray[400]}` }}>
+            <Card style={{ background: `${COLORS.muted}08`, borderLeft: `4px solid ${COLORS.muted}` }}>
               <div style={{ fontSize: "13px", color: COLORS.muted, marginBottom: "8px" }}>Pasif</div>
-              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.gray[400] }}>{stats.inactive}</div>
+              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.muted }}>{stats.inactive}</div>
             </Card>
           </div>
 
@@ -243,7 +243,7 @@ export function UsersPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: "12px" }}>
               {Object.entries({ ADMIN: "Admin", OPERATOR: "Operatör", STATION: "İstasyon", VIEWER: "Görüntüleyici" }).map(([role, label]) => (
                 <div key={role} style={{ textAlign: "center", padding: "12px", border: `1px solid ${COLORS.border}`, borderRadius: RADIUS.md }}>
-                  <div style={{ fontSize: "24px", fontWeight: "700", color: COLORS.primary[500], marginBottom: "4px" }}>
+                  <div style={{ fontSize: "24px", fontWeight: "700", color: COLORS.primary, marginBottom: "4px" }}>
                     {stats.byRole[role] || 0}
                   </div>
                   <div style={{ fontSize: "12px", color: COLORS.muted }}>{label}</div>
@@ -254,7 +254,7 @@ export function UsersPage() {
 
           {/* Şifre Sıfırlama Modal */}
           {resetPasswordUserId && (
-            <Card title="Şifre Sıfırla" style={{ marginBottom: "20px", background: `${COLORS.warning.DEFAULT}08` }}>
+            <Card title="Şifre Sıfırla" style={{ marginBottom: "20px", background: `${COLORS.warning}08` }}>
               <div style={{ display: "grid", gap: "12px" }}>
                 <div>
                   <label style={{ fontSize: "13px", fontWeight: "600", color: COLORS.text, marginBottom: "6px", display: "block" }}>
@@ -293,7 +293,7 @@ export function UsersPage() {
           {(showCreateForm || editingUser) && (
             <Card
               title={editingUser ? "Kullanıcı Düzenle" : "Yeni Kullanıcı Oluştur"}
-              style={{ marginBottom: "20px", background: `${COLORS.primary[500]}08` }}
+              style={{ marginBottom: "20px", background: `${COLORS.primary}08` }}
             >
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" }}>
                 <div>
@@ -305,9 +305,9 @@ export function UsersPage() {
                     onChange={(e) => setFormData(s => ({ ...s, username: e.target.value }))}
                     placeholder="kullanici_adi"
                     disabled={!!editingUser}
-                    style={{ borderColor: formErrors.username ? COLORS.error.DEFAULT : undefined }}
+                    style={{ borderColor: formErrors.username ? COLORS.danger : undefined }}
                   />
-                  {formErrors.username && <div style={{ fontSize: "12px", color: COLORS.error.DEFAULT, marginTop: "4px" }}>{formErrors.username}</div>}
+                  {formErrors.username && <div style={{ fontSize: "12px", color: COLORS.danger, marginTop: "4px" }}>{formErrors.username}</div>}
                 </div>
                 <div>
                   <label style={{ fontSize: "13px", fontWeight: "600", color: COLORS.text, marginBottom: "6px", display: "block" }}>
@@ -317,9 +317,9 @@ export function UsersPage() {
                     value={formData.display_name}
                     onChange={(e) => setFormData(s => ({ ...s, display_name: e.target.value }))}
                     placeholder="Ahmet Yılmaz"
-                    style={{ borderColor: formErrors.display_name ? COLORS.error.DEFAULT : undefined }}
+                    style={{ borderColor: formErrors.display_name ? COLORS.danger : undefined }}
                   />
-                  {formErrors.display_name && <div style={{ fontSize: "12px", color: COLORS.error.DEFAULT, marginTop: "4px" }}>{formErrors.display_name}</div>}
+                  {formErrors.display_name && <div style={{ fontSize: "12px", color: COLORS.danger, marginTop: "4px" }}>{formErrors.display_name}</div>}
                 </div>
                 <div>
                   <label style={{ fontSize: "13px", fontWeight: "600", color: COLORS.text, marginBottom: "6px", display: "block" }}>
@@ -330,9 +330,9 @@ export function UsersPage() {
                     value={formData.email}
                     onChange={(e) => setFormData(s => ({ ...s, email: e.target.value }))}
                     placeholder="kullanici@example.com"
-                    style={{ borderColor: formErrors.email ? COLORS.error.DEFAULT : undefined }}
+                    style={{ borderColor: formErrors.email ? COLORS.danger : undefined }}
                   />
-                  {formErrors.email && <div style={{ fontSize: "12px", color: COLORS.error.DEFAULT, marginTop: "4px" }}>{formErrors.email}</div>}
+                  {formErrors.email && <div style={{ fontSize: "12px", color: COLORS.danger, marginTop: "4px" }}>{formErrors.email}</div>}
                 </div>
                 <div>
                   <label style={{ fontSize: "13px", fontWeight: "600", color: COLORS.text, marginBottom: "6px", display: "block" }}>
@@ -354,9 +354,9 @@ export function UsersPage() {
                       value={formData.password}
                       onChange={(e) => setFormData(s => ({ ...s, password: e.target.value }))}
                       placeholder="Minimum 6 karakter"
-                      style={{ borderColor: formErrors.password ? COLORS.error.DEFAULT : undefined }}
+                      style={{ borderColor: formErrors.password ? COLORS.danger : undefined }}
                     />
-                    {formErrors.password && <div style={{ fontSize: "12px", color: COLORS.error.DEFAULT, marginTop: "4px" }}>{formErrors.password}</div>}
+                    {formErrors.password && <div style={{ fontSize: "12px", color: COLORS.danger, marginTop: "4px" }}>{formErrors.password}</div>}
                   </div>
                 )}
                 <div>
@@ -446,7 +446,7 @@ export function UsersPage() {
                         padding: "16px",
                         border: `1px solid ${COLORS.border}`,
                         borderRadius: RADIUS.md,
-                        background: user.isActive ? "transparent" : `${COLORS.gray[200]}40`,
+                        background: user.isActive ? "transparent" : `${COLORS.muted}40`,
                         display: "grid",
                         gridTemplateColumns: "auto 1fr auto",
                         gap: "16px",
@@ -459,13 +459,13 @@ export function UsersPage() {
                           width: "48px",
                           height: "48px",
                           borderRadius: "50%",
-                          background: `${COLORS.primary[500]}20`,
+                          background: `${COLORS.primary}20`,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
                           fontSize: "16px",
                           fontWeight: "700",
-                          color: COLORS.primary[500],
+                          color: COLORS.primary,
                         }}
                       >
                         {initials}
@@ -567,3 +567,5 @@ export function UsersPage() {
     </div>
   );
 }
+
+

@@ -1,17 +1,69 @@
+version: "3.9"
+
 services:
-  backend:
-    build: ./backend
-    ports:
-      - "8080:8080"
-  frontend:
-    build: ./frontend
-    ports:
-      - "3001:3001"
+  # ── PostgreSQL ──────────────────────────────────────────────────
   db:
-    image: postgres:15
+    image: postgres:15-alpine
+    container_name: optiplan_db
+    restart: unless-stopped
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: appdb
+      POSTGRES_USER: ${DB_USER:-optiplan}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-optiplan123}
+      POSTGRES_DB: ${DB_NAME:-optiplandb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER:-optiplan} -d ${DB_NAME:-optiplandb}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Backend (FastAPI) ────────────────────────────────────────────
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: optiplan_backend
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-optiplan}:${DB_PASSWORD:-optiplan123}@db:5432/${DB_NAME:-optiplandb}
+      SECRET_KEY: ${SECRET_KEY:-supersecretkey_change_in_prod_2026}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      CORS_ORIGINS: "http://localhost,http://localhost:80,http://localhost:3000"
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/health || exit 1" ]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+
+  # ── Frontend (React + Vite → Nginx) ─────────────────────────────
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+    container_name: optiplan_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:80 || exit 1" ]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  postgres_data:
+    driver: local

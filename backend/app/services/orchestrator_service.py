@@ -68,6 +68,7 @@ logger = logging.getLogger(__name__)
 
 ORCH_BASE_URL = os.environ.get("ORCH_BASE_URL", "http://localhost:3001")
 ORCH_TIMEOUT = float(os.environ.get("ORCH_TIMEOUT", "15"))
+_UNSET = object()
 
 
 def _call_orchestrator(method: str, path: str, json_body: dict | None = None) -> dict | None:
@@ -93,6 +94,17 @@ def _call_orchestrator(method: str, path: str, json_body: dict | None = None) ->
 def _payload_hash(payload: dict) -> str:
     raw = json.dumps(payload, sort_keys=True, default=str)
     return hashlib.sha256(raw.encode()).hexdigest()[:16]
+
+
+def _extract_orchestrator_job(payload: dict | None) -> dict | None:
+    if not payload:
+        return None
+    nested = payload.get("job")
+    if isinstance(nested, dict):
+        return nested
+    if isinstance(payload.get("state"), str):
+        return payload
+    return None
 
 
 def _add_audit(
@@ -144,6 +156,54 @@ class OrchestratorService:
 
     def __init__(self, db: Session):
         self.db = db
+
+    def _resolve_job(self, job_or_id: OptiJob | str) -> OptiJob:
+        if isinstance(job_or_id, OptiJob):
+            return job_or_id
+        return self.get_job(job_or_id)
+
+    @staticmethod
+    def _coerce_state(new_state: OptiJobStateEnum | str) -> OptiJobStateEnum:
+        if isinstance(new_state, OptiJobStateEnum):
+            return new_state
+        return OptiJobStateEnum(str(new_state))
+
+    def update_job_state(
+        self,
+        job_or_id: OptiJob | str,
+        new_state: OptiJobStateEnum | str,
+        *,
+        audit_event_type: str | None = None,
+        audit_message: str | None = None,
+        audit_details: dict | None = None,
+        error_code: JobErrorCode | str | None | object = _UNSET,
+        error_message: str | None | object = _UNSET,
+        commit: bool = True,
+        refresh: bool = True,
+        **field_updates,
+    ) -> OptiJob:
+        job = self._resolve_job(job_or_id)
+        if bool(audit_event_type) != bool(audit_message):
+            raise ValidationError("Audit event type ve message birlikte verilmelidir")
+
+        job.state = self._coerce_state(new_state)
+        if error_code is not _UNSET:
+            job.error_code = error_code.value if isinstance(error_code, JobErrorCode) else error_code
+        if error_message is not _UNSET:
+            job.error_message = error_message
+
+        for field_name, value in field_updates.items():
+            setattr(job, field_name, value)
+
+        if audit_event_type and audit_message:
+            _add_audit(self.db, job.id, audit_event_type, audit_message, audit_details)
+
+        if commit:
+            self.db.commit()
+            if refresh:
+                self.db.refresh(job)
+
+        return job
 
     # -- Job Olustur --
     def create_job(
@@ -209,12 +269,16 @@ class OrchestratorService:
 
         # Orchestrator'a gonder; basarisizsa yerel isleme yap
         orch_result = _call_orchestrator("POST", "/jobs", payload)
-        if orch_result and "job" in orch_result:
-            orch_state = orch_result["job"].get("state", "NEW")
+        orch_job = _extract_orchestrator_job(orch_result)
+        if orch_job:
+            orch_state = orch_job.get("state", "NEW")
             if orch_state != "NEW":
-                job.state = OptiJobStateEnum(orch_state)
-                _add_audit(self.db, job_id, "STATE_CHANGE", f"Orchestrator durumu: {orch_state}")
-                self.db.commit()
+                self.update_job_state(
+                    job,
+                    orch_state,
+                    audit_event_type="STATE_CHANGE",
+                    audit_message=f"Orchestrator durumu: {orch_state}",
+                )
         else:
             # Orchestrator yok -> yerel isleme
             logger.info("Orchestrator erisilemedi, yerel isleme baslatiliyor: job=%s", job_id)
@@ -244,11 +308,14 @@ class OrchestratorService:
                 if phone:
                     customer = self.db.query(Customer).filter(Customer.phone == phone).first()
             if not customer:
-                job.state = OptiJobStateEnum.HOLD
-                job.error_code = JobErrorCode.CRM_NO_MATCH
-                job.error_message = "CRM musteri eslesmesi bulunamadi. Musteri kaydi olusturulmali."
-                _add_audit(self.db, job.id, "STATE_HOLD", "CRM gate: musteri bulunamadi - HOLD")
-                self.db.commit()
+                self.update_job_state(
+                    job,
+                    OptiJobStateEnum.HOLD,
+                    audit_event_type="STATE_HOLD",
+                    audit_message="CRM gate: musteri bulunamadi - HOLD",
+                    error_code=JobErrorCode.CRM_NO_MATCH,
+                    error_message="CRM musteri eslesmesi bulunamadi. Musteri kaydi olusturulmali.",
+                )
                 return
 
             # -- 1) Plaka ebati kontrolu (AGENT_ONEFILE §G6) --
@@ -259,23 +326,27 @@ class OrchestratorService:
                 if default_plate.get("width_mm") and default_plate.get("height_mm"):
                     has_plate = True
             if not has_plate:
-                job.state = OptiJobStateEnum.HOLD
-                job.error_code = JobErrorCode.PLATE_SIZE_MISSING
-                job.error_message = (
-                    "Plaka ebati belirtilmemis ve varsayilan yapilandirma bulunamadi."
+                self.update_job_state(
+                    job,
+                    OptiJobStateEnum.HOLD,
+                    audit_event_type="STATE_HOLD",
+                    audit_message="Plaka ebati eksik - HOLD",
+                    error_code=JobErrorCode.PLATE_SIZE_MISSING,
+                    error_message="Plaka ebati belirtilmemis ve varsayilan yapilandirma bulunamadi.",
                 )
-                _add_audit(self.db, job.id, "STATE_HOLD", "Plaka ebati eksik - HOLD")
-                self.db.commit()
                 return
 
             # Parcalari yukle
             parts = self.db.query(OrderPart).filter(OrderPart.order_id == order.id).all()
             if not parts:
-                job.state = OptiJobStateEnum.HOLD
-                job.error_code = JobErrorCode.NO_PARTS
-                job.error_message = "Sipariste parca bulunamadi"
-                _add_audit(self.db, job.id, "STATE_HOLD", "Parca yok - HOLD")
-                self.db.commit()
+                self.update_job_state(
+                    job,
+                    OptiJobStateEnum.HOLD,
+                    audit_event_type="STATE_HOLD",
+                    audit_message="Parca yok - HOLD",
+                    error_code=JobErrorCode.NO_PARTS,
+                    error_message="Sipariste parca bulunamadi",
+                )
                 return
 
             # -- 2) Arkalik kalinlik + trim validasyonu (AGENT_ONEFILE §THICKNESS) --
@@ -285,65 +356,60 @@ class OrchestratorService:
                 thickness_key = str(int(thickness))
 
                 if part_group == "ARKALIK" and int(thickness) not in BACKING_THICKNESSES:
-                    job.state = OptiJobStateEnum.HOLD
-                    job.error_code = JobErrorCode.BACKING_THICKNESS_UNKNOWN
-                    job.error_message = f"Bilinmeyen arkalik kalinligi: {thickness}mm (gecerli: {sorted(BACKING_THICKNESSES)})"
-                    _add_audit(
-                        self.db,
-                        job.id,
-                        "STATE_HOLD",
-                        f"Arkalik kalinlik hatasi: {thickness}mm - HOLD",
+                    self.update_job_state(
+                        job,
+                        OptiJobStateEnum.HOLD,
+                        audit_event_type="STATE_HOLD",
+                        audit_message=f"Arkalik kalinlik hatasi: {thickness}mm - HOLD",
+                        error_code=JobErrorCode.BACKING_THICKNESS_UNKNOWN,
+                        error_message=f"Bilinmeyen arkalik kalinligi: {thickness}mm (gecerli: {sorted(BACKING_THICKNESSES)})",
                     )
-                    self.db.commit()
                     return
 
                 if thickness_key not in TRIM_BY_THICKNESS:
-                    job.state = OptiJobStateEnum.HOLD
-                    job.error_code = JobErrorCode.TRIM_RULE_MISSING
-                    job.error_message = f"Trim kurali bulunamadi: {thickness_key}mm"
-                    _add_audit(
-                        self.db,
-                        job.id,
-                        "STATE_HOLD",
-                        f"Trim kurali eksik: {thickness_key}mm - HOLD",
+                    self.update_job_state(
+                        job,
+                        OptiJobStateEnum.HOLD,
+                        audit_event_type="STATE_HOLD",
+                        audit_message=f"Trim kurali eksik: {thickness_key}mm - HOLD",
+                        error_code=JobErrorCode.TRIM_RULE_MISSING,
+                        error_message=f"Trim kurali bulunamadi: {thickness_key}mm",
                     )
-                    self.db.commit()
                     return
 
             # -- 3) Parca donusumu (AGENT_ONEFILE §G4) --
             transformed_parts = self._transform_parts(parts, order)
 
-            job.state = OptiJobStateEnum.PREPARED
-            _add_audit(
-                self.db,
-                job.id,
-                "STATE_PREPARED",
-                "Parca donusum kurallari uygulandi (cm->mm, trim, edge, grain mapping)",
-                {"transform_count": len(transformed_parts)},
+            self.update_job_state(
+                job,
+                OptiJobStateEnum.PREPARED,
+                audit_event_type="STATE_PREPARED",
+                audit_message="Parca donusum kurallari uygulandi (cm->mm, trim, edge, grain mapping)",
+                audit_details={"transform_count": len(transformed_parts)},
             )
-            self.db.commit()
             logger.info("Job %s: NEW -> PREPARED (part transformation)", job.id)
 
             # -- 4) OPTI_IMPORTED state --
             # Worker service OPTI_IMPORTED -> OPTI_RUNNING gecisini yapar
-            job.state = OptiJobStateEnum.OPTI_IMPORTED
-            _add_audit(
-                self.db,
-                job.id,
-                "STATE_OPTI_IMPORTED",
-                "UI otomasyon worker kuyruguna alindi (XLSX worker tarafinda olusturulacak)",
-                {"engine": "ui_automation"},
+            self.update_job_state(
+                job,
+                OptiJobStateEnum.OPTI_IMPORTED,
+                audit_event_type="STATE_OPTI_IMPORTED",
+                audit_message="UI otomasyon worker kuyruguna alindi (XLSX worker tarafinda olusturulacak)",
+                audit_details={"engine": "ui_automation"},
             )
-            self.db.commit()
             logger.info("Job %s: PREPARED -> %s (ui_automation queue)", job.id, job.state.value)
 
         except Exception as exc:
             logger.error("Yerel isleme hatasi (job=%s): %s", job.id, exc, exc_info=True)
-            job.state = OptiJobStateEnum.FAILED
-            job.error_code = JobErrorCode.LOCAL_PROCESSING
-            job.error_message = str(exc)[:500]
-            _add_audit(self.db, job.id, "STATE_FAILED", f"Yerel isleme hatasi: {exc}")
-            self.db.commit()
+            self.update_job_state(
+                job,
+                OptiJobStateEnum.FAILED,
+                audit_event_type="STATE_FAILED",
+                audit_message=f"Yerel isleme hatasi: {exc}",
+                error_code=JobErrorCode.LOCAL_PROCESSING,
+                error_message=str(exc)[:500],
+            )
 
     # -- AGENT_ONEFILE §G4: Part Transformation --
     def _transform_parts(self, parts: list, order) -> list[dict]:
@@ -422,15 +488,16 @@ class OrchestratorService:
         try:
             cmd = [OPTIPLAN_EXE_PATH] + xlsx_files
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            job.state = OptiJobStateEnum.OPTI_RUNNING
-            _add_audit(
-                self.db,
-                job.id,
-                "STATE_OPTI_RUNNING",
-                f"OptiPlanning.exe baslatildi (PID={proc.pid})",
-                {"exe": OPTIPLAN_EXE_PATH, "files": [os.path.basename(p) for p in xlsx_files]},
+            self.update_job_state(
+                job,
+                OptiJobStateEnum.OPTI_RUNNING,
+                audit_event_type="STATE_OPTI_RUNNING",
+                audit_message=f"OptiPlanning.exe baslatildi (PID={proc.pid})",
+                audit_details={
+                    "exe": OPTIPLAN_EXE_PATH,
+                    "files": [os.path.basename(p) for p in xlsx_files],
+                },
             )
-            self.db.commit()
             logger.info("Job %s: OPTI_IMPORTED -> OPTI_RUNNING (PID=%d)", job.id, proc.pid)
         except FileNotFoundError:
             logger.warning(
@@ -451,6 +518,16 @@ class OrchestratorService:
         if not job:
             raise NotFoundError("Job", job_id)
         return job
+
+    def get_job_status(self, job_id: str) -> dict:
+        job = self.get_job(job_id)
+        return {
+            "job_id": job.id,
+            "state": job.state.value,
+            "error_code": job.error_code,
+            "error_message": job.error_message,
+            "retry_count": job.retry_count,
+        }
 
     # -- Job Listesi --
     def list_jobs(
@@ -499,13 +576,15 @@ class OrchestratorService:
         _call_orchestrator("POST", f"/jobs/{job_id}/retry")
 
         job.retry_count += 1
-        job.state = OptiJobStateEnum.NEW
-        job.error_code = None
-        job.error_message = None
-        _add_audit(self.db, job_id, "RETRY", f"Retry #{job.retry_count}", {"triggered_by": user_id})
-        self.db.commit()
-        self.db.refresh(job)
-        return job
+        return self.update_job_state(
+            job,
+            OptiJobStateEnum.NEW,
+            audit_event_type="RETRY",
+            audit_message=f"Retry #{job.retry_count}",
+            audit_details={"triggered_by": user_id},
+            error_code=None,
+            error_message=None,
+        )
 
     # -- Approve (HOLD -> devam) --
     def approve_job(self, job_id: str, user_id: int | None = None) -> OptiJob:
@@ -519,19 +598,15 @@ class OrchestratorService:
         _call_orchestrator("POST", f"/jobs/{job_id}/approve")
 
         # STATE_MACHINE.md: HOLD -> NEW
-        job.state = OptiJobStateEnum.NEW
-        job.error_code = None
-        job.error_message = None
-        _add_audit(
-            self.db,
-            job_id,
-            "APPROVE",
-            "HOLD'dan cikarildi - NEW'e alindi",
-            {"approved_by": user_id},
+        return self.update_job_state(
+            job,
+            OptiJobStateEnum.NEW,
+            audit_event_type="APPROVE",
+            audit_message="HOLD'dan cikarildi - NEW'e alindi",
+            audit_details={"approved_by": user_id},
+            error_code=None,
+            error_message=None,
         )
-        self.db.commit()
-        self.db.refresh(job)
-        return job
 
     # -- Iptal (aktif -> FAILED) --
     def cancel_job(self, job_id: str, user_id: int | None = None) -> OptiJob:
@@ -545,27 +620,32 @@ class OrchestratorService:
         # Orchestrator'a iptal bildir
         _call_orchestrator("POST", f"/jobs/{job_id}/cancel")
 
-        job.state = OptiJobStateEnum.FAILED
-        job.error_code = "E_CANCELLED"
-        job.error_message = "Kullanici tarafindan iptal edildi"
-        _add_audit(self.db, job_id, "CANCEL", "Job iptal edildi", {"cancelled_by": user_id})
-        self.db.commit()
-        self.db.refresh(job)
-        return job
+        return self.update_job_state(
+            job,
+            OptiJobStateEnum.FAILED,
+            audit_event_type="CANCEL",
+            audit_message="Job iptal edildi",
+            audit_details={"cancelled_by": user_id},
+            error_code=JobErrorCode.CANCELLED,
+            error_message="Kullanici tarafindan iptal edildi",
+        )
 
     # -- Durum Senkronizasyonu (opsiyonel) --
     def sync_job_state(self, job_id: str) -> OptiJob:
         """Orchestrator'dan guncel durumu ceker ve backend DB'yi gunceller."""
         job = self.get_job(job_id)
         orch_data = _call_orchestrator("GET", f"/jobs/{job_id}")
-        if orch_data and "state" in orch_data:
-            new_state = orch_data["state"]
+        orch_job = _extract_orchestrator_job(orch_data)
+        if orch_job and "state" in orch_job:
+            new_state = orch_job["state"]
             if new_state != job.state.value:
                 old = job.state.value
-                job.state = OptiJobStateEnum(new_state)
-                job.error_code = orch_data.get("error_code")
-                job.error_message = orch_data.get("error_message")
-                _add_audit(self.db, job_id, "STATE_SYNC", f"{old} -> {new_state}")
-                self.db.commit()
-                self.db.refresh(job)
+                job = self.update_job_state(
+                    job,
+                    new_state,
+                    audit_event_type="STATE_SYNC",
+                    audit_message=f"{old} -> {new_state}",
+                    error_code=orch_job.get("error_code"),
+                    error_message=orch_job.get("error_message"),
+                )
         return job

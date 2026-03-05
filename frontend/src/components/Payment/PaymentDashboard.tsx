@@ -125,38 +125,38 @@ export default function PaymentDashboard({ embedded = false }: { embedded?: bool
             icon="BI" 
             label="Toplam Fatura" 
             value={totalInvoices} 
-            color={COLORS.primary[500]} 
+            color={COLORS.primary} 
           />
           <KPICard 
             icon="PD" 
             label="Ödenen Tutar" 
             value={`₺${paidAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`} 
-            color={COLORS.success.DEFAULT} 
+            color={COLORS.success} 
           />
           <KPICard 
             icon="PA" 
             label="Bekleyen Tutar" 
             value={`₺${pendingAmount.toLocaleString("tr-TR", { maximumFractionDigits: 0 })}`} 
-            color={COLORS.accent[400]} 
+            color={COLORS.accent} 
           />
           <KPICard 
             icon="OD" 
             label="Vadesi Geçmiş" 
             value={overdueCount} 
-            color={COLORS.error.DEFAULT}
+            color={COLORS.danger}
           />
           <KPICard
             icon="RM"
             label="Bekleyen Hatırlatma"
             value={reminderPendingCount}
-            color={COLORS.info.DEFAULT}
+            color={COLORS.primary}
           />
           {statistics != null && (
             <KPICard
               icon="CR"
               label="Tahsilat Oranı"
               value={`%${statistics.collectionRate.toFixed(1)}`}
-              color={statistics.collectionRate >= 80 ? COLORS.success.DEFAULT : COLORS.accent[400]}
+              color={statistics.collectionRate >= 80 ? COLORS.success : COLORS.accent}
             />
           )}
         </div>
@@ -178,8 +178,8 @@ export default function PaymentDashboard({ embedded = false }: { embedded?: bool
                 cursor: "pointer",
                 fontSize: TYPOGRAPHY.fontSize.sm,
                 fontWeight: TYPOGRAPHY.fontWeight.medium,
-                color: activeTab === tab.id ? COLORS.primary[500] : COLORS.muted,
-                borderBottom: activeTab === tab.id ? `2px solid ${COLORS.primary[500]}` : "none",
+                color: activeTab === tab.id ? COLORS.primary : COLORS.muted,
+                borderBottom: activeTab === tab.id ? `2px solid ${COLORS.primary}` : "none",
                 transition: TRANSITIONS.fast,
                 display: "flex",
                 alignItems: "center",
@@ -277,3 +277,5 @@ export default function PaymentDashboard({ embedded = false }: { embedded?: bool
     </div>
   );
 }
+
+

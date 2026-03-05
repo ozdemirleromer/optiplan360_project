@@ -1,4 +1,4 @@
-﻿import type { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import { COLORS, RADIUS, TYPOGRAPHY, getStatusConfig } from "./constants";
 
 interface BadgeProps {
@@ -52,11 +52,11 @@ export function Badge({ status, variant = "secondary", children, animated = fals
   }
 
   const variantMap: Record<NonNullable<BadgeProps["variant"]>, { bg: string; border: string; color: string }> = {
-    success: { bg: "rgba(74,222,128,0.15)", border: "rgba(74,222,128,0.35)", color: COLORS.success.DEFAULT },
-    secondary: { bg: "rgba(115,115,115,0.15)", border: "rgba(115,115,115,0.35)", color: COLORS.gray[300] },
-    warning: { bg: "rgba(251,191,36,0.15)", border: "rgba(251,191,36,0.35)", color: COLORS.warning.DEFAULT },
-    danger: { bg: "rgba(244,63,94,0.15)", border: "rgba(244,63,94,0.35)", color: COLORS.danger.DEFAULT },
-    info: { bg: "rgba(167,139,250,0.15)", border: "rgba(167,139,250,0.35)", color: COLORS.info.DEFAULT },
+    success: { bg: "rgba(74,222,128,0.15)", border: "rgba(74,222,128,0.35)", color: COLORS.success },
+    secondary: { bg: "rgba(115,115,115,0.15)", border: "rgba(115,115,115,0.35)", color: COLORS.muted },
+    warning: { bg: "rgba(251,191,36,0.15)", border: "rgba(251,191,36,0.35)", color: COLORS.warning },
+    danger: { bg: "rgba(244,63,94,0.15)", border: "rgba(244,63,94,0.35)", color: COLORS.danger },
+    info: { bg: "rgba(167,139,250,0.15)", border: "rgba(167,139,250,0.35)", color: COLORS.primary },
   };
 
   const selected = variantMap[variant];
@@ -81,3 +81,4 @@ export function Badge({ status, variant = "secondary", children, animated = fals
     </span>
   );
 }
+

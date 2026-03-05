@@ -1,0 +1,114 @@
+/* Ribbon Control Center */
+.ribbon-container {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+  height: 100px;
+  min-height: 100px;
+}
+
+/* Tab Bar (Top stripe) */
+.ribbon-tabs {
+  display: flex;
+  height: 28px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.ribbon-tab {
+  flex: 0 1 auto;
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.ribbon-tab:hover {
+  background: rgba(0, 120, 212, 0.05);
+}
+
+.ribbon-tab.active {
+  background: #0078D4;
+  color: white;
+  border-bottom-color: #0078D4;
+}
+
+/* Icon Strip (Bottom stripe, 60px) */
+.ribbon-icons {
+  display: flex;
+  height: 60px;
+  align-items: center;
+  padding: 8px 12px;
+  gap: 0;
+  background: var(--bg-surface);
+  overflow-x: auto;
+}
+
+.ribbon-icon-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  border-right: 1px solid var(--border);
+  min-width: fit-content;
+}
+
+.ribbon-icon-group:last-child {
+  border-right: none;
+}
+
+.ribbon-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.ribbon-icon-btn:hover {
+  background: rgba(0, 120, 212, 0.1);
+  color: #0078D4;
+}
+
+.ribbon-icon-btn:active {
+  background: #0078D4;
+  color: white;
+}
+
+.ribbon-icon-label {
+  font-family: "Segoe UI", sans-serif;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text);
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+}
+
+/* Dark mode */
+:root[data-ui-theme="dark"] .ribbon-tab:hover {
+  background: rgba(0, 120, 212, 0.15);
+}
+
+:root[data-ui-theme="dark"] .ribbon-icon-btn:hover {
+  background: rgba(0, 120, 212, 0.2);
+}

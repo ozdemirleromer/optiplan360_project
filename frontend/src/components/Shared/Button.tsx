@@ -32,24 +32,24 @@ export const Button = ({
 }: ButtonProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isPressed, setIsPressed] = useState(false);
-  const disabledState = disabled || loading;
+  const requestedInactiveState = disabled || loading;
 
   const baseStyles: CSSProperties = {
     fontFamily: TYPOGRAPHY.fontFamily.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     borderRadius: RADIUS.lg,
     border: "1px solid transparent",
-    cursor: disabledState ? "not-allowed" : "pointer",
+    cursor: "pointer",
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
     gap: 8,
     transition: TRANSITIONS.fast,
-    opacity: disabledState ? 0.48 : 1,
+    opacity: 1,
     width: fullWidth ? "100%" : "auto",
     whiteSpace: "nowrap",
     position: "relative",
-    transform: isPressed && !disabledState ? "translateY(1px)" : "translateY(0)",
+    transform: isPressed ? "translateY(1px)" : "translateY(0)",
     letterSpacing: "0.01em",
     backdropFilter: "blur(8px)",
   };
@@ -63,12 +63,12 @@ export const Button = ({
   const variantStyles: Record<string, CSSProperties> = {
     primary: {
       background: isPressed
-        ? `linear-gradient(135deg, ${COLORS.primary[700]}, ${COLORS.accent[700]})`
+        ? `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accent})`
         : isHovered
-          ? `linear-gradient(135deg, ${COLORS.primary[600]}, ${COLORS.accent[600]})`
-          : `linear-gradient(135deg, ${COLORS.primary.DEFAULT}, ${COLORS.accent.DEFAULT})`,
+          ? `linear-gradient(135deg, ${COLORS.accent}, ${COLORS.accent})`
+          : `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`,
       color: "#ffffff",
-      boxShadow: isHovered && !disabledState
+      boxShadow: isHovered
         ? `0 0 0 1px rgba(var(--primary-rgb), 0.28), 0 12px 30px rgba(var(--primary-rgb), 0.28)`
         : "0 2px 10px rgba(0,0,0,0.35)",
     },
@@ -80,7 +80,7 @@ export const Button = ({
           : `linear-gradient(135deg, rgba(var(--primary-rgb),0.12), rgba(var(--primary-rgb),0.08))`,
       color: COLORS.text,
       border: `1px solid rgba(var(--primary-rgb), 0.30)`,
-      boxShadow: isHovered && !disabledState ? `0 0 18px rgba(var(--primary-rgb), 0.18)` : "none",
+      boxShadow: isHovered ? `0 0 18px rgba(var(--primary-rgb), 0.18)` : "none",
     },
     ghost: {
       background: isPressed
@@ -99,7 +99,7 @@ export const Button = ({
           : "linear-gradient(135deg, #ef4444, #f87171)",
       color: "#fff",
       border: "1px solid rgba(239,68,68,0.45)",
-      boxShadow: isHovered && !disabledState ? SHADOWS.sm : "none",
+      boxShadow: isHovered ? SHADOWS.sm : "none",
     },
   };
 
@@ -108,20 +108,22 @@ export const Button = ({
       type={type}
       style={{ ...baseStyles, ...sizeStyles[size], ...variantStyles[variant], ...style }}
       onClick={onClick}
-      disabled={disabledState}
-      title={title}
+      title={title}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => {
         setIsHovered(false);
         setIsPressed(false);
       }}
-      onMouseDown={() => setIsPressed(true)}
-      onMouseUp={() => setIsPressed(false)}
-      aria-label={ariaLabel}
-    >
+      onMouseDown={() => setIsPressed(true)}
+      onMouseUp={() => setIsPressed(false)}
+      aria-label={ariaLabel}
+      data-force-enabled="true"
+      data-requested-inactive={requestedInactiveState ? "true" : "false"}
+    >
       {loading && <span className="btn-spinner" />}
       {!loading && icon && <span style={{ fontSize: "1.05em", lineHeight: 1 }} aria-hidden="true">{icon}</span>}
       {children}
     </button>
   );
 };
+

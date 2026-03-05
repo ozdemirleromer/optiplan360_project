@@ -137,10 +137,10 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
   const deliveredSparkData = trends?.map(t => t.ordersDelivered) ?? defaultSparkData;
 
   const kpiData = [
-    { icon: "OR", label: "Bugün Gelen", value: stats?.ordersNew ?? 0, color: COLORS.info.DEFAULT, sparkData: [...newSparkData, stats?.ordersNew ?? 0] },
-    { icon: "UR", label: "Üretimde", value: stats?.ordersProduction ?? 0, color: COLORS.accent[400], sparkData: [...prodSparkData, stats?.ordersProduction ?? 0] },
-    { icon: "HZ", label: "Hazır", value: stats?.ordersReady ?? 0, color: COLORS.success.DEFAULT, sparkData: [...readySparkData, stats?.ordersReady ?? 0] },
-    { icon: "TM", label: "Tamamlanan", value: stats?.ordersDelivered ?? 0, color: COLORS.primary[500], sparkData: [...deliveredSparkData, stats?.ordersDelivered ?? 0] }
+    { icon: "OR", label: "Bugün Gelen", value: stats?.ordersNew ?? 0, color: COLORS.primary, sparkData: [...newSparkData, stats?.ordersNew ?? 0] },
+    { icon: "UR", label: "Üretimde", value: stats?.ordersProduction ?? 0, color: COLORS.accent, sparkData: [...prodSparkData, stats?.ordersProduction ?? 0] },
+    { icon: "HZ", label: "Hazır", value: stats?.ordersReady ?? 0, color: COLORS.success, sparkData: [...readySparkData, stats?.ordersReady ?? 0] },
+    { icon: "TM", label: "Tamamlanan", value: stats?.ordersDelivered ?? 0, color: COLORS.primary, sparkData: [...deliveredSparkData, stats?.ordersDelivered ?? 0] }
   ];
 
   // Dinamik insights verileri (API'den gelen) veya fallback
@@ -207,10 +207,10 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                 padding: "12px 24px",
                 fontSize: 14,
                 fontWeight: activeTab === tab.id ? 700 : 400,
-                color: activeTab === tab.id ? COLORS.primary.DEFAULT : COLORS.muted,
-                background: activeTab === tab.id ? `${COLORS.primary.DEFAULT}08` : "transparent",
+                color: activeTab === tab.id ? COLORS.primary : COLORS.muted,
+                background: activeTab === tab.id ? `${COLORS.primary}08` : "transparent",
                 border: "none",
-                borderBottom: activeTab === tab.id ? `3px solid ${COLORS.primary.DEFAULT}` : "3px solid transparent",
+                borderBottom: activeTab === tab.id ? `3px solid ${COLORS.primary}` : "3px solid transparent",
                 cursor: "pointer",
                 fontFamily: TYPOGRAPHY.fontFamily.base,
                 marginBottom: "-1px",
@@ -250,7 +250,7 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                 border: "1px solid rgba(234,179,8,0.25)",
                 borderRadius: RADIUS.md,
                 fontSize: 12,
-                color: COLORS.warning.DEFAULT,
+                color: COLORS.warning,
               }}
             >
               <AlertTriangle size={13} aria-hidden />
@@ -291,13 +291,13 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                     <div>
                       <div style={{ fontSize: 13, fontWeight: TYPOGRAPHY.fontWeight.semibold }}>{station.name}</div>
                       <div style={{ fontSize: 11, color: COLORS.muted }}>Durum: {station.istasyonDurumu}</div>
-                      <div style={{ fontSize: 11, color: COLORS.gray[400] }}>Son okutma: {station.lastScan}</div>
+                      <div style={{ fontSize: 11, color: COLORS.muted }}>Son okutma: {station.lastScan}</div>
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <div
                         style={{
                           fontSize: 11,
-                          color: station.active ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                          color: station.active ? COLORS.success : COLORS.danger,
                           marginBottom: 4,
                         }}
                       >
@@ -314,11 +314,11 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
               <div style={{ display: "grid", gap: 10 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
                   <span style={{ fontSize: 13, color: COLORS.muted }}>Toplam Siparişler</span>
-                  <strong style={{ color: COLORS.primary[500] }}>{stats?.totalOrders ?? 0}</strong>
+                  <strong style={{ color: COLORS.primary }}>{stats?.totalOrders ?? 0}</strong>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
                   <span style={{ fontSize: 13, color: COLORS.muted }}>Aktif İstasyon</span>
-                  <strong style={{ color: COLORS.success.DEFAULT }}>{activeCount} / {stations.length}</strong>
+                  <strong style={{ color: COLORS.success }}>{activeCount} / {stations.length}</strong>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: `1px solid ${COLORS.border}`, paddingBottom: 8 }}>
                   <span style={{ fontSize: 13, color: COLORS.muted }}>Müşteri Sayısı</span>
@@ -344,13 +344,13 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(320px,1fr))", gap: 12 }}>
               <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: RADIUS.md, padding: "10px 12px", background: "rgba(255,255,255,.015)" }}>
-                <h4 style={{ margin: "0 0 8px", fontSize: 13, color: COLORS.primary[500] }}>Risk ve Olasılık Matrisi</h4>
+                <h4 style={{ margin: "0 0 8px", fontSize: 13, color: COLORS.primary }}>Risk ve Olasılık Matrisi</h4>
                 <div style={{ display: "grid", gap: 8 }}>
                   {probabilityInsights.map((item) => (
                     <div key={item.label} style={{ borderBottom: `1px dashed ${COLORS.border}`, paddingBottom: 6 }}>
                       <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
                         <span style={{ fontSize: 12 }}>{item.label}</span>
-                        <span style={{ fontSize: 11, color: COLORS.warning.DEFAULT }}>{item.probability}</span>
+                        <span style={{ fontSize: 11, color: COLORS.warning }}>{item.probability}</span>
                       </div>
                       <div style={{ fontSize: 11, color: COLORS.muted }}>Etki: {item.impact} | Aksiyon: {item.action}</div>
                     </div>
@@ -359,7 +359,7 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
               </div>
 
               <div style={{ border: `1px solid ${COLORS.border}`, borderRadius: RADIUS.md, padding: "10px 12px", background: "rgba(255,255,255,.015)" }}>
-                <h4 style={{ margin: "0 0 8px", fontSize: 13, color: COLORS.primary[500] }}>Kapasite ve Talep Planı</h4>
+                <h4 style={{ margin: "0 0 8px", fontSize: 13, color: COLORS.primary }}>Kapasite ve Talep Planı</h4>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500 }}>
                     <thead>
@@ -376,7 +376,7 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                           <td style={{ fontSize: 12, padding: "8px 6px" }}>{item.demand}</td>
                           <td style={{ fontSize: 12, padding: "8px 6px" }}>{item.capacity}</td>
                           <td style={{ fontSize: 12, padding: "8px 6px" }}>{item.utilization}</td>
-                          <td style={{ fontSize: 12, padding: "8px 6px", color: item.risk === "Kritik" ? COLORS.error.DEFAULT : item.risk === "Yüksek" ? COLORS.warning.DEFAULT : COLORS.success.DEFAULT }}>
+                          <td style={{ fontSize: 12, padding: "8px 6px", color: item.risk === "Kritik" ? COLORS.danger : item.risk === "Yüksek" ? COLORS.warning : COLORS.success }}>
                             {item.risk}
                           </td>
                         </tr>
@@ -392,14 +392,14 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
             <div style={{ overflowX: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ borderBottom: `1px solid ${COLORS.border2}` }}>
+                  <tr style={{ borderBottom: `1px solid ${COLORS.border}` }}>
                     {["Sipariş No", "Müşteri", "Malzeme", "Parça", "Öncelik", "Durum", "Tarih"].map((h) => (
                       <th
                         key={h}
                         style={{
                           padding: "11px 12px",
                           fontSize: 11,
-                          color: COLORS.gray[400],
+                          color: COLORS.muted,
                           textTransform: "uppercase",
                           letterSpacing: ".05em",
                           textAlign: "left",
@@ -414,15 +414,15 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                   {recentOrders.length > 0 ? (
                     recentOrders.map((order) => (
                       <tr key={order.id} style={{ borderBottom: `1px solid ${COLORS.border}` }}>
-                        <td style={{ padding: "11px 12px", color: COLORS.primary[500], fontFamily: TYPOGRAPHY.fontFamily.mono, fontSize: 12 }}>
+                        <td style={{ padding: "11px 12px", color: COLORS.primary, fontFamily: TYPOGRAPHY.fontFamily.mono, fontSize: 12 }}>
                           {order.id?.substring(0, 8)}...
                         </td>
                         <td style={{ padding: "11px 12px" }}>
                           <div style={{ fontSize: 13 }}>{order.cust || "—"}</div>
-                          <div style={{ fontSize: 11, color: COLORS.gray[400] }}>{order.phone || "—"}</div>
+                          <div style={{ fontSize: 11, color: COLORS.muted }}>{order.phone || "—"}</div>
                         </td>
                         <td style={{ padding: "11px 12px", fontSize: 13, color: COLORS.muted }}>{order.mat || "—"}</td>
-                        <td style={{ padding: "11px 12px", fontSize: 13, color: COLORS.accent[400], fontWeight: TYPOGRAPHY.fontWeight.bold }}>
+                        <td style={{ padding: "11px 12px", fontSize: 13, color: COLORS.accent, fontWeight: TYPOGRAPHY.fontWeight.bold }}>
                           {getPartCount(order.parts, 1)}
                         </td>
                         <td style={{ padding: "11px 12px" }}>
@@ -431,7 +431,7 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
                         <td style={{ padding: "11px 12px" }}>
                           <Badge status={order.status || "NEW"} />
                         </td>
-                        <td style={{ padding: "11px 12px", fontSize: 12, color: COLORS.gray[400] }}>
+                        <td style={{ padding: "11px 12px", fontSize: 12, color: COLORS.muted }}>
                           {order.date ? new Date(order.date).toLocaleDateString("tr-TR") : "—"}
                         </td>
                       </tr>
@@ -452,3 +452,5 @@ export function Dashboard({ currentUser = { name: "Kullanıcı" }, onNewOrder }:
     </div>
   );
 }
+
+

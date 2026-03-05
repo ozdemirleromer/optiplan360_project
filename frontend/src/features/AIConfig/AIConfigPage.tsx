@@ -213,8 +213,8 @@ export default function AIConfigPage() {
 
   const feedbackBg =
     feedback?.type === "success"
-      ? { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)", color: COLORS.success.DEFAULT }
-      : { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.35)",  color: COLORS.error.DEFAULT };
+      ? { bg: "rgba(16,185,129,0.12)", border: "rgba(16,185,129,0.35)", color: COLORS.success }
+      : { bg: "rgba(239,68,68,0.12)",  border: "rgba(239,68,68,0.35)",  color: COLORS.danger };
 
   const providerOptions = PROVIDERS.map((p) => ({ value: p.provider, label: p.name }));
   const modelOptions = (PROVIDERS.find((p) => p.provider === formData.provider)?.models ?? [])
@@ -266,8 +266,8 @@ export default function AIConfigPage() {
                   padding: "8px 14px", fontSize: 13,
                   fontWeight: active ? 600 : 400,
                   background: "none", border: "none",
-                  borderBottom: active ? `2px solid ${COLORS.primary.DEFAULT}` : "2px solid transparent",
-                  color: active ? COLORS.primary.DEFAULT : COLORS.muted,
+                  borderBottom: active ? `2px solid ${COLORS.primary}` : "2px solid transparent",
+                  color: active ? COLORS.primary : COLORS.muted,
                   cursor: "pointer", marginBottom: -1,
                 }}
               >
@@ -460,7 +460,7 @@ export default function AIConfigPage() {
                         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                           <div style={{
                             width: 10, height: 10, borderRadius: "50%",
-                            background: info.active ? COLORS.success.DEFAULT : COLORS.gray[400],
+                            background: info.active ? COLORS.success : COLORS.muted,
                           }} />
                           <div>
                             <div style={{ fontWeight: 500 }}>{service.toUpperCase()}</div>
@@ -532,7 +532,7 @@ export default function AIConfigPage() {
                   padding: 12,
                 }}
               >
-                <div style={{ fontWeight: 600, marginBottom: 4, color: testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT }}>
+                <div style={{ fontWeight: 600, marginBottom: 4, color: testResult.success ? COLORS.success : COLORS.danger }}>
                   {testResult.success ? "✓ Test Başarılı" : "✗ Test Başarısız"}
                 </div>
                 <div style={{ fontSize: 13, color: COLORS.text }}>{testResult.message}</div>
@@ -544,3 +544,4 @@ export default function AIConfigPage() {
     </div>
   );
 }
+

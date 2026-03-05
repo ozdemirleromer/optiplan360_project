@@ -1,18 +1,29 @@
 .app-shell {
   min-height: 100vh;
+  height: 100vh;
   display: flex;
+  flex-direction: column;
   background: var(--bg-main);
   color: var(--text-main);
   font-family: var(--font-body);
   position: relative;
+  overflow: hidden;
+}
+
+.app-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .app-main {
   flex: 1;
   min-width: 0;
-  margin-top: var(--mobile-header-height, 0);
   display: flex;
   flex-direction: column;
+  overflow: auto;
 }
 
 .page-content {
@@ -827,4 +838,63 @@ html[data-ui-theme="industrialGrid"] .sidebar-shell.is-collapsed {
   html[data-ui-theme="cleanProfessional"] .app-main {
     max-width: none;
   }
+}
+
+/* Industrial shell override: force flat control-software look regardless of persisted legacy theme */
+html[data-ui-theme] .app-shell {
+  background: #121212 !important;
+  color: #F3F4F6 !important;
+}
+
+html[data-ui-theme] .sidebar-shell {
+  background: #1E1E1E !important;
+  border-right: 1px solid #333333 !important;
+  backdrop-filter: none !important;
+}
+
+html[data-ui-theme] .shared-card {
+  background: #1E1E1E !important;
+  border: 1px solid #333333 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html[data-ui-theme] .topbar-shell,
+html[data-ui-theme] .global-search-shell,
+html[data-ui-theme] .global-search-input-wrap {
+  background: #1E1E1E !important;
+  border-color: #333333 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html[data-ui-theme] .global-status-note.is-info {
+  background: #1E1E1E !important;
+  border-color: #333333 !important;
+  box-shadow: none !important;
+}
+
+html[data-ui-theme] .global-status-note.is-warning {
+  background: #3f1f0f !important;
+  border-color: #7c2d12 !important;
+  box-shadow: none !important;
+}
+
+html[data-ui-theme] .premium-pill-tabs,
+html[data-ui-theme] .premium-pill-tab,
+html[data-ui-theme] .premium-chip {
+  border-radius: 0 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html[data-ui-theme] .premium-pill-tab.is-active,
+html[data-ui-theme] .premium-chip.is-active {
+  background: #005A9E !important;
+  border-color: #0078D4 !important;
+  color: #F3F4F6 !important;
+}
+
+html[data-ui-theme] * {
+  transition: none !important;
 }

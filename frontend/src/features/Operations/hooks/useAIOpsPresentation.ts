@@ -30,9 +30,9 @@ const HEALTH_TO_BADGE: Record<string, BadgeVariant> = {
 
 function getStatusToneMap(): Record<string, { label: string; color: string }> {
   return {
-    HEALTHY: { label: "Sağlam", color: COLORS.success.DEFAULT },
-    DEGRADED: { label: "Dalgalanma", color: COLORS.warning.DEFAULT },
-    DISCONNECTED: { label: "Bağlantı Yok", color: COLORS.danger.DEFAULT },
+    HEALTHY: { label: "Sağlam", color: COLORS.success },
+    DEGRADED: { label: "Dalgalanma", color: COLORS.warning },
+    DISCONNECTED: { label: "Bağlantı Yok", color: COLORS.danger },
     UNKNOWN: { label: "Bilinmiyor", color: COLORS.muted },
   };
 }
@@ -162,3 +162,4 @@ export function useAIOpsPresentation(stats: AIOpsStats): AIOpsPresentationModel 
     riskItems,
   };
 }
+

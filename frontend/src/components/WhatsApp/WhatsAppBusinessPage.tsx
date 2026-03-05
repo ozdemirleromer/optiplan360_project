@@ -58,9 +58,9 @@ type TabId = "overview" | "config" | "send" | "history";
 // ── Sabitler ─────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, { bg: string; color: string; label: string }> = {
-  SENT: { bg: COLORS.success.light, color: COLORS.success.DEFAULT, label: "Gönderildi" },
-  FAILED: { bg: COLORS.danger.light, color: COLORS.danger.DEFAULT, label: "Başarısız" },
-  PENDING: { bg: COLORS.warning.light, color: COLORS.warning.DEFAULT, label: "Bekliyor" },
+  SENT: { bg: COLORS.success, color: COLORS.success, label: "Gönderildi" },
+  FAILED: { bg: COLORS.danger, color: COLORS.danger, label: "Başarısız" },
+  PENDING: { bg: COLORS.warning, color: COLORS.warning, label: "Bekliyor" },
 };
 
 const TABS: { id: TabId; label: string; icon: React.ReactNode }[] = [
@@ -178,7 +178,7 @@ export function WhatsAppBusinessPage() {
             zIndex: 9999,
             padding: "12px 20px",
             borderRadius: RADIUS.md,
-            background: toast.type === "success" ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT,
+            background: toast.type === "success" ? COLORS.success : COLORS.danger,
             color: "#fff",
             fontSize: 13,
             fontWeight: TYPOGRAPHY.fontWeight.semibold,
@@ -219,8 +219,8 @@ export function WhatsAppBusinessPage() {
                 padding: "10px 16px",
                 background: "transparent",
                 border: "none",
-                borderBottom: `2px solid ${activeTab === tab.id ? COLORS.primary.DEFAULT : "transparent"}`,
-                color: activeTab === tab.id ? COLORS.primary.DEFAULT : COLORS.muted,
+                borderBottom: `2px solid ${activeTab === tab.id ? COLORS.primary : "transparent"}`,
+                color: activeTab === tab.id ? COLORS.primary : COLORS.muted,
                 fontWeight: activeTab === tab.id ? TYPOGRAPHY.fontWeight.semibold : TYPOGRAPHY.fontWeight.normal,
                 fontSize: 13,
                 cursor: "pointer",
@@ -320,10 +320,10 @@ function OverviewTab({
               width: 12,
               height: 12,
               borderRadius: "50%",
-              background: isConfigured ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT,
+              background: isConfigured ? COLORS.success : COLORS.danger,
               boxShadow: isConfigured
-                ? `0 0 8px ${COLORS.success.DEFAULT}`
-                : `0 0 8px ${COLORS.danger.DEFAULT}`,
+                ? `0 0 8px ${COLORS.success}`
+                : `0 0 8px ${COLORS.danger}`,
             }}
           />
           <span style={{ fontSize: 14, fontWeight: TYPOGRAPHY.fontWeight.semibold, color: COLORS.text }}>
@@ -336,8 +336,8 @@ function OverviewTab({
               marginTop: 12,
               padding: "10px 14px",
               borderRadius: RADIUS.md,
-              background: COLORS.warning.light,
-              color: COLORS.warning.DEFAULT,
+              background: COLORS.warning,
+              color: COLORS.warning,
               fontSize: 12,
               display: "flex",
               alignItems: "center",
@@ -356,19 +356,19 @@ function OverviewTab({
           icon={<Send size={16} aria-hidden="true" />}
           label="Toplam Gönderilen"
           value={summary?.totalSent ?? 0}
-          color={COLORS.primary.DEFAULT}
+          color={COLORS.primary}
         />
         <KPICard
           icon={<Clock size={16} aria-hidden="true" />}
           label="Bugün Gönderilen"
           value={summary?.todaySent ?? 0}
-          color={COLORS.success.DEFAULT}
+          color={COLORS.success}
         />
         <KPICard
           icon={<XCircle size={16} aria-hidden="true" />}
           label="Başarısız"
           value={summary?.failed ?? 0}
-          color={COLORS.danger.DEFAULT}
+          color={COLORS.danger}
         />
         <KPICard
           icon={<CheckCircle size={16} aria-hidden="true" />}
@@ -378,7 +378,7 @@ function OverviewTab({
               ? `%${Math.round(((summary.totalSent - summary.failed) / summary.totalSent) * 100)}`
               : "%0"
           }
-          color={COLORS.accent.DEFAULT}
+          color={COLORS.accent}
         />
       </div>
 
@@ -632,7 +632,7 @@ function ConfigTab({
               width: 10,
               height: 10,
               borderRadius: "50%",
-              background: config?.configured ? COLORS.success.DEFAULT : COLORS.warning.DEFAULT,
+              background: config?.configured ? COLORS.success : COLORS.warning,
             }}
           />
           <span style={{ fontSize: 13, color: COLORS.text }}>
@@ -647,9 +647,9 @@ function ConfigTab({
               marginTop: 12,
               padding: 12,
               borderRadius: RADIUS.md,
-              background: COLORS.success.light,
+              background: COLORS.success,
               fontSize: 12,
-              color: COLORS.success.DEFAULT,
+              color: COLORS.success,
               display: "grid",
               gap: 4,
             }}
@@ -759,8 +759,8 @@ function SendTab({
               marginBottom: 16,
               padding: "10px 14px",
               borderRadius: RADIUS.md,
-              background: COLORS.warning.light,
-              color: COLORS.warning.DEFAULT,
+              background: COLORS.warning,
+              color: COLORS.warning,
               fontSize: 12,
               display: "flex",
               alignItems: "center",
@@ -898,7 +898,7 @@ function SendTab({
                   style={{
                     padding: "10px 14px",
                     borderRadius: RADIUS.md,
-                    border: `1px solid ${selectedTemplate === t.name ? COLORS.primary.DEFAULT : COLORS.border}`,
+                    border: `1px solid ${selectedTemplate === t.name ? COLORS.primary : COLORS.border}`,
                     background: selectedTemplate === t.name ? primaryRgba(0.08) : COLORS.bg.elevated,
                     cursor: "pointer",
                     transition: "all 0.15s ease",
@@ -913,8 +913,8 @@ function SendTab({
                         fontSize: 10,
                         padding: "2px 6px",
                         borderRadius: RADIUS.full,
-                        background: `${COLORS.primary.DEFAULT}18`,
-                        color: COLORS.primary.DEFAULT,
+                        background: `${COLORS.primary}18`,
+                        color: COLORS.primary,
                         fontWeight: TYPOGRAPHY.fontWeight.semibold,
                       }}
                     >
@@ -964,9 +964,9 @@ function HistoryTab({
 
   const filterButtons: { id: "ALL" | "SENT" | "FAILED" | "PENDING"; label: string; color: string }[] = [
     { id: "ALL", label: "Tümü", color: COLORS.text },
-    { id: "SENT", label: "Gönderildi", color: COLORS.success.DEFAULT },
-    { id: "FAILED", label: "Başarısız", color: COLORS.danger.DEFAULT },
-    { id: "PENDING", label: "Bekliyor", color: COLORS.warning.DEFAULT },
+    { id: "SENT", label: "Gönderildi", color: COLORS.success },
+    { id: "FAILED", label: "Başarısız", color: COLORS.danger },
+    { id: "PENDING", label: "Bekliyor", color: COLORS.warning },
   ];
 
   return (
@@ -1110,7 +1110,7 @@ function HistoryTab({
                         style={{
                           padding: "8px 10px",
                           borderBottom: `1px solid ${COLORS.border}`,
-                          color: COLORS.danger.DEFAULT,
+                          color: COLORS.danger,
                           fontSize: 11,
                           maxWidth: 150,
                           overflow: "hidden",
@@ -1137,3 +1137,4 @@ function HistoryTab({
 }
 
 export default WhatsAppBusinessPage;
+

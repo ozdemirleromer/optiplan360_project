@@ -143,7 +143,7 @@ def get_current_customer(current_user: User = Depends(get_current_user)) -> User
 
 
 
-        raise AuthorizationError("Bu alana sadece mÃ¼ÅŸteri kullanÄ±cÄ±larÄ± eriÅŸebilir.")
+        raise AuthorizationError("Bu alana sadece müşteri kullanıcıları erişebilir.")
 
 
 
@@ -153,12 +153,11 @@ def get_current_customer(current_user: User = Depends(get_current_user)) -> User
 
 
 
-        raise AuthorizationError("KullanÄ±cÄ± hesabÄ±nÄ±za tanÄ±mlÄ± bir ÅŸirket (CRM Account) bulunamadÄ±.")
+        raise AuthorizationError("Kullanıcı hesabınıza tanımlı bir şirket (CRM Account) bulunamadı.")
 
 
 
 
-        )
 
 
 

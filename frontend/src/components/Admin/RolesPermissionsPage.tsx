@@ -219,9 +219,9 @@ export function RolesPermissionsPage() {
         <div style={{ maxWidth: "1400px", margin: "0 auto" }}>
           {/* İstatistik Kartları */}
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "12px", marginBottom: "20px" }}>
-            <Card style={{ background: `${COLORS.primary[500]}08`, borderLeft: `4px solid ${COLORS.primary[500]}` }}>
+            <Card style={{ background: `${COLORS.primary}08`, borderLeft: `4px solid ${COLORS.primary}` }}>
               <div style={{ fontSize: "13px", color: COLORS.muted, marginBottom: "8px" }}>Toplam Kullanıcı</div>
-              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.primary[500] }}>{roleStats.total}</div>
+              <div style={{ fontSize: "28px", fontWeight: "700", color: COLORS.primary }}>{roleStats.total}</div>
             </Card>
             {ROLES.map((role) => (
               <Card
@@ -363,7 +363,7 @@ export function RolesPermissionsPage() {
                       key={mod.module}
                       style={{
                         borderBottom: `1px solid ${COLORS.border}`,
-                        background: idx % 2 === 0 ? "transparent" : `${COLORS.gray[100]}40`,
+                        background: idx % 2 === 0 ? "transparent" : `${COLORS.muted}40`,
                       }}
                     >
                       <td style={{ padding: "12px", fontWeight: "600", color: COLORS.text }}>
@@ -437,3 +437,5 @@ export function RolesPermissionsPage() {
     </div>
   );
 }
+
+

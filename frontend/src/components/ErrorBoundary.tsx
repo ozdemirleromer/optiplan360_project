@@ -140,7 +140,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 <summary
                   style={{
                     cursor: 'pointer',
-                    color: COLORS.primary.DEFAULT,
+                    color: COLORS.primary,
                     fontWeight: '500',
                     marginBottom: '0.5rem',
                   }}
@@ -180,7 +180,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 style={{
                   flex: 1,
                   padding: '0.75rem 1.5rem',
-                  backgroundColor: COLORS.primary.DEFAULT,
+                  backgroundColor: COLORS.primary,
                   color: '#fff',
                   border: 'none',
                   borderRadius: '2px',
@@ -190,10 +190,10 @@ export class ErrorBoundary extends Component<Props, State> {
                   transition: 'all 0.2s ease',
                 }}
                 onMouseOver={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.primary[600];
+                  e.currentTarget.style.backgroundColor = COLORS.accent;
                 }}
                 onMouseOut={(e) => {
-                  e.currentTarget.style.backgroundColor = COLORS.primary.DEFAULT;
+                  e.currentTarget.style.backgroundColor = COLORS.primary;
                 }}
               >
                 Sayfayı Yenile
@@ -205,7 +205,7 @@ export class ErrorBoundary extends Component<Props, State> {
                   flex: 1,
                   padding: '0.75rem 1.5rem',
                   backgroundColor: 'transparent',
-                  color: COLORS.primary.DEFAULT,
+                  color: COLORS.primary,
                   border: `1px solid ${primaryRgba(0.3)}`,
                   borderRadius: '2px',
                   fontSize: '0.875rem',
@@ -231,3 +231,4 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 }
+

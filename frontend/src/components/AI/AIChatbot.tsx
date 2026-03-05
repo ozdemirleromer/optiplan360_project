@@ -260,7 +260,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
           borderRadius: '50%',
 
-          background: `linear-gradient(135deg, ${COLORS.primary.DEFAULT}, #8b5cf6)`,
+          background: `linear-gradient(135deg, ${COLORS.primary}, #8b5cf6)`,
 
           border: 'none',
 
@@ -268,7 +268,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
           cursor: 'pointer',
 
-          boxShadow: `0 8px 32px ${COLORS.primary.DEFAULT}50`,
+          boxShadow: `0 8px 32px ${COLORS.primary}50`,
 
           display: 'flex',
 
@@ -358,7 +358,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
           padding: '12px 16px',
 
-          background: `linear-gradient(135deg, ${COLORS.primary.DEFAULT}, #8b5cf6)`,
+          background: `linear-gradient(135deg, ${COLORS.primary}, #8b5cf6)`,
 
           color: 'white',
 
@@ -468,7 +468,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
                     background: msg.role === 'user'
 
-                      ? `linear-gradient(135deg, ${COLORS.primary.DEFAULT}, ${COLORS.primary[600]})`
+                      ? `linear-gradient(135deg, ${COLORS.primary}, ${COLORS.accent})`
 
                       : COLORS.bg.surface,
 
@@ -540,7 +540,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
                     background: 'transparent',
 
-                    color: COLORS.primary.DEFAULT,
+                    color: COLORS.primary,
 
                     fontSize: 11,
 
@@ -552,7 +552,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
                   }}
 
-                  onMouseEnter={(e) => { e.currentTarget.style.background = `${COLORS.primary.DEFAULT}15`; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = `${COLORS.primary}15`; }}
 
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
 
@@ -644,7 +644,7 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
                 borderRadius: RADIUS.md,
 
-                background: input.trim() ? COLORS.primary.DEFAULT : COLORS.bg.main,
+                background: input.trim() ? COLORS.primary : COLORS.bg.main,
 
                 border: 'none',
 
@@ -687,4 +687,5 @@ export const AIChatbot = ({ onNavigate: _onNavigate }: AIChatbotProps) => {
 
 
 export default AIChatbot;
+
 

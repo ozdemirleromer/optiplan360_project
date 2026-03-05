@@ -142,9 +142,9 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
               alignItems: "center",
               justifyContent: "space-between",
               padding: 12,
-              background: `${COLORS.primary[500]}10`,
+              background: `${COLORS.primary}10`,
               borderRadius: RADIUS.md,
-              border: `1px solid ${COLORS.primary[500]}30`,
+              border: `1px solid ${COLORS.primary}30`,
             }}
           >
             <div>
@@ -160,7 +160,7 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
                 cursor: "pointer",
                 fontSize: 13,
                 fontWeight: 500,
-                background: config.enabled ? COLORS.success.DEFAULT : COLORS.muted,
+                background: config.enabled ? COLORS.success : COLORS.muted,
                 color: "white",
               }}
             >
@@ -171,7 +171,7 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
           {/* Access Key ID */}
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-              Access Key ID <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+              Access Key ID <span style={{ color: COLORS.danger }}>*</span>
             </label>
             <input
               type="text"
@@ -194,7 +194,7 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
           {/* Secret Access Key */}
           <div>
             <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
-              Secret Access Key <span style={{ color: COLORS.error.DEFAULT }}>*</span>
+              Secret Access Key <span style={{ color: COLORS.danger }}>*</span>
             </label>
             <input
               type="password"
@@ -252,16 +252,16 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
                 padding: 12,
                 borderRadius: RADIUS.md,
                 background: testResult.success
-                  ? `${COLORS.success.DEFAULT}15`
-                  : `${COLORS.error.DEFAULT}15`,
-                border: `1px solid ${testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT}30`,
+                  ? `${COLORS.success}15`
+                  : `${COLORS.danger}15`,
+                border: `1px solid ${testResult.success ? COLORS.success : COLORS.danger}30`,
               }}
             >
               <div
                 style={{
                   fontSize: 13,
                   fontWeight: 500,
-                  color: testResult.success ? COLORS.success.DEFAULT : COLORS.error.DEFAULT,
+                  color: testResult.success ? COLORS.success : COLORS.danger,
                   display: "flex",
                   alignItems: "center",
                   gap: 8,
@@ -300,3 +300,5 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
     </div>
   );
 }
+
+

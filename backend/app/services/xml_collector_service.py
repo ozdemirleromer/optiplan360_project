@@ -42,6 +42,7 @@ from ..database import SessionLocal
 from ..models import OptiAuditEvent, OptiJob, OptiJobStateEnum
 from ..models.enums import JobErrorCode
 from . import tracking_folder_service as tracking
+from .orchestrator_service import OrchestratorService
 
 logger = logging.getLogger(__name__)
 
@@ -76,18 +77,6 @@ for _d in (
 
 
 # -- Yardimci Fonksiyonlar --
-
-
-def _add_audit(
-    db: Session, job_id: str, event_type: str, message: str, details: dict | None = None
-):
-    event = OptiAuditEvent(
-        job_id=job_id,
-        event_type=event_type,
-        message=message,
-        details_json=json.dumps(details, default=str) if details else None,
-    )
-    db.add(event)
 
 
 def _validate_xml(xml_path: str) -> tuple[bool, str]:
@@ -175,6 +164,7 @@ def collect_xml_once() -> dict:
     """
     stats = {"processed": 0, "failed": 0, "delivered": 0, "done": 0}
     db: Session = SessionLocal()
+    orchestrator = OrchestratorService(db)
 
     try:
         now = datetime.now(tz=timezone.utc)
@@ -207,17 +197,15 @@ def collect_xml_once() -> dict:
 
             if state_time and (now - state_time).total_seconds() > XML_COLLECT_TIMEOUT_S:
                 elapsed = (now - state_time).total_seconds()
-                job.state = OptiJobStateEnum.FAILED
-                job.error_code = JobErrorCode.OPTI_XML_TIMEOUT
-                job.error_message = f"XML bekleme zaman asimi ({XML_COLLECT_TIMEOUT_S}s)"
-                _add_audit(
-                    db,
-                    job.id,
-                    "STATE_FAILED",
-                    "Zaman asimi: XML gelmedi",
-                    {"timeout_s": XML_COLLECT_TIMEOUT_S},
+                orchestrator.update_job_state(
+                    job,
+                    OptiJobStateEnum.FAILED,
+                    audit_event_type="STATE_FAILED",
+                    audit_message="Zaman asimi: XML gelmedi",
+                    audit_details={"timeout_s": XML_COLLECT_TIMEOUT_S},
+                    error_code=JobErrorCode.OPTI_XML_TIMEOUT,
+                    error_message=f"XML bekleme zaman asimi ({XML_COLLECT_TIMEOUT_S}s)",
                 )
-                db.commit()
                 logger.error(
                     "XML_TIMEOUT job=%s elapsed=%.0fs limit=%ds",
                     job.id, elapsed, XML_COLLECT_TIMEOUT_S,
@@ -244,13 +232,15 @@ def collect_xml_once() -> dict:
             is_valid, err_msg = _validate_xml(xml_path)
             if not is_valid:
                 logger.warning("Gecersiz XML (job=%s): %s - %s", job.id, xml_path, err_msg)
-                job.state = OptiJobStateEnum.FAILED
-                job.error_code = JobErrorCode.XML_INVALID
-                job.error_message = err_msg
-                _add_audit(
-                    db, job.id, "STATE_FAILED", f"Gecersiz XML: {err_msg}", {"xml_path": xml_path}
+                orchestrator.update_job_state(
+                    job,
+                    OptiJobStateEnum.FAILED,
+                    audit_event_type="STATE_FAILED",
+                    audit_message=f"Gecersiz XML: {err_msg}",
+                    audit_details={"xml_path": xml_path},
+                    error_code=JobErrorCode.XML_INVALID,
+                    error_message=err_msg,
                 )
-                db.commit()
                 tracking.on_state_change("FAILED", job.id, xml_path=xml_path, error_message=err_msg)
                 tracking.write_daily_log(
                     f"Job {job.id[:8]}: FAILED - Gecersiz XML: {err_msg}", log_type="collector"
@@ -263,20 +253,15 @@ def collect_xml_once() -> dict:
             xml_fname = os.path.basename(xml_path)
             parse_result = _parse_solution_xml(xml_path)
 
-            job.state = OptiJobStateEnum.XML_READY
-            job.xml_file_path = xml_path
-            # Parse sonucunu result_json'a kaydet (plaka adedi, maliyet vb.)
-            if hasattr(job, "result_json"):
-                job.result_json = json.dumps(parse_result, default=str)
-
-            _add_audit(
-                db,
-                job.id,
-                "STATE_XML_READY",
-                "XML bulundu, dogrulandi ve parse edildi",
-                {"xml_file": xml_fname, **parse_result},
+            orchestrator.update_job_state(
+                job,
+                OptiJobStateEnum.XML_READY,
+                audit_event_type="STATE_XML_READY",
+                audit_message="XML bulundu, dogrulandi ve parse edildi",
+                audit_details={"xml_file": xml_fname, **parse_result},
+                xml_file_path=xml_path,
+                result_json=json.dumps(parse_result, default=str),
             )
-            db.commit()
             stats["processed"] += 1
 
             # AGENT_ONEFILE §4: inbox/ icine atomik kopyala
@@ -297,16 +282,14 @@ def collect_xml_once() -> dict:
                         pass
                 continue
 
-            job.state = OptiJobStateEnum.DELIVERED
-            job.xml_file_path = inbox_final
-            _add_audit(
-                db,
-                job.id,
-                "STATE_DELIVERED",
-                "XML makine inbox klasorune kopyalandi",
-                {"inbox_path": inbox_final, "xml_file": xml_fname},
+            orchestrator.update_job_state(
+                job,
+                OptiJobStateEnum.DELIVERED,
+                audit_event_type="STATE_DELIVERED",
+                audit_message="XML makine inbox klasorune kopyalandi",
+                audit_details={"inbox_path": inbox_final, "xml_file": xml_fname},
+                xml_file_path=inbox_final,
             )
-            db.commit()
 
             # Tracking: XML_READY ve DELIVERED klasorlerine tasi
             tracking.on_state_change("XML_READY", job.id, xml_path=xml_path)
@@ -328,15 +311,13 @@ def collect_xml_once() -> dict:
 
             # AGENT_ONEFILE §4: processed/ altinda gorunurse DONE
             if _file_in_dir(xml_fname, MACHINE_PROCESSED_DIR):
-                job.state = OptiJobStateEnum.DONE
-                _add_audit(
-                    db,
-                    job.id,
-                    "STATE_DONE",
-                    "Makine ACK alindi (processed/)",
-                    {"xml_file": xml_fname},
+                orchestrator.update_job_state(
+                    job,
+                    OptiJobStateEnum.DONE,
+                    audit_event_type="STATE_DONE",
+                    audit_message="Makine ACK alindi (processed/)",
+                    audit_details={"xml_file": xml_fname},
                 )
-                db.commit()
                 tracking.on_state_change(
                     "DONE", job.id, xml_path=os.path.join(MACHINE_PROCESSED_DIR, xml_fname)
                 )
@@ -349,13 +330,15 @@ def collect_xml_once() -> dict:
 
             # AGENT_ONEFILE §4: failed/ altinda gorunurse FAILED
             if _file_in_dir(xml_fname, MACHINE_FAILED_DIR):
-                job.state = OptiJobStateEnum.FAILED
-                job.error_code = JobErrorCode.OSI_ACK_FAILED
-                job.error_message = "Makine hata bildirdi (failed/ klasorunde bulundu)"
-                _add_audit(
-                    db, job.id, "STATE_FAILED", "Makine hata ACK (failed/)", {"xml_file": xml_fname}
+                orchestrator.update_job_state(
+                    job,
+                    OptiJobStateEnum.FAILED,
+                    audit_event_type="STATE_FAILED",
+                    audit_message="Makine hata ACK (failed/)",
+                    audit_details={"xml_file": xml_fname},
+                    error_code=JobErrorCode.OSI_ACK_FAILED,
+                    error_message="Makine hata bildirdi (failed/ klasorunde bulundu)",
                 )
-                db.commit()
                 tracking.on_state_change("FAILED", job.id, error_message="Makine hata ACK")
                 tracking.write_daily_log(
                     f"Job {job.id[:8]}: FAILED - Makine hata ACK", log_type="collector"
@@ -371,17 +354,15 @@ def collect_xml_once() -> dict:
                     delivered_time = delivered_time.replace(tzinfo=timezone.utc)
 
             if delivered_time and (now - delivered_time).total_seconds() > MACHINE_ACK_TIMEOUT_S:
-                job.state = OptiJobStateEnum.FAILED
-                job.error_code = JobErrorCode.OSI_ACK_TIMEOUT
-                job.error_message = f"Makine ACK zaman asimi ({MACHINE_ACK_TIMEOUT_S}s)"
-                _add_audit(
-                    db,
-                    job.id,
-                    "STATE_FAILED",
-                    "Makine ACK zaman asimi",
-                    {"timeout_s": MACHINE_ACK_TIMEOUT_S},
+                orchestrator.update_job_state(
+                    job,
+                    OptiJobStateEnum.FAILED,
+                    audit_event_type="STATE_FAILED",
+                    audit_message="Makine ACK zaman asimi",
+                    audit_details={"timeout_s": MACHINE_ACK_TIMEOUT_S},
+                    error_code=JobErrorCode.OSI_ACK_TIMEOUT,
+                    error_message=f"Makine ACK zaman asimi ({MACHINE_ACK_TIMEOUT_S}s)",
                 )
-                db.commit()
                 tracking.on_state_change(
                     "FAILED", job.id, error_message=f"ACK timeout ({MACHINE_ACK_TIMEOUT_S}s)"
                 )

@@ -783,7 +783,7 @@ function DeviceGroupPanel({
                         size={16}
                         color={
                           station.active
-                            ? COLORS.success.DEFAULT
+                            ? COLORS.success
                             : COLORS.muted
                         }
                       />
@@ -1089,3 +1089,4 @@ function DeviceGroupPanel({
     </div>
   );
 }
+

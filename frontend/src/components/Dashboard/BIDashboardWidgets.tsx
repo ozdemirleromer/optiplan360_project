@@ -20,7 +20,7 @@ interface GaugeWidgetProps {
 }
 
 export const CapacityGauge = ({ value, label, subtitle }: GaugeWidgetProps) => {
-  const color = value < 70 ? COLORS.success.DEFAULT : value < 90 ? COLORS.warning.DEFAULT : COLORS.danger.DEFAULT;
+  const color = value < 70 ? COLORS.success : value < 90 ? COLORS.warning : COLORS.danger;
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (value / 100) * circumference;
 
@@ -94,8 +94,8 @@ export const MiniChart = ({ data, labels, title, currentValue, previousValue, un
         <div style={{
           display: 'flex', alignItems: 'center', gap: 4,
           padding: '4px 8px', borderRadius: 12,
-          background: isUp ? `${COLORS.success.DEFAULT}15` : `${COLORS.danger.DEFAULT}15`,
-          color: isUp ? COLORS.success.DEFAULT : COLORS.danger.DEFAULT,
+          background: isUp ? `${COLORS.success}15` : `${COLORS.danger}15`,
+          color: isUp ? COLORS.success : COLORS.danger,
           fontSize: 12, fontWeight: 600,
         }}>
           {isUp ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
@@ -113,8 +113,8 @@ export const MiniChart = ({ data, labels, title, currentValue, previousValue, un
               minHeight: 4,
               borderRadius: 4,
               background: i === data.length - 1
-                ? COLORS.primary.DEFAULT
-                : `${COLORS.primary.DEFAULT}40`,
+                ? COLORS.primary
+                : `${COLORS.primary}40`,
               transition: 'height 0.5s ease',
             }} />
             {labels && <span style={{ fontSize: 9, color: COLORS.muted }}>{labels[i]}</span>}
@@ -141,15 +141,15 @@ interface AIInsightsProps {
 
 export const AIInsights = ({ insights }: AIInsightsProps) => {
   const iconMap = {
-    warning: <Zap size={16} style={{ color: COLORS.warning.DEFAULT }} />,
-    info: <Target size={16} style={{ color: COLORS.info.DEFAULT }} />,
-    success: <TrendingUp size={16} style={{ color: COLORS.success.DEFAULT }} />,
+    warning: <Zap size={16} style={{ color: COLORS.warning }} />,
+    info: <Target size={16} style={{ color: COLORS.primary }} />,
+    success: <TrendingUp size={16} style={{ color: COLORS.success }} />,
   };
 
   const bgMap = {
-    warning: `${COLORS.warning.DEFAULT}10`,
-    info: `${COLORS.info.DEFAULT}10`,
-    success: `${COLORS.success.DEFAULT}10`,
+    warning: `${COLORS.warning}10`,
+    info: `${COLORS.primary}10`,
+    success: `${COLORS.success}10`,
   };
 
   return (
@@ -160,11 +160,11 @@ export const AIInsights = ({ insights }: AIInsightsProps) => {
       background: COLORS.bg.surface,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <Zap size={18} style={{ color: COLORS.primary.DEFAULT }} />
+        <Zap size={18} style={{ color: COLORS.primary }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>AI Öneriler</span>
         <span style={{
           padding: '2px 8px', borderRadius: 10, fontSize: 10, fontWeight: 600,
-          background: `${COLORS.primary.DEFAULT}20`, color: COLORS.primary.DEFAULT,
+          background: `${COLORS.primary}20`, color: COLORS.primary,
         }}>
           {insights.length} yeni
         </span>
@@ -186,8 +186,8 @@ export const AIInsights = ({ insights }: AIInsightsProps) => {
                 {insight.action && (
                   <button style={{
                     marginTop: 8, padding: '4px 10px', borderRadius: 6,
-                    background: `${COLORS.primary.DEFAULT}15`, border: `1px solid ${COLORS.primary.DEFAULT}30`,
-                    color: COLORS.primary.DEFAULT, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+                    background: `${COLORS.primary}15`, border: `1px solid ${COLORS.primary}30`,
+                    color: COLORS.primary, fontSize: 11, fontWeight: 600, cursor: 'pointer',
                   }}>
                     {insight.action}
                   </button>
@@ -218,10 +218,10 @@ interface StationGridProps {
 
 export const StationGrid = ({ stations }: StationGridProps) => {
   const statusColors = {
-    online: COLORS.success.DEFAULT,
-    offline: COLORS.danger.DEFAULT,
-    warning: COLORS.warning.DEFAULT,
-    idle: COLORS.gray[400],
+    online: COLORS.success,
+    offline: COLORS.danger,
+    warning: COLORS.warning,
+    idle: COLORS.muted,
   };
 
   const statusLabels = {
@@ -239,7 +239,7 @@ export const StationGrid = ({ stations }: StationGridProps) => {
       background: COLORS.bg.surface,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <Activity size={18} style={{ color: COLORS.primary.DEFAULT }} />
+        <Activity size={18} style={{ color: COLORS.primary }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>İstasyon Durumları</span>
       </div>
 
@@ -290,9 +290,9 @@ interface CapacityTimelineProps {
 
 export const CapacityTimeline = ({ slots }: CapacityTimelineProps) => {
   const riskColors = {
-    'Düşük': COLORS.success.DEFAULT,
-    'Orta': COLORS.warning.DEFAULT,
-    'Yüksek': COLORS.danger.DEFAULT,
+    'Düşük': COLORS.success,
+    'Orta': COLORS.warning,
+    'Yüksek': COLORS.danger,
     'Kritik': '#dc2626',
   };
 
@@ -304,7 +304,7 @@ export const CapacityTimeline = ({ slots }: CapacityTimelineProps) => {
       background: COLORS.bg.surface,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-        <Clock size={18} style={{ color: COLORS.primary.DEFAULT }} />
+        <Clock size={18} style={{ color: COLORS.primary }} />
         <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.text }}>Kapasite Planı</span>
       </div>
 
@@ -398,7 +398,7 @@ export const QuickStats = ({ stats }: QuickStatsProps) => {
             </div>
             {stat.trend && (
               <div style={{
-                color: stat.trend === 'up' ? COLORS.success.DEFAULT : stat.trend === 'down' ? COLORS.danger.DEFAULT : COLORS.muted,
+                color: stat.trend === 'up' ? COLORS.success : stat.trend === 'down' ? COLORS.danger : COLORS.muted,
               }}>
                 {stat.trend === 'up' ? <TrendingUp size={14} /> : stat.trend === 'down' ? <TrendingDown size={14} /> : <Activity size={14} />}
               </div>
@@ -410,7 +410,7 @@ export const QuickStats = ({ stats }: QuickStatsProps) => {
           {stat.trendValue && (
             <div style={{
               fontSize: 11, marginTop: 4,
-              color: stat.trend === 'up' ? COLORS.success.DEFAULT : stat.trend === 'down' ? COLORS.danger.DEFAULT : COLORS.muted,
+              color: stat.trend === 'up' ? COLORS.success : stat.trend === 'down' ? COLORS.danger : COLORS.muted,
             }}>
               {stat.trendValue}
             </div>
@@ -429,3 +429,4 @@ export default {
   CapacityTimeline,
   QuickStats,
 };
+

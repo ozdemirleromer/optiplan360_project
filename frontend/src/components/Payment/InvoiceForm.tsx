@@ -174,7 +174,7 @@ export default function InvoiceForm({ invoice, onSubmit, onClose }: InvoiceFormP
             <div style={{ fontSize: TYPOGRAPHY.fontSize.sm, color: COLORS.muted, marginBottom: 4 }}>
               Toplam Tutar
             </div>
-            <div style={{ fontSize: TYPOGRAPHY.fontSize.lg, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary[500] }}>
+            <div style={{ fontSize: TYPOGRAPHY.fontSize.lg, fontWeight: TYPOGRAPHY.fontWeight.bold, color: COLORS.primary }}>
               ₺{calculateTotal().toLocaleString("tr-TR", { maximumFractionDigits: 2 })}
             </div>
           </div>
@@ -257,10 +257,10 @@ export default function InvoiceForm({ invoice, onSubmit, onClose }: InvoiceFormP
         {error && (
           <div style={{
             padding: 12,
-            background: COLORS.error.light,
-            border: `1px solid ${COLORS.error.DEFAULT}`,
+            background: COLORS.danger,
+            border: `1px solid ${COLORS.danger}`,
             borderRadius: RADIUS.md,
-            color: COLORS.error.DEFAULT,
+            color: COLORS.danger,
             fontSize: TYPOGRAPHY.fontSize.sm,
             display: "flex",
             alignItems: "center",
@@ -280,7 +280,7 @@ export default function InvoiceForm({ invoice, onSubmit, onClose }: InvoiceFormP
               flex: 1,
               padding: "10px 16px",
               border: `1px solid ${COLORS.border}`,
-              background: COLORS.bg.subtle,
+              background: COLORS.bg.elevated,
               color: COLORS.text,
               borderRadius: RADIUS.md,
               cursor: loading ? "not-allowed" : "pointer",
@@ -298,7 +298,7 @@ export default function InvoiceForm({ invoice, onSubmit, onClose }: InvoiceFormP
               flex: 1,
               padding: "10px 16px",
               border: "none",
-              background: COLORS.primary[500],
+              background: COLORS.primary,
               color: "white",
               borderRadius: RADIUS.md,
               cursor: loading ? "not-allowed" : "pointer",
@@ -314,3 +314,5 @@ export default function InvoiceForm({ invoice, onSubmit, onClose }: InvoiceFormP
     </Card>
   );
 }
+
+

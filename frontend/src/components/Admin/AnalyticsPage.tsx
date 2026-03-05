@@ -138,9 +138,9 @@ export function AnalyticsPage() {
 
       <div style={{ padding: 24, maxWidth: 1400, margin: "0 auto", display: "grid", gap: 16 }}>
         {error && (
-          <Card style={{ background: `${COLORS.error.DEFAULT}15`, borderLeft: `4px solid ${COLORS.error.DEFAULT}` }}>
+          <Card style={{ background: `${COLORS.danger}15`, borderLeft: `4px solid ${COLORS.danger}` }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span style={{ color: COLORS.error.DEFAULT, fontSize: 13 }}>
+              <span style={{ color: COLORS.danger, fontSize: 13 }}>
                 <strong>Hata:</strong> {error}
               </span>
               <button
@@ -149,7 +149,7 @@ export function AnalyticsPage() {
                   background: "none",
                   border: "none",
                   cursor: "pointer",
-                  color: COLORS.error.DEFAULT,
+                  color: COLORS.danger,
                   fontSize: 18,
                 }}
               >
@@ -205,39 +205,39 @@ export function AnalyticsPage() {
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Toplam Siparişler</div>
             <div style={{ fontSize: 32, fontWeight: 700, color: "#06b6d4" }}>{stats.totalOrders}</div>
-            <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 4 }}>Son 30 gün</div>
+            <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Son 30 gün</div>
           </Card>
           <Card
             style={{
-              background: `linear-gradient(135deg, ${COLORS.success.DEFAULT}22, ${COLORS.success.DEFAULT}11)`,
-              borderLeft: `4px solid ${COLORS.success.DEFAULT}`,
+              background: `linear-gradient(135deg, ${COLORS.success}22, ${COLORS.success}11)`,
+              borderLeft: `4px solid ${COLORS.success}`,
             }}
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Teslim Oranı</div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.success.DEFAULT }}>{completionRate}%</div>
-            <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 4 }}>
+            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.success }}>{completionRate}%</div>
+            <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>
               {stats.ordersDelivered} teslim edildi
             </div>
           </Card>
           <Card
             style={{
-              background: `linear-gradient(135deg, ${COLORS.warning.DEFAULT}22, ${COLORS.warning.DEFAULT}11)`,
-              borderLeft: `4px solid ${COLORS.warning.DEFAULT}`,
+              background: `linear-gradient(135deg, ${COLORS.warning}22, ${COLORS.warning}11)`,
+              borderLeft: `4px solid ${COLORS.warning}`,
             }}
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Ortalama Süre</div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.warning.DEFAULT }}>{avgProcessingTime} h</div>
-            <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 4 }}>İşlem süresi</div>
+            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.warning }}>{avgProcessingTime} h</div>
+            <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>İşlem süresi</div>
           </Card>
           <Card
             style={{
-              background: `linear-gradient(135deg, ${COLORS.info[500]}22, ${COLORS.info[500]}11)`,
-              borderLeft: `4px solid ${COLORS.info[500]}`,
+              background: `linear-gradient(135deg, ${COLORS.primary}22, ${COLORS.primary}11)`,
+              borderLeft: `4px solid ${COLORS.primary}`,
             }}
           >
             <div style={{ fontSize: 12, color: COLORS.muted }}>Toplam Müşteriler</div>
-            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.info[500] }}>{stats.totalCustomers}</div>
-            <div style={{ fontSize: 11, color: COLORS.gray[400], marginTop: 4 }}>Kayıtlı</div>
+            <div style={{ fontSize: 32, fontWeight: 700, color: COLORS.primary }}>{stats.totalCustomers}</div>
+            <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Kayıtlı</div>
           </Card>
         </div>
 
@@ -294,7 +294,7 @@ export function AnalyticsPage() {
                   style={{
                     display: "inline-block",
                     padding: "4px 8px",
-                    background: COLORS.success.DEFAULT,
+                    background: COLORS.success,
                     color: "#fff",
                     borderRadius: 3,
                     fontSize: 11,
@@ -413,24 +413,24 @@ export function AnalyticsPage() {
               style={{
                 textAlign: "center",
                 padding: 16,
-                background: `${COLORS.gray[300]}10`,
+                background: `${COLORS.muted}10`,
                 borderRadius: RADIUS.md,
                 border: `1px solid ${COLORS.border}`,
               }}
             >
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.gray[500] }}>{stats.ordersNew}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.muted }}>{stats.ordersNew}</div>
               <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Yeni</div>
             </div>
             <div
               style={{
                 textAlign: "center",
                 padding: 16,
-                background: `${COLORS.warning.DEFAULT}10`,
+                background: `${COLORS.warning}10`,
                 borderRadius: RADIUS.md,
                 border: `1px solid ${COLORS.border}`,
               }}
             >
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning.DEFAULT }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.warning }}>
                 {stats.ordersProduction}
               </div>
               <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Üretimde</div>
@@ -439,24 +439,24 @@ export function AnalyticsPage() {
               style={{
                 textAlign: "center",
                 padding: 16,
-                background: `${COLORS.info[500]}10`,
+                background: `${COLORS.primary}10`,
                 borderRadius: RADIUS.md,
                 border: `1px solid ${COLORS.border}`,
               }}
             >
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.info[500] }}>{stats.ordersReady}</div>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.primary }}>{stats.ordersReady}</div>
               <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Hazır</div>
             </div>
             <div
               style={{
                 textAlign: "center",
                 padding: 16,
-                background: `${COLORS.success.DEFAULT}10`,
+                background: `${COLORS.success}10`,
                 borderRadius: RADIUS.md,
                 border: `1px solid ${COLORS.border}`,
               }}
             >
-              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success.DEFAULT }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: COLORS.success }}>
                 {stats.ordersDelivered}
               </div>
               <div style={{ fontSize: 11, color: COLORS.muted, marginTop: 4 }}>Teslim Edildi</div>
@@ -476,7 +476,7 @@ export function AnalyticsPage() {
                     background: "#f3f4f6",
                     borderRadius: RADIUS.sm,
                     borderLeft: `3px solid ${
-                      log.action.includes("ERROR") ? COLORS.error.DEFAULT : "#06b6d4"
+                      log.action.includes("ERROR") ? COLORS.danger : "#06b6d4"
                     }`,
                   }}
                 >
@@ -500,3 +500,5 @@ export function AnalyticsPage() {
     </div>
   );
 }
+
+

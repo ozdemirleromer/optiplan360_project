@@ -157,7 +157,7 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
                                    type="checkbox"
                                    checked={autoTrigger}
                                    onChange={(e) => setAutoTrigger(e.target.checked)}
-                                   style={{ width: 16, height: 16, accentColor: COLORS.primary.DEFAULT }}
+                                   style={{ width: 16, height: 16, accentColor: COLORS.primary }}
                               />
                               <span style={{ fontSize: 14, color: COLORS.text }}>Aktarım sonrası OptiPlan'ı otomatik tetikle</span>
                          </label>
@@ -170,13 +170,13 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
                                    cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center"
                               }}
                          >
-                              <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.primary.DEFAULT }}>Gelişmiş Makine Parametreleri</span>
-                              <span style={{ fontSize: 18, color: COLORS.primary.DEFAULT }}>{showAdvanced ? "−" : "+"}</span>
+                              <span style={{ fontSize: 14, fontWeight: 600, color: COLORS.primary }}>Gelişmiş Makine Parametreleri</span>
+                              <span style={{ fontSize: 18, color: COLORS.primary }}>{showAdvanced ? "−" : "+"}</span>
                          </div>
 
                          {/* Advanced Settings Fields */}
                          {showAdvanced && (
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, backgroundColor: COLORS.bg.subtle, padding: 16, borderRadius: RADIUS.md }}>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, backgroundColor: COLORS.bg.elevated, padding: 16, borderRadius: RADIUS.md }}>
                                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                                         <label style={{ fontSize: 13, color: COLORS.text }}>Testere Kalınlığı (mm)</label>
                                         <input type="number" step="0.1" value={sawThickness} onChange={(e) => setSawThickness(parseFloat(e.target.value) || 0)} style={{ padding: "6px 10px", borderRadius: RADIUS.sm, border: `1px solid ${COLORS.border}` }} />
@@ -218,7 +218,7 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
 
                                    <div style={{ display: "flex", flexDirection: "column", gap: 6, justifyContent: "flex-end", height: "100%", paddingBottom: 6 }}>
                                         <label style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-                                             <input type="checkbox" checked={allowRotation} onChange={(e) => setAllowRotation(e.target.checked)} style={{ accentColor: COLORS.primary.DEFAULT }} />
+                                             <input type="checkbox" checked={allowRotation} onChange={(e) => setAllowRotation(e.target.checked)} style={{ accentColor: COLORS.primary }} />
                                              <span style={{ fontSize: 13, color: COLORS.text }}>Döndürmeye İzin Ver (Rotation)</span>
                                         </label>
                                    </div>
@@ -257,3 +257,4 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
           </div>
      );
 }
+

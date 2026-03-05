@@ -1,687 +1,150 @@
-"""
+from dataclasses import dataclass, field
+from typing import Any
 
-
-Export Format Doğrulama Servisi
-
-
-Değişmez kurallara göre export öncesi format kontrolü
-
-
-"""
-
-
-
-
-
-from dataclasses import dataclass
-
-
-from typing import Any, Dict, List
-
-
-
-
-
-
+from ..constants.excel_schema import (
+    ARKALIK_FORBIDDEN_COLUMNS,
+    PART_GROUPS,
+    REQUIRED_COLUMNS,
+    VALID_GRAIN_VALUES,
+)
 
 
 @dataclass
-
-
 class ValidationResult:
+    is_valid: bool
+    details: dict[str, Any] = field(default_factory=dict)
+    errors: list[str] = field(default_factory=list)
+    warnings: list[str] = field(default_factory=list)
 
-
-    passed: bool
-
-
-    details: Dict[str, Any]
-
-
-    errors: List[str]
-
-
-    warnings: List[str]
-
-
-
-
-
-
+    @property
+    def passed(self) -> bool:
+        return self.is_valid
 
 
 class ExportValidator:
-
-
-    """
-
-
-    Export öncesi format doğrulama
-
-
-    Kural #3: .xlsx formatı kontrolü
-
-
-    Kural #4: Tag bütünlüğü kontrolü
-
-
-    Kural #5: Ondalık değer doğrulama
-
-
-    Kural #1: Gövde/Arkalık ayrımı
-
-
-    Kural #2: Renk/Kalınlık ayrımı
-
-
-    """
-
-
-
-
-
-    # OptiPlanning Excel tag'leri - Kural #4: Asla değiştirilmez
-
-
-    REQUIRED_EXCEL_TAGS = [
-
-
-        "NO",
-
-
-        "CODE",
-
-
-        "LENGTH",
-
-
-        "WIDTH",
-
-
-        "QUANTITY",
-
-
-        "GRAIN",
-
-
-        "TOP_EDGE",
-
-
-        "BOTTOM_EDGE",
-
-
-        "LEFT_EDGE",
-
-
-        "RIGHT_EDGE",
-
-
-    ]
-
-
-
-
-
-    # Kural #8: Makinenin kabul ettiği grain değerleri
-
-
-    VALID_GRAIN_VALUES = ["0-Material", "1-Material", "2-Material", "3-Material"]
-
-
-
-
-
-    def __init__(self):
-
-
-        self.errors = []
-
-
-        self.warnings = []
-
-
-
-
-
-    def validate_export_format(self, data: Dict[str, Any]) -> ValidationResult:
-
-
-        """Ana doğrulama fonksiyonu"""
-
-
-        self.errors = []
-
-
-        self.warnings = []
-
-
-
-
+    """Canonical export validation entry point."""
+
+    def validate(self, data: Any, group: str) -> ValidationResult:
+        errors: list[str] = []
+        warnings: list[str] = []
+        normalized_group = (group or "").upper()
+
+        if normalized_group not in PART_GROUPS:
+            errors.append(f"Gecersiz part group: {group}")
+            return ValidationResult(is_valid=False, errors=errors, warnings=warnings)
+
+        frame = self._coerce_dataframe(data)
+        columns = list(frame.columns)
+        missing_columns = [column for column in REQUIRED_COLUMNS if column not in columns]
+        if missing_columns:
+            errors.append(f"Eksik zorunlu kolonlar: {missing_columns}")
+
+        if "GRAIN" in frame.columns:
+            invalid_grains = sorted(
+                {
+                    str(value)
+                    for value in frame["GRAIN"].dropna().tolist()
+                    if str(value) not in VALID_GRAIN_VALUES
+                }
+            )
+            if invalid_grains:
+                errors.append(f"Gecersiz grain degerleri: {invalid_grains}")
+
+        if normalized_group == "ARKALIK":
+            band_violations = self._find_arkalik_band_violations(frame)
+            if band_violations:
+                errors.append(
+                    "Kural #9 ihlali: ARKALIK satirlarinda bant kolonlari bos olmali "
+                    f"(satirlar: {band_violations})"
+                )
 
         details = {
-
-
-            "format_check": self._check_format(data),
-
-
-            "tags_intact": self._verify_excel_tags(data),
-
-
-            "decimal_values": self._check_decimal_values(data),
-
-
-            "split_by_group": self._check_group_separation(data),
-
-
-            "split_by_material": self._check_material_separation(data),
-
-
-            "grain_values": self._check_grain_values(data),
-
-
-            "band_on_arkalik": self._check_no_band_on_arkalik(data),
-
-
+            "group": normalized_group,
+            "row_count": len(frame.index),
+            "columns": columns,
+            "missing_columns": missing_columns,
         }
-
-
-
-
-
-        passed = all(details.values()) and len(self.errors) == 0
-
-
-
-
-
         return ValidationResult(
-
-
-            passed=passed, details=details, errors=self.errors, warnings=self.warnings
-
-
+            is_valid=len(errors) == 0,
+            details=details,
+            errors=errors,
+            warnings=warnings,
         )
 
+    def validate_export_format(self, data: dict[str, Any]) -> ValidationResult:
+        """
+        Backward-compatible wrapper for older dict payload validation.
+        Expected keys:
+        - format
+        - columns
+        - measures
+        - groups
+        """
 
+        errors: list[str] = []
+        warnings: list[str] = []
+        format_type = str(data.get("format", "")).lower()
+        if format_type and format_type != "xlsx":
+            errors.append(f"Format hatasi: {format_type} yerine xlsx olmali")
 
-
-
-    def _check_format(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #3: Format .xlsx olmalı"""
-
-
-        format_type = data.get("format", "").lower()
-
-
-        if format_type != "xlsx":
-
-
-            self.errors.append(f"Format hatası: {format_type} yerine xlsx olmalı (Kural #3)")
-
-
-            return False
-
-
-        return True
-
-
-
-
-
-    def _verify_excel_tags(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #4: Excel tag'leri asla değiştirilmez/eksiltilmez"""
-
-
-        columns = data.get("columns", [])
-
-
-        missing_tags = [tag for tag in self.REQUIRED_EXCEL_TAGS if tag not in columns]
-
-
-
-
-
-        if missing_tags:
-
-
-            self.errors.append(f"Eksik Excel tag'leri: {missing_tags} (Kural #4)")
-
-
-            return False
-
-
-
-
-
-        extra_tags = [tag for tag in columns if tag not in self.REQUIRED_EXCEL_TAGS]
-
-
-        if extra_tags:
-
-
-            self.warnings.append(f"Ekstra tag'ler (dikkat): {extra_tags}")
-
-
-
-
-
-        return True
-
-
-
-
-
-    def _check_decimal_values(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #5: Makine ondalık kabul eder"""
-
+        columns = [str(column) for column in data.get("columns", [])]
+        missing_columns = [column for column in REQUIRED_COLUMNS if column not in columns]
+        if missing_columns:
+            errors.append(f"Eksik zorunlu kolonlar: {missing_columns}")
 
         measures = data.get("measures", [])
-
-
-        invalid_measures = []
-
-
-
-
-
-        for measure in measures:
-
-
-            length = measure.get("length")
-
-
-            width = measure.get("width")
-
-
-
-
-
-            # Ondalık kontrolü
-
-
-            if isinstance(length, int) or isinstance(width, int):
-
-
-                invalid_measures.append(measure)
-
-
-                self.warnings.append(f"Tam sayı değer: {measure}. Ondalığa çevrilecek (Kural #5)")
-
-
-
-
-
-        return len(invalid_measures) == 0
-
-
-
-
-
-    def _check_group_separation(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #1: Gövde ve arkalık ayrı çıktı"""
-
-
-        groups = data.get("groups", [])
-
-
-
-
-
-        has_govde = any(g.get("type") == "GOVDE" for g in groups)
-
-
-        has_arkalik = any(g.get("type") == "ARKALIK" for g in groups)
-
-
-
-
-
-        if has_govde and has_arkalik:
-
-
-            # Aynı dosyada olmamalı
-
-
-            govde_count = sum(1 for g in groups if g.get("type") == "GOVDE")
-
-
-            arkalik_count = sum(1 for g in groups if g.get("type") == "ARKALIK")
-
-
-
-
-
-            if govde_count > 0 and arkalik_count > 0:
-
-
-                self.errors.append(
-
-
-                    "Gövde ve arkalık aynı dosyada! Ayrı export yapılmalı (Kural #1)"
-
-
-                )
-
-
-                return False
-
-
-
-
-
-        return True
-
-
-
-
-
-    def _check_material_separation(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #2: Renk ve kalınlık farklıysa ayrı liste"""
-
-
-        groups = data.get("groups", [])
-
-
-
-
-
-        if not groups:
-
-
-            return True
-
-
-
-
-
-        # Her grup içinde malzeme çeşitliliği kontrolü
-
-
-        for group in groups:
-
-
-            materials = group.get("materials", [])
-
-
-            unique_combinations = set()
-
-
-
-
-
-            for material in materials:
-
-
-                thickness = material.get("thickness")
-
-
-                color = material.get("color")
-
-
-                combo = f"{thickness}_{color}"
-
-
-                unique_combinations.add(combo)
-
-
-
-
-
-            if len(unique_combinations) > 1:
-
-
-                self.warnings.append(
-
-
-                    f"Grup '{group.get('name')}' içinde farklı malzemeler: {unique_combinations}. "
-
-
-                    f"Ayrı listeler önerilir (Kural #2)"
-
-
-                )
-
-
-
-
-
-        return True
-
-
-
-
-
-    def _check_grain_values(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #8: Grain değerleri 0/1/2/3-Material olmalı"""
-
-
-        measures = data.get("measures", [])
-
-
-
-
-
-        for measure in measures:
-
-
-            grain = measure.get("grain")
-
-
-            if grain and grain not in self.VALID_GRAIN_VALUES:
-
-
-                self.errors.append(
-
-
-                    f"Geçersiz grain değeri: {grain}. "
-
-
-                    f"Olmalı: {self.VALID_GRAIN_VALUES} (Kural #8)"
-
-
-                )
-
-
-                return False
-
-
-
-
-
-        return True
-
-
-
-
-
-    def _check_no_band_on_arkalik(self, data: Dict[str, Any]) -> bool:
-
-
-        """Kural #9: Arkalıkta bant kesinlikle olmaz"""
-
-
-        groups = data.get("groups", [])
-
-
-
-
-
-        for group in groups:
-
-
-            if group.get("type") == "ARKALIK":
-
-
-                measures = group.get("measures", [])
-
-
-                for measure in measures:
-
-
-                    band_edges = [
-
-
-                        measure.get("top_edge", False),
-
-
-                        measure.get("bottom_edge", False),
-
-
-                        measure.get("left_edge", False),
-
-
-                        measure.get("right_edge", False),
-
-
-                    ]
-
-
-                    if any(band_edges):
-
-
-                        self.errors.append(f"Arkalıkta bant var! Satır: {measure} (Kural #9)")
-
-
-                        return False
-
-
-
-
-
-        return True
-
-
-
-
-
-    def generate_checklist(self, data: Dict[str, Any]) -> List[Dict[str, Any]]:
-
-
-        """Export öncesi kontrol listesi"""
-
-
-        return [
-
-
+        invalid_grains = sorted(
             {
+                str(measure.get("grain"))
+                for measure in measures
+                if measure.get("grain") and str(measure.get("grain")) not in VALID_GRAIN_VALUES
+            }
+        )
+        if invalid_grains:
+            errors.append(f"Gecersiz grain degerleri: {invalid_grains}")
 
+        for group in data.get("groups", []):
+            if str(group.get("type", "")).upper() == "ARKALIK":
+                for index, measure in enumerate(group.get("measures", []), start=1):
+                    if any(self._has_value(measure.get(column.lower())) for column in ARKALIK_FORBIDDEN_COLUMNS):
+                        errors.append(f"Kural #9 ihlali: ARKALIK measure#{index} bant iceriyor")
+                        break
 
-                "item": "Gövde/Arkalık ayrımı",
-
-
-                "status": self._check_group_separation(data),
-
-
-                "rule": "#1",
-
-
+        return ValidationResult(
+            is_valid=len(errors) == 0,
+            details={
+                "format": format_type or "unknown",
+                "columns": columns,
+                "missing_columns": missing_columns,
             },
-
-
-            {
-
-
-                "item": "Renk/Kalınlık ayrımı",
-
-
-                "status": self._check_material_separation(data),
-
-
-                "rule": "#2",
-
-
-            },
-
-
-            {"item": "Format .xlsx", "status": self._check_format(data), "rule": "#3"},
-
-
-            {"item": "Excel tag'leri bütün", "status": self._verify_excel_tags(data), "rule": "#4"},
-
-
-            {
-
-
-                "item": "Ondalık değerler hazır",
-
-
-                "status": self._check_decimal_values(data),
-
-
-                "rule": "#5",
-
-
-            },
-
-
-            {
-
-
-                "item": "Grain değerleri doğru",
-
-
-                "status": self._check_grain_values(data),
-
-
-                "rule": "#8",
-
-
-            },
-
-
-            {
-
-
-                "item": "Arkalıkta bant yok",
-
-
-                "status": self._check_no_band_on_arkalik(data),
-
-
-                "rule": "#9",
-
-
-            },
-
-
-        ]
-
-
-
-
-
-
-
-
-# Singleton instance
-
-
-validator = ExportValidator()
-
-
-
-
-
-
-
-
-def validate_export(data: Dict[str, Any]) -> ValidationResult:
-
-
-    """Kolay kullanım fonksiyonu"""
-
-
-    return validator.validate_export_format(data)
-
-
+            errors=errors,
+            warnings=warnings,
+        )
+
+    def _coerce_dataframe(self, data: Any):
+        import pandas as pd
+
+        if isinstance(data, pd.DataFrame):
+            return data.copy()
+        if isinstance(data, list):
+            return pd.DataFrame(data)
+        if isinstance(data, dict):
+            if "rows" in data:
+                return pd.DataFrame(data["rows"])
+            if "measures" in data:
+                return pd.DataFrame(data["measures"])
+        return pd.DataFrame()
+
+    def _find_arkalik_band_violations(self, frame) -> list[int]:
+        violating_rows: list[int] = []
+        for row_index, (_, row) in enumerate(frame.iterrows(), start=1):
+            if any(self._has_value(row.get(column)) for column in ARKALIK_FORBIDDEN_COLUMNS):
+                violating_rows.append(row_index)
+        return violating_rows
+
+    def _has_value(self, value: Any) -> bool:
+        if value is None:
+            return False
+        if isinstance(value, str):
+            return value.strip() not in {"", "0", "0.0", "false", "False"}
+        return bool(value)

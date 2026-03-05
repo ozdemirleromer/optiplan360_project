@@ -24,13 +24,10 @@
     left: -100% !important;
     top: 0 !important;
     height: 100vh !important;
-    width: 280px !important;
+    width: 250px !important;
     z-index: 1000 !important;
-    transition: left 0.3s ease !important;
-    background:
-      radial-gradient(circle at 14% -6%, rgba(var(--primary-rgb), 0.18), transparent 40%),
-      radial-gradient(circle at 88% 6%, rgba(124, 58, 237, 0.17), transparent 34%),
-      linear-gradient(180deg, rgba(12, 12, 16, 0.97), rgba(9, 9, 11, 0.96)) !important;
+    transition: none !important;
+    background: #1E1E1E !important;
   }
 
   .sidebar-shell.is-open {

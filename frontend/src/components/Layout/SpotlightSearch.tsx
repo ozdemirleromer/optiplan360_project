@@ -175,7 +175,7 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
               borderBottom: `1px solid ${COLORS.border}`,
             }}
           >
-            <Search size={20} style={{ color: COLORS.primary.DEFAULT, flexShrink: 0 }} />
+            <Search size={20} style={{ color: COLORS.primary, flexShrink: 0 }} />
             <input
               ref={inputRef}
               value={query}
@@ -234,7 +234,7 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
                     fontSize: 13,
                     textAlign: 'left',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.background = `${COLORS.primary.DEFAULT}15`; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = `${COLORS.primary}15`; }}
                   onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; }}
                 >
                   <Search size={14} style={{ opacity: 0.5 }} />
@@ -279,8 +279,8 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
                   gap: 12,
                   width: '100%',
                   padding: '10px 12px',
-                  background: selectedIndex === index ? `${COLORS.primary.DEFAULT}15` : 'transparent',
-                  border: selectedIndex === index ? `1px solid ${COLORS.primary.DEFAULT}30` : '1px solid transparent',
+                  background: selectedIndex === index ? `${COLORS.primary}15` : 'transparent',
+                  border: selectedIndex === index ? `1px solid ${COLORS.primary}30` : '1px solid transparent',
                   borderRadius: RADIUS.md,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
@@ -293,11 +293,11 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
                   width: 36,
                   height: 36,
                   borderRadius: RADIUS.md,
-                  background: `${COLORS.primary.DEFAULT}15`,
+                  background: `${COLORS.primary}15`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: COLORS.primary.DEFAULT,
+                  color: COLORS.primary,
                   flexShrink: 0,
                 }}>
                   {result.icon}
@@ -325,7 +325,7 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
                 )}
 
                 {selectedIndex === index && (
-                  <ArrowRight size={14} style={{ color: COLORS.primary.DEFAULT, flexShrink: 0 }} />
+                  <ArrowRight size={14} style={{ color: COLORS.primary, flexShrink: 0 }} />
                 )}
               </button>
             ))}
@@ -357,3 +357,4 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
 };
 
 export default SpotlightSearch;
+

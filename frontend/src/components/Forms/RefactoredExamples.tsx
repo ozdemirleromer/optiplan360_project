@@ -1,4 +1,4 @@
-﻿/**
+/**
  * OPTIPLAN360 - REFACTORED COMPONENTS (BEFORE & AFTER)
  * 
  * Iyilestirme ornekleri: New Input Components kullanarak
@@ -220,7 +220,7 @@ export function LoginPageRefactored() {
                 borderRadius: RADIUS.md,
                 background: "rgba(255, 90, 106, 0.1)",
                 border: `1px solid rgba(255, 90, 106, 0.3)`,
-                color: COLORS.error.DEFAULT,
+                color: COLORS.danger,
                 fontSize: "13px",
               }}
             >
@@ -366,8 +366,8 @@ const OrderEditorRefactored = () => {
           <Card
             style={{
               marginTop: 12,
-              background: `${COLORS.success.light}`,
-              border: `1px solid ${COLORS.success.DEFAULT}33`,
+              background: `${COLORS.success}`,
+              border: `1px solid ${COLORS.success}33`,
             }}
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -600,7 +600,7 @@ const OrderEditorRefactored = () => {
               style={{
                 flex: 1,
                 height: 4,
-                background: step <= formState.step ? COLORS.primary[500] : COLORS.border,
+                background: step <= formState.step ? COLORS.primary : COLORS.border,
                 borderRadius: 2,
                 transition: "background 0.3s",
               }}
@@ -648,3 +648,5 @@ const OrderEditorRefactored = () => {
 
 export default OrderEditorRefactored;
 
+
+

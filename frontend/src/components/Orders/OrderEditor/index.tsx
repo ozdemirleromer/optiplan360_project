@@ -2,28 +2,30 @@
  * OrderEditor - Main Component
  */
 
-import { useCallback, useEffect, useState } from "react";
-import { Button } from "../../Shared/Button";
-import { Card } from "../../Shared/Card";
-import { Modal } from "../../Shared/Modal";
-import { TopBar } from "../../Layout/TopBar";
-import { COLORS, RADIUS, TYPOGRAPHY, TRANSITIONS } from "../../Shared/constants";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Order, ORDER_STATUS_LABELS } from "../../../types";
 import type { OrderStatus, PriorityLevel } from "../../../types";
-import { ordersService } from "../../../services/ordersService";
 import {
   type MeasureRow,
   buildMeasuresCsv,
   buildMeasuresExcelHtml,
+  calculateEstimatedArea,
   calculateTotalParts,
   downloadTextFile,
-  parseImportedMeasures,
   parseImportedArray,
+  parseImportedMeasures,
 } from "./shared";
-import { MeasureTable } from "./MeasureTable";
+import { OrderOptimizationPanel } from "../../UI/OrderOptimizationPanel";
+import type { OrderOptimizationRibbonTab } from "../../Ribbon/OrderOptimizationRibbon";
+import { buildCustomerField, buildPlateSizeValue, buildSystemOrderNo, normalizeMaskedNumberOnBlur, parseCustomerField, parseMaskedNumber, parsePlateSizeInputs, sanitizeMaskedNumberInput } from "./workbenchUtils";
 import { apiRequest } from "../../../services/apiClient";
 import { orchestratorService } from "../../../services/orchestratorService";
+import { ordersService } from "../../../services/ordersService";
 import { useOrdersStore } from "../../../stores/ordersStore";
+import { useAuthStore } from "../../../stores/authStore";
+import { useUIStore } from "../../../stores/uiStore";
+import { notificationHelpers } from "../../../stores/notificationStore";
+import { Modal } from "../../Shared/Modal";
 import * as XLSX from "xlsx";
 
 const EMPTY_ROW: MeasureRow = {
@@ -36,6 +38,53 @@ interface OrderEditorProps {
   order: Order | null;
   onBack: () => void;
 }
+
+const toInputDate = (value?: string): string => {
+  const source = value ? new Date(value) : new Date();
+  if (Number.isNaN(source.getTime())) {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  return source.toISOString().slice(0, 10);
+};
+
+const SUPPORTED_THICKNESSES = [4, 5, 8, 18] as const;
+
+// Malzeme Array
+const MATERIAL_SPECIFICATIONS = [
+  { thickness: "3MM", dimensions: "170*210" },
+  { thickness: "4MM", dimensions: "210*280" },
+  { thickness: "5MM", dimensions: "210*280" },
+  { thickness: "6MM", dimensions: "210*280" },
+  { thickness: "8MM", dimensions: "210*280" },
+  { thickness: "10MM", dimensions: "210*280" },
+  { thickness: "12MM", dimensions: "210*280" },
+  { thickness: "16MM", dimensions: "210*280" },
+  { thickness: "18MM", dimensions: "210*280" },
+  { thickness: "18MM", dimensions: "183*366" },
+  { thickness: "22MM", dimensions: "210*280" },
+  { thickness: "25MM", dimensions: "210*280" },
+  { thickness: "30MM", dimensions: "210*280" },
+] as const;
+
+// Ölçü Spesifikasyonları (Boy x En)
+const MEASUREMENTS_SPECIFICATIONS = [
+  { boy: "210", en: "280", display: "210x280" },
+  { boy: "170", en: "210", display: "170x210" },
+  { boy: "183", en: "366", display: "183x366" },
+  { boy: "150", en: "200", display: "150x200" },
+  { boy: "200", en: "300", display: "200x300" },
+  { boy: "250", en: "350", display: "250x350" },
+  { boy: "300", en: "400", display: "300x400" },
+  { boy: "220", en: "330", display: "220x330" },
+  { boy: "240", en: "320", display: "240x320" },
+  { boy: "160", en: "240", display: "160x240" },
+  { boy: "180", en: "260", display: "180x260" },
+  { boy: "195", en: "290", display: "195x290" },
+  { boy: "225", en: "315", display: "225x315" },
+] as const;
+
+type MeasureRowStatus = NonNullable<MeasureRow["status"]>;
 
 const getExportFilename = (prefix: string, ext: string): string => {
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -51,45 +100,79 @@ const escapeHtml = (value: string): string => {
     .replace(/'/g, "&#39;");
 };
 
-const exportButtonStyle: React.CSSProperties = {
-  padding: "18px 16px",
-  border: `1px solid ${COLORS.border}`,
-  borderRadius: RADIUS.lg,
-  background: `${COLORS.primary[500]}10`,
-  cursor: "pointer",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: 10,
-  color: COLORS.primary[500],
-  transition: TRANSITIONS.fast,
-  fontSize: 13,
-  fontWeight: 600,
+const toMeasureRowStatus = (value?: string): MeasureRowStatus => {
+  if (value === "READY") return "READY";
+  if (value === "HELD" || value === "HOLD") return "HELD";
+  if (value === "OPTIMIZING" || value === "IN_PRODUCTION") return "OPTIMIZING";
+  return "NEW";
 };
+
+const buildRowDefaults = (material: string, thickness: number, orderStatus: string) => {
+  const roundedThickness = Math.round(Number.parseFloat(String(thickness)));
+  return {
+    material: material.trim(),
+    thickness: SUPPORTED_THICKNESSES.includes(roundedThickness as (typeof SUPPORTED_THICKNESSES)[number])
+      ? String(roundedThickness)
+      : "",
+    status: toMeasureRowStatus(orderStatus),
+  };
+};
+
+const applyRowDefaults = (
+  sourceRows: MeasureRow[],
+  defaults: { material: string; thickness: string; status: MeasureRowStatus },
+): MeasureRow[] => sourceRows.map((row, index) => ({
+  ...row,
+  id: row.id || index + 1,
+  material: row.material || defaults.material,
+  thickness: row.thickness || defaults.thickness,
+  status: row.status || defaults.status,
+}));
 
 export function OrderEditor({ order, onBack }: OrderEditorProps) {
   const [tab, setTab] = useState<"measures" | "validate" | "export">("measures");
   const [rows, setRows] = useState<MeasureRow[]>([{ ...EMPTY_ROW }]);
-  const [material, setMaterial] = useState(order?.mat || "Belirtilmedi");
+  const initialPlateInputs = parsePlateSizeInputs(order?.plate || "2800x2070");
+  const [material, setMaterial] = useState(order?.mat || "18MM 210*280");
   const [plateSize, setPlateSize] = useState(order?.plate || "2100x2800");
+  const [plateBoyInput, setPlateBoyInput] = useState(initialPlateInputs.boy);
+  const [plateEnInput, setPlateEnInput] = useState(initialPlateInputs.en);
   const [thickness, setThickness] = useState(order?.thick || 18);
   const [customerName, setCustomerName] = useState(order?.cust || "");
   const [customerPhone, setCustomerPhone] = useState(order?.phone || "");
-  const [importModal, setImportModal] = useState(false);
+  const [customerField, setCustomerField] = useState(buildCustomerField(order?.cust || "", order?.phone || ""));
+  const [dueDate, setDueDate] = useState(toInputDate(order?.date));
+  const [activeRibbonTab, setActiveRibbonTab] = useState<OrderOptimizationRibbonTab>("siparis");
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
-  const [importError, setImportError] = useState<string | null>(null);
-  const [importInfo, setImportInfo] = useState<string | null>(null);
+  const [hasAttemptedValidation, setHasAttemptedValidation] = useState(false);
   // Yeni oluşturulan siparişin ID'sini tut — çift kayıt önleme
   const [savedOrderId, setSavedOrderId] = useState<string | null>(order?.id || null);
+  const savedOrderIdRef = useRef(savedOrderId);
+  savedOrderIdRef.current = savedOrderId;
   const [isSaving, setIsSaving] = useState(false);
   const [priority, setPriority] = useState<PriorityLevel>(order?.priority || "normal");
   const [orderStatus, setOrderStatus] = useState<OrderStatus>(order?.status || "NEW");
+  const [importModal, setImportModal] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importInfo, setImportInfo] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const [partsLoaded, setPartsLoaded] = useState(false);
   const [partsError, setPartsError] = useState<string | null>(null);
   const isArk = order?.grp === "ARKALIK";
-  const nextRowId = Math.max(...rows.map((row) => row.id), 0) + 1;
+  const knownOrders = useOrdersStore((state) => state.orders);
+  const themeMode = useUIStore((state) => state.theme);
+  const activeUserName = useAuthStore((state) => state.user?.fullName || state.user?.username || state.user?.email || "Operator");
+  const customerSuggestions = Array.from(
+    new Set(
+      knownOrders
+        .map((entry) => buildCustomerField(entry.cust || "", entry.phone || ""))
+        .filter(Boolean),
+    ),
+  );
+  const resolvedOrderNo = buildSystemOrderNo(order?.orderNo, savedOrderId || order?.id || null);
+  const rowDefaults = buildRowDefaults(material, thickness, orderStatus);
+  const validationState = !hasAttemptedValidation ? "idle" : validationErrors.length === 0 ? "valid" : "invalid";
 
   // Mevcut siparis acildiginda backend'den parcalari yukle
   useEffect(() => {
@@ -100,9 +183,13 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
         // apiClient transformKeys zaten snake_case -> camelCase donusumu yapar
         const detail = await apiRequest<Record<string, unknown>>(`/orders/${order.id}`, { method: "GET" });
         if (cancelled) return;
+        const detailMaterial = String(detail.materialName ?? detail.material_name ?? order?.mat ?? "");
+        const detailThickness = Number(detail.thicknessMm ?? detail.thickness_mm ?? order?.thick ?? 18);
+        const detailStatus = String(detail.status ?? order?.status ?? "NEW");
+        const detailRowDefaults = buildRowDefaults(detailMaterial, detailThickness, detailStatus);
         const rawParts = Array.isArray(detail.parts) ? detail.parts as Record<string, unknown>[] : [];
         if (rawParts.length > 0) {
-          const mapped: MeasureRow[] = rawParts.map((p, idx) => ({
+          const mapped = applyRowDefaults(rawParts.map((p, idx) => ({
             id: idx + 1,
             boy: String(p.boyMm ?? p.boy_mm ?? ""),
             en: String(p.enMm ?? p.en_mm ?? ""),
@@ -115,7 +202,7 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
             delik1: String(p.drillCode1 ?? p.drill_code_1 ?? ""),
             delik2: String(p.drillCode2 ?? p.drill_code_2 ?? ""),
             info: String(p.partDesc ?? p.part_desc ?? ""),
-          }));
+          })), detailRowDefaults);
           setRows(mapped);
           setPartsError(null);
         } else {
@@ -137,6 +224,11 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
         if (custName) setCustomerName(String(custName));
         const phoneVal = detail.phoneNorm ?? detail.phone_norm;
         if (phoneVal) setCustomerPhone(String(phoneVal));
+        if (custName || phoneVal) {
+          setCustomerField(buildCustomerField(String(custName ?? ""), String(phoneVal ?? "")));
+        }
+        const dueDateValue = detail.dueDate ?? detail.due_date ?? detail.date;
+        if (dueDateValue) setDueDate(toInputDate(String(dueDateValue)));
         const statusVal = detail.status;
         if (statusVal && typeof statusVal === "string") setOrderStatus(statusVal as OrderStatus);
         const prioVal = detail.priority;
@@ -150,10 +242,45 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     return () => { cancelled = true; };
   }, [order?.id]);
 
+  useEffect(() => {
+    const parsed = parsePlateSizeInputs(plateSize);
+    setPlateBoyInput(parsed.boy);
+    setPlateEnInput(parsed.en);
+  }, [plateSize]);
+
+  useEffect(() => {
+    setRows((prev) => {
+      let changed = false;
+      const next = prev.map((row) => {
+        let nextRow = row;
+
+        if (!row.material && rowDefaults.material) {
+          nextRow = { ...nextRow, material: rowDefaults.material };
+          changed = true;
+        }
+
+        if (!row.thickness && rowDefaults.thickness) {
+          nextRow = { ...nextRow, thickness: rowDefaults.thickness };
+          changed = true;
+        }
+
+        if (!row.status && rowDefaults.status) {
+          nextRow = { ...nextRow, status: rowDefaults.status };
+          changed = true;
+        }
+
+        return nextRow;
+      });
+
+      return changed ? next : prev;
+    });
+  }, [rowDefaults.material, rowDefaults.status, rowDefaults.thickness]);
+
   const runValidation = useCallback((navigateToExport: boolean): boolean => {
     const errors: string[] = [];
     const normalizedPhone = customerPhone.replace(/\D/g, "");
     const thicknessValue = Number.parseFloat(String(thickness));
+    setHasAttemptedValidation(true);
 
     if (!customerName.trim()) {
       errors.push("Musteri adi gerekli.");
@@ -178,8 +305,8 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     }
 
     rows.forEach((row) => {
-      const boy = Number.parseFloat(row.boy);
-      const en = Number.parseFloat(row.en);
+      const boy = parseMaskedNumber(row.boy);
+      const en = parseMaskedNumber(row.en);
       const adet = Number.parseInt(row.adet, 10);
       const grain = Number.parseInt(row.grain, 10);
 
@@ -215,12 +342,29 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     runValidation(true);
   };
 
+  const handleCustomerFieldChange = useCallback((value: string) => {
+    setCustomerField(value);
+    const parsed = parseCustomerField(value);
+    setCustomerName(parsed.name);
+    setCustomerPhone(parsed.phone);
+  }, []);
+
+  const handleCustomerNameChange = useCallback((value: string) => {
+    setCustomerName(value);
+    setCustomerField(buildCustomerField(value, customerPhone));
+  }, [customerPhone]);
+
+  const handleCustomerPhoneChange = useCallback((value: string) => {
+    setCustomerPhone(value);
+    setCustomerField(buildCustomerField(customerName, value));
+  }, [customerName]);
+
   type BackendOrderPart = {
     part_group: "GOVDE" | "ARKALIK";
     boy_mm: number;
     en_mm: number;
     adet: number;
-    grain_code: "0-Material" | "1-Material" | "2-Material" | "3-Material";
+    grain_code: "0-Material" | "1-Boyuna" | "2-Enine" | "3-Material";
     u1: boolean;
     u2: boolean;
     k1: boolean;
@@ -245,13 +389,13 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
   const parsePlateSizeMm = (value: string): { widthMm?: number; heightMm?: number } => {
     const match = value
       .replace(/\s+/g, "")
-      .match(/(\d+(?:[.,]\d+)?)\s*[xX*\u00D7]\s*(\d+(?:[.,]\d+)?)/);
+      .match(/([\d.,]+)\s*[xX*\u00D7]\s*([\d.,]+)/);
     if (!match) {
       return {};
     }
 
-    const width = Number.parseFloat(match[1].replace(",", "."));
-    const height = Number.parseFloat(match[2].replace(",", "."));
+    const width = Number.parseFloat(match[1].replace(/,/g, ""));
+    const height = Number.parseFloat(match[2].replace(/,/g, ""));
     if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
       return {};
     }
@@ -261,10 +405,10 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
 
   const normalizePhone = (value: string): string => value.replace(/\D/g, "");
 
-  const toGrainCode = (value: string): "0-Material" | "1-Material" | "2-Material" | "3-Material" => {
+  const toGrainCode = (value: string): "0-Material" | "1-Boyuna" | "2-Enine" | "3-Material" => {
     const grain = Number.parseInt(value, 10);
-    if (grain === 1) return "1-Material";
-    if (grain === 2) return "2-Material";
+    if (grain === 1) return "1-Boyuna";
+    if (grain === 2) return "2-Enine";
     if (grain === 3) return "3-Material";
     return "0-Material";
   };
@@ -272,8 +416,8 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
   const mapRowsToBackendParts = (sourceRows: MeasureRow[]): BackendOrderPart[] => {
     const partGroup: "GOVDE" | "ARKALIK" = order?.grp === "ARKALIK" ? "ARKALIK" : "GOVDE";
     return sourceRows.map((row) => {
-      const boyMm = Number.parseFloat(String(row.boy).replace(",", "."));
-      const enMm = Number.parseFloat(String(row.en).replace(",", "."));
+      const boyMm = parseMaskedNumber(String(row.boy));
+      const enMm = parseMaskedNumber(String(row.en));
       const adet = Number.parseInt(String(row.adet), 10);
       const edgeDisabled = partGroup === "ARKALIK";
 
@@ -296,26 +440,29 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
 
   const mapRowsToOrchestratorParts = (sourceRows: MeasureRow[]) => {
     const partType: "GOVDE" | "ARKALIK" = order?.grp === "ARKALIK" ? "ARKALIK" : "GOVDE";
-    const materialCode = material.trim() || "MATERIAL";
-    const color = material.trim() || "Belirtilmedi";
+    const headerMaterial = material.trim() || "MATERIAL";
     const baseThickness = Number.isFinite(thickness) && thickness > 0 ? thickness : 18;
-    const partThickness = partType === "ARKALIK" ? 8 : baseThickness;
 
     return sourceRows.map((row) => {
-      const lengthMm = Number.parseFloat(String(row.boy).replace(",", "."));
-      const widthMm = Number.parseFloat(String(row.en).replace(",", "."));
+      const lengthMm = parseMaskedNumber(String(row.boy));
+      const widthMm = parseMaskedNumber(String(row.en));
       const quantityRaw = Number.parseInt(String(row.adet), 10);
       const grainRaw = Number.parseInt(String(row.grain), 10);
+      const rowMaterial = row.material?.trim() || headerMaterial;
+      const rowThickness = Number.parseInt(row.thickness || "", 10);
+      const partThickness = partType === "ARKALIK"
+        ? 8
+        : (Number.isFinite(rowThickness) && rowThickness > 0 ? rowThickness : baseThickness);
 
       return {
         id: String(row.id),
         partType,
-        materialCode,
+        materialCode: rowMaterial,
         lengthCm: Number.isFinite(lengthMm) && lengthMm > 0 ? lengthMm / 10 : 0,
         widthCm: Number.isFinite(widthMm) && widthMm > 0 ? widthMm / 10 : 0,
         quantity: Number.isFinite(quantityRaw) && quantityRaw > 0 ? quantityRaw : 1,
         grain: [0, 1, 2, 3].includes(grainRaw) ? grainRaw : 0,
-        color,
+        color: rowMaterial || "Belirtilmedi",
         thicknessMm: partThickness,
       };
     });
@@ -393,7 +540,7 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
 
     const partsPayload = mapRowsToBackendParts(rows);
 
-    const existingId = savedOrderId || order?.id;
+    const existingId = savedOrderIdRef.current || order?.id;
     if (existingId) {
       await apiRequest(`/orders/${existingId}`, {
         method: "PUT",
@@ -422,7 +569,6 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     if (isSaving) return;
     const isValid = runValidation(false);
     if (!isValid) {
-      setTab("validate");
       return;
     }
 
@@ -431,9 +577,10 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
       await saveOrderToDB();
       // Store'u güncelle — sipariş listesinde yeni kayıt görünsün
       await useOrdersStore.getState().fetchOrders();
-      window.alert(`Siparis kaydedildi: ${customerName} (${calculateTotalParts(rows)} parca)`);
-    } catch (e: any) {
-      window.alert("Kaydedilirken hata olustu: " + e.message);
+      notificationHelpers.success(`Siparis kaydedildi: ${customerName} (${calculateTotalParts(rows)} parca)`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      notificationHelpers.error("Kaydedilirken hata olustu: " + msg);
     } finally {
       setIsSaving(false);
     }
@@ -467,9 +614,10 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
       });
       // Store'u güncelle
       await useOrdersStore.getState().fetchOrders();
-      window.alert(`Siparis optimizasyon kuyruguna alindi. Job ID: ${job.id}`);
-    } catch (e: any) {
-      window.alert("Optimizasyon baslatilamadi: " + e.message);
+      notificationHelpers.success(`Siparis optimizasyon kuyruguna alindi. Job ID: ${job.id}`);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : String(e);
+      notificationHelpers.error("Optimizasyon baslatilamadi: " + msg);
     } finally {
       setIsOptimizing(false);
     }
@@ -487,40 +635,58 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleSave]);
 
-  const handleRowUpdate = (id: number, field: string, value: string | number | boolean) => {
+  const handleRowUpdate = useCallback((id: number, field: string, value: string | number | boolean) => {
     setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
-  };
+  }, []);
 
-  const handleAddRow = () => {
-    setRows((prev) => [
-      ...prev,
-      {
-        id: nextRowId,
-        boy: "",
-        en: "",
-        adet: "1",
-        grain: "0",
-        u1: false,
-        u2: false,
-        k1: false,
-        k2: false,
-        delik1: "",
-        delik2: "",
-        info: "",
-      },
-    ]);
-  };
+  const handleAddRow = useCallback(() => {
+    setRows((prev) => {
+      const nextRowId = Math.max(...prev.map((row) => row.id), 0) + 1;
+      return [
+        ...prev,
+        {
+          id: nextRowId,
+          boy: "",
+          en: "",
+          adet: "1",
+          grain: "0",
+          u1: false,
+          u2: false,
+          k1: false,
+          k2: false,
+          delik1: "",
+          delik2: "",
+          info: "",
+          thickness: rowDefaults.thickness,
+          material: rowDefaults.material,
+          status: rowDefaults.status,
+        },
+      ];
+    });
+  }, [rowDefaults.material, rowDefaults.status, rowDefaults.thickness]);
 
-  const handleRemoveRow = (id: number) => {
+  const handleRemoveRow = useCallback((id: number) => {
     setRows((prev) => prev.filter((row) => row.id !== id));
-  };
+  }, []);
 
-  const handleExportCsv = () => {
+  const handleDuplicateRow = useCallback((id: number) => {
+    setRows((prev) => {
+      const source = prev.find((row) => row.id === id);
+      if (!source) {
+        return prev;
+      }
+      const nextRowId = Math.max(...prev.map((row) => row.id), 0) + 1;
+      return [...prev, { ...source, id: nextRowId }];
+    });
+  }, []);
+
+  const handleExportCsv = useCallback(() => {
     const csv = buildMeasuresCsv(rows);
     downloadTextFile(csv, getExportFilename("siparis-olculeri", "csv"), "text/csv");
-  };
+    notificationHelpers.success("CSV disa aktarma baslatildi.");
+  }, [rows]);
 
-  const handleExportExcel = () => {
+  const handleExportExcel = useCallback(() => {
     const html = buildMeasuresExcelHtml(rows, {
       customerName,
       customerPhone,
@@ -528,12 +694,13 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
       thickness,
     });
     downloadTextFile(html, getExportFilename("siparis-olculeri", "xls"), "application/vnd.ms-excel");
-  };
+    notificationHelpers.success("Excel disa aktarma baslatildi.");
+  }, [customerName, customerPhone, plateSize, rows, thickness]);
 
-  const handlePrint = () => {
+  const handlePrint = useCallback(() => {
     const printWindow = window.open("", "_blank", "width=1280,height=860");
     if (!printWindow) {
-      alert("Yazdirma penceresi acilamadi. Tarayici acilir pencereyi engellemis olabilir.");
+      notificationHelpers.error("Yazdirma penceresi acilamadi.");
       return;
     }
 
@@ -553,8 +720,10 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
             <td>${escapeHtml(row.delik1)}</td>
             <td>${escapeHtml(row.delik2)}</td>
             <td>${escapeHtml(row.info)}</td>
+            <td>${escapeHtml(row.material || "")}</td>
+            <td>${escapeHtml(row.thickness || "")}</td>
           </tr>
-        `
+        `,
       )
       .join("");
 
@@ -569,7 +738,7 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
             h1 { margin: 0 0 8px 0; font-size: 20px; }
             .meta { margin-bottom: 14px; color: #374151; font-size: 12px; }
             table { border-collapse: collapse; width: 100%; font-size: 12px; }
-            th, td { border: 1px solid #d1d5db; padding: 6px; text-align: left; }
+            th, td { border: 1px solid #d1d5db; padding: 6px 8px; text-align: left; }
             th { background: #f3f4f6; }
             .footer { margin-top: 14px; font-size: 11px; color: #6b7280; }
           </style>
@@ -598,6 +767,8 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
                 <th>Delik-1</th>
                 <th>Delik-2</th>
                 <th>Bilgi</th>
+                <th>Malzeme</th>
+                <th>Kalinlik</th>
               </tr>
             </thead>
             <tbody>${rowsHtml}</tbody>
@@ -612,17 +783,18 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     printWindow.document.close();
     printWindow.focus();
     printWindow.print();
-  };
+  }, [customerName, customerPhone, plateSize, rows, thickness]);
 
-  const handleTemplateDownload = () => {
+  const handleTemplateDownload = useCallback(() => {
     const template = buildMeasuresCsv([
-      { id: 1, boy: "650", en: "420", adet: "2", grain: "0", u1: false, u2: false, k1: false, k2: false, delik1: "", delik2: "", info: "Ornek satir 1" },
-      { id: 2, boy: "1200", en: "300", adet: "1", grain: "1", u1: true, u2: false, k1: true, k2: false, delik1: "8", delik2: "", info: "Ornek satir 2" },
+      { id: 1, boy: "650", en: "420", adet: "2", grain: "0", u1: false, u2: false, k1: false, k2: false, delik1: "", delik2: "", info: "Ornek satir 1", material: material.trim(), thickness: rowDefaults.thickness, status: rowDefaults.status },
+      { id: 2, boy: "1200", en: "300", adet: "1", grain: "1", u1: true, u2: false, k1: true, k2: false, delik1: "8", delik2: "", info: "Ornek satir 2", material: material.trim(), thickness: rowDefaults.thickness, status: rowDefaults.status },
     ]);
     downloadTextFile(template, "ornek-olcu-sablonu.csv", "text/csv");
-  };
+    notificationHelpers.success("Ornek CSV sablonu indirildi.");
+  }, [material, rowDefaults.status, rowDefaults.thickness]);
 
-  const handleImportFile = async (file: File) => {
+  const handleImportFile = useCallback(async (file: File) => {
     setImportError(null);
     setImportInfo(null);
 
@@ -633,30 +805,34 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
     }
 
     try {
-      let importedRows;
+      let importedRows: MeasureRow[];
       let warnings: string[];
+      let importDefaults = rowDefaults;
 
       if (extension === "xlsx" || extension === "xls") {
         const arrayBuffer = await file.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, { type: "array" });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-
-        // json header: 1 means we get array of arrays
         const dataRows = XLSX.utils.sheet_to_json<any[]>(worksheet, { header: 1 });
         const result = parseImportedArray(dataRows);
         importedRows = result.rows;
         warnings = result.warnings;
 
-        // Metadata aktarimi
         if (result.meta?.thickness) setThickness(result.meta.thickness);
         if (result.meta?.plateSize) setPlateSize(result.meta.plateSize);
         if (result.meta?.material) setMaterial(result.meta.material);
+        importDefaults = buildRowDefaults(
+          result.meta?.material ?? material,
+          result.meta?.thickness ?? thickness,
+          orderStatus,
+        );
 
-        // Musteri adi dosya isminden, telefon bos
-        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-        setCustomerName(nameWithoutExt.trim());
+        const nameWithoutExt = file.name.substring(0, file.name.lastIndexOf(".")) || file.name;
+        const importedName = nameWithoutExt.trim();
+        setCustomerName(importedName);
         setCustomerPhone("");
+        setCustomerField(buildCustomerField(importedName, ""));
       } else {
         const rawText = await file.text();
         const result = parseImportedMeasures(rawText);
@@ -669,11 +845,11 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
         return;
       }
 
-      const normalizedRows = importedRows.map((row, index) => ({
+      const normalizedRows = applyRowDefaults(importedRows.map((row, index) => ({
         ...row,
         id: index + 1,
         grain: row.grain || "0",
-      }));
+      })), importDefaults);
 
       setRows(normalizedRows);
       setTab("measures");
@@ -687,408 +863,168 @@ export function OrderEditor({ order, onBack }: OrderEditorProps) {
       console.error("Import error:", error);
       setImportError("Dosya okunurken bir hata olustu.");
     }
-  };
+  }, [material, orderStatus, rowDefaults, thickness]);
 
-  const onExportButtonEnter = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.currentTarget.style.background = `${COLORS.primary[500]}20`;
-    event.currentTarget.style.borderColor = COLORS.primary[500];
-  };
+  const handleDeleteOrder = useCallback(async () => {
+    if (!order) return;
+    if (!window.confirm("Bu siparisi silmek istediginizden emin misiniz?")) {
+      return;
+    }
 
-  const onExportButtonLeave = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.currentTarget.style.background = `${COLORS.primary[500]}10`;
-    event.currentTarget.style.borderColor = COLORS.border;
-  };
+    setIsDeleting(true);
+    try {
+      await ordersService.remove(order.id);
+      await useOrdersStore.getState().fetchOrders();
+      notificationHelpers.success("Siparis silindi.");
+      onBack();
+    } catch {
+      notificationHelpers.error("Siparis silinemedi (sadece NEW durumundaki siparisler silinebilir)");
+    } finally {
+      setIsDeleting(false);
+    }
+  }, [onBack, order]);
+
+  const commitPlateSize = useCallback((nextBoy: string, nextEn: string) => {
+    setPlateSize(buildPlateSizeValue({ boy: nextBoy, en: nextEn }));
+  }, []);
+
+  const handlePlateBoyChange = useCallback((value: string) => {
+    setPlateBoyInput(sanitizeMaskedNumberInput(value));
+  }, []);
+
+  const handlePlateEnChange = useCallback((value: string) => {
+    setPlateEnInput(sanitizeMaskedNumberInput(value));
+  }, []);
+
+  const handlePlateBoyBlur = useCallback(() => {
+    const normalized = normalizeMaskedNumberOnBlur(plateBoyInput);
+    const nextBoy = normalized || parsePlateSizeInputs(plateSize).boy;
+    setPlateBoyInput(nextBoy);
+    commitPlateSize(nextBoy, plateEnInput);
+  }, [commitPlateSize, plateBoyInput, plateEnInput, plateSize]);
+
+  const handlePlateEnBlur = useCallback(() => {
+    const normalized = normalizeMaskedNumberOnBlur(plateEnInput);
+    const nextEn = normalized || parsePlateSizeInputs(plateSize).en;
+    setPlateEnInput(nextEn);
+    commitPlateSize(plateBoyInput, nextEn);
+  }, [commitPlateSize, plateBoyInput, plateEnInput, plateSize]);
+
+  const panelNotice = partsError
+    ? { text: partsError, tone: "danger" as const }
+    : {
+        text: `${ORDER_STATUS_LABELS[orderStatus] || orderStatus} / ${activeUserName}`,
+        tone: "default" as const,
+      };
+  const panelMessages = [
+    partsError ? { tone: "danger" as const, text: partsError } : null,
+    importInfo ? { tone: "success" as const, text: importInfo } : null,
+    importError ? { tone: "warning" as const, text: importError } : null,
+  ].filter(Boolean) as Array<{ tone: "danger" | "success" | "warning"; text: string }>;
+
+  const handleRibbonTabChange = useCallback((nextTab: OrderOptimizationRibbonTab) => {
+    setActiveRibbonTab(nextTab);
+  }, []);
 
   return (
-    <div className="electric-page">
-      <TopBar
-        title={order ? order.cust : "Yeni Siparis"}
-        subtitle="Olcu girisi, dogrulama ve disa aktarma"
-        breadcrumbs={["Siparisler", "Editor"]}
+    <div style={{ width: "100%", paddingBottom: 24 }}>
+      <OrderOptimizationPanel
+        themeMode={themeMode}
+        activeTab={activeRibbonTab}
+        customerValue={customerField}
+        customerName={customerName}
+        customerPhone={customerPhone}
+        orderNo={resolvedOrderNo}
+        orderStatus={ORDER_STATUS_LABELS[orderStatus] || orderStatus}
+        dueDate={dueDate}
+        plateBoy={plateBoyInput}
+        plateEn={plateEnInput}
+        material={material}
+        thickness={thickness}
+        priority={priority}
+        customerSuggestions={customerSuggestions}
+        items={rows}
+        notice={panelNotice}
+        messages={panelMessages}
+        totalParts={calculateTotalParts(rows)}
+        estimatedArea={calculateEstimatedArea(rows)}
+        validationState={validationState}
+        canDelete={Boolean(order)}
+        isDeleting={isDeleting}
+        isSaving={isSaving}
+        isOptimizing={isOptimizing}
+        validationErrors={validationErrors}
+        onTabChange={handleRibbonTabChange}
+        onClose={onBack}
+        onCustomerChange={handleCustomerFieldChange}
+        onCustomerNameChange={handleCustomerNameChange}
+        onCustomerPhoneChange={handleCustomerPhoneChange}
+        onDueDateChange={setDueDate}
+        onPlateBoyChange={handlePlateBoyChange}
+        onPlateEnChange={handlePlateEnChange}
+        onPlateBoyBlur={handlePlateBoyBlur}
+        onPlateEnBlur={handlePlateEnBlur}
+        onMaterialChange={setMaterial}
+        onThicknessChange={setThickness}
+        onPriorityChange={(v) => setPriority(v as PriorityLevel)}
+        onItemChange={handleRowUpdate}
+        onAddItem={handleAddRow}
+        onRemoveItem={handleRemoveRow}
+        onDuplicateItem={handleDuplicateRow}
+        onSave={handleSave}
+        onOptimize={handleOptimize}
+        onValidate={handleValidate}
+        onOpenImport={() => setImportModal(true)}
+        onExportCsv={handleExportCsv}
+        onExportExcel={handleExportExcel}
+        onPrint={handlePrint}
+        onDownloadTemplate={handleTemplateDownload}
+        onDelete={order ? () => void handleDeleteOrder() : undefined}
       />
-      <div className="app-page-container" style={{ display: "flex", flexDirection: "column", gap: 16, paddingBottom: 200 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
-              onClick={onBack}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: COLORS.muted,
-                fontSize: 20,
-              }}
-              aria-label="Geri don"
-            >
-              {"<-"}
-            </button>
-            <h2 style={{ margin: 0, fontSize: TYPOGRAPHY.fontSize["2xl"], fontWeight: TYPOGRAPHY.fontWeight.bold }}>
-              {order ? order.cust : "Yeni Siparis"}
-            </h2>
+      <Modal open={importModal} title="Olculeri Ice Aktar" onClose={() => setImportModal(false)}>
+        <div style={{ padding: "20px", fontSize: 14, display: "grid", gap: 14 }}>
+          <div style={{ lineHeight: 1.6 }}>
+            CSV/TXT/XLS dosyasi yukleyin.
+            <br />
+            Beklenen sutunlar: <code>boy,en,adet,grain,u1,u2,k1,k2,delik-1,delik-2,bilgi</code>
           </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
-            {order && (
-              <span style={{
-                padding: "4px 10px",
-                fontSize: 11,
-                fontWeight: 600,
-                borderRadius: RADIUS.md,
-                background: orderStatus === "NEW" ? `${COLORS.info.DEFAULT}20` : orderStatus === "IN_PRODUCTION" ? `${COLORS.accent[400]}20` : orderStatus === "READY" ? `${COLORS.success.DEFAULT}20` : `${COLORS.muted}20`,
-                color: orderStatus === "NEW" ? COLORS.info.DEFAULT : orderStatus === "IN_PRODUCTION" ? COLORS.accent[400] : orderStatus === "READY" ? COLORS.success.DEFAULT : COLORS.muted,
-              }}>
-                {ORDER_STATUS_LABELS[orderStatus] || orderStatus}
-              </span>
-            )}
-            <select
-              value={priority}
-              onChange={(e) => setPriority(e.target.value as PriorityLevel)}
-              title="Oncelik"
-              style={{
-                padding: "6px 8px",
-                fontSize: 12,
-                borderRadius: RADIUS.md,
-                border: `1px solid ${COLORS.border}`,
-                background: "rgba(14, 20, 25, 0.5)",
-                color: COLORS.text,
-              }}
-            >
-              <option value="low">Dusuk</option>
-              <option value="normal">Normal</option>
-              <option value="high">Yuksek</option>
-              <option value="urgent">Acil</option>
-            </select>
-            <Button onClick={() => setImportModal(true)} variant="secondary" size="sm">
-              Ice Aktar
-            </Button>
-            <Button onClick={handleSave} variant="secondary" size="sm">
-              Kaydet (Ctrl+S)
-            </Button>
-            <Button
-              onClick={handleOptimize}
-              size="sm"
-              disabled={isOptimizing || rows.length === 0}
-              title="Siparisi kaydedip OptiPlanning'e gonderir"
-            >
-              {isOptimizing ? "Gonderiliyor..." : "Optimizasyona Gonder"}
-            </Button>
-            {order && (
-              <Button
-                variant="danger"
-                size="sm"
-                disabled={isDeleting}
-                onClick={async () => {
-                  if (!confirm("Bu siparisi silmek istediginizden emin misiniz?")) return;
-                  setIsDeleting(true);
-                  try {
-                    await ordersService.remove(order.id);
-                    await useOrdersStore.getState().fetchOrders();
-                    onBack();
-                  } catch {
-                    window.alert("Siparis silinemedi (sadece NEW durumundaki siparisler silinebilir)");
-                  } finally {
-                    setIsDeleting(false);
-                  }
-                }}
-              >
-                {isDeleting ? "Siliniyor..." : "Sil"}
-              </Button>
-            )}
-          </div>
-        </div>
 
-        {partsError && (
-          <Card style={{ border: `1px solid ${COLORS.error.DEFAULT}`, background: `${COLORS.error.DEFAULT}10` }}>
-            <div style={{ padding: "10px 14px", fontSize: 13, color: COLORS.error.DEFAULT }}>
-              {partsError}
-            </div>
-          </Card>
-        )}
+          <input
+            type="file"
+            accept=".csv,.txt,.xls,.xlsx"
+            onChange={async (event) => {
+              const file = event.target.files?.[0];
+              if (!file) return;
+              await handleImportFile(file);
+              event.target.value = "";
+            }}
+            style={{ display: "block", padding: "8px" }}
+          />
 
-        {importInfo && (
-          <Card style={{ border: `1px solid ${COLORS.success.DEFAULT}`, background: `${COLORS.success.DEFAULT}10` }}>
-            <div style={{ padding: "10px 14px", fontSize: 13, color: COLORS.success.DEFAULT }}>
-              {importInfo}
-            </div>
-          </Card>
-        )}
-
-        {importError && (
-          <Card style={{ border: `1px solid ${COLORS.warning.DEFAULT}`, background: `${COLORS.warning.DEFAULT}10` }}>
-            <div style={{ padding: "10px 14px", fontSize: 13, color: COLORS.warning.DEFAULT }}>
+          {importError ? (
+            <div style={{ padding: "10px 12px", borderRadius: 6, background: "rgba(220, 38, 38, 0.12)", color: "#DC2626", fontSize: 12 }}>
               {importError}
             </div>
-          </Card>
-        )}
+          ) : null}
 
-        <Card>
-          <div style={{ padding: "16px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 12 }}>
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: COLORS.gray[400], display: "block", marginBottom: 8 }}>
-                Musteri
-              </label>
-              <input
-                type="text"
-                value={customerName}
-                onChange={(event) => setCustomerName(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(14, 20, 25, 0.5)",
-                  color: COLORS.text,
-                  fontSize: 13,
-                  outline: "none",
-                  transition: TRANSITIONS.fast,
-                }}
-                placeholder="Musteri adi"
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: COLORS.gray[400], display: "block", marginBottom: 8 }}>
-                Telefon
-              </label>
-              <input
-                type="text"
-                value={customerPhone}
-                onChange={(event) => setCustomerPhone(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(14, 20, 25, 0.5)",
-                  color: COLORS.text,
-                  fontSize: 13,
-                  outline: "none",
-                  transition: TRANSITIONS.fast,
-                }}
-                placeholder="+90 555 123 45 67"
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: COLORS.gray[400], display: "block", marginBottom: 8 }}>
-                Plaka Boyutu
-              </label>
-              <select
-                value={plateSize}
-                onChange={(event) => setPlateSize(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(14, 20, 25, 0.5)",
-                  color: COLORS.text,
-                  fontSize: 13,
-                  outline: "none",
-                  transition: TRANSITIONS.fast,
-                }}
-              >
-                <option>2100x2800</option>
-                <option>2000x3000</option>
-                <option>1500x2000</option>
-              </select>
-            </div>
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: COLORS.gray[400], display: "block", marginBottom: 8 }}>
-                Kalinlik (mm)
-              </label>
-              <input
-                type="number"
-                value={thickness}
-                onChange={(event) => setThickness(parseFloat(event.target.value))}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(14, 20, 25, 0.5)",
-                  color: COLORS.text,
-                  fontSize: 13,
-                  outline: "none",
-                  transition: TRANSITIONS.fast,
-                }}
-                min="0.5"
-                max="100"
-                step="0.5"
-              />
-            </div>
-            <div>
-              <label style={{ fontSize: 12, fontWeight: 600, color: COLORS.gray[400], display: "block", marginBottom: 8 }}>
-                Renk / Malzeme
-              </label>
-              <input
-                type="text"
-                value={material}
-                onChange={(event) => setMaterial(event.target.value)}
-                style={{
-                  width: "100%",
-                  padding: "10px 14px",
-                  borderRadius: 6,
-                  border: `1px solid ${COLORS.border}`,
-                  background: "rgba(14, 20, 25, 0.5)",
-                  color: COLORS.text,
-                  fontSize: 13,
-                  outline: "none",
-                  transition: TRANSITIONS.fast,
-                }}
-                placeholder="Renk veya malzeme"
-              />
-            </div>
-          </div>
-        </Card>
-
-        <div style={{ display: "flex", gap: 0, borderBottom: `1px solid ${COLORS.border}` }}>
-          {(["measures", "validate", "export"] as const).map((value) => (
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" }}>
             <button
-              key={value}
-              onClick={() => setTab(value)}
-              style={{
-                padding: "12px 20px",
-                border: "none",
-                background: "none",
-                cursor: "pointer",
-                color: tab === value ? COLORS.primary[500] : COLORS.gray[500],
-                fontSize: 14,
-                fontWeight: TYPOGRAPHY.fontWeight.semibold,
-                borderBottom: tab === value ? `2px solid ${COLORS.primary[500]}` : "none",
-                transition: TRANSITIONS.fast,
-              }}
+              type="button"
+              onClick={handleTemplateDownload}
+              style={{ height: 32, padding: "0 14px", border: "1px solid #9CA3AF", background: "transparent", cursor: "pointer" }}
             >
-              {value === "measures" && "Olculer"}
-              {value === "validate" && "Dogrula"}
-              {value === "export" && "Disa Aktar"}
+              Ornek CSV Indir
             </button>
-          ))}
+            <button
+              type="button"
+              onClick={() => setImportModal(false)}
+              style={{ height: 32, padding: "0 14px", border: "1px solid #9CA3AF", background: "transparent", cursor: "pointer" }}
+            >
+              Kapat
+            </button>
+          </div>
         </div>
-
-        {tab === "measures" && (
-          <MeasureTable
-            rows={rows}
-            isArk={isArk}
-            selectedGrain="0"
-            onRowUpdate={handleRowUpdate}
-            onAddRow={handleAddRow}
-            onRemoveRow={handleRemoveRow}
-          />
-        )}
-
-        {tab === "validate" && (
-          <Card style={{ padding: "20px" }}>
-            {validationErrors.length === 0 ? (
-              <div style={{ textAlign: "center", color: COLORS.success.DEFAULT, padding: "20px 12px" }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>OK</div>
-                <div style={{ fontSize: 14, fontWeight: TYPOGRAPHY.fontWeight.semibold }}>
-                  Hata yok. Disa aktarmaya hazir.
-                </div>
-                <Button onClick={() => setTab("export")} style={{ marginTop: 16 }}>
-                  Disa Aktar Adimina Git
-                </Button>
-              </div>
-            ) : (
-              <div>
-                <div style={{ color: COLORS.error.DEFAULT, marginBottom: 16, fontSize: 14, fontWeight: TYPOGRAPHY.fontWeight.semibold }}>
-                  {validationErrors.length} hata bulundu:
-                </div>
-                <ul style={{ margin: 0, paddingLeft: 20, color: COLORS.text, fontSize: 13, lineHeight: 1.6 }}>
-                  {validationErrors.map((error, index) => (
-                    <li key={index}>{error}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div style={{ marginTop: 20, display: "flex", gap: 8, justifyContent: "center" }}>
-              <Button onClick={handleValidate} variant="secondary">
-                Tekrar Dogrula
-              </Button>
-              <Button onClick={() => setTab("measures")}>Geri Don</Button>
-            </div>
-          </Card>
-        )}
-
-        {tab === "export" && (
-          <Card style={{ padding: "24px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-              <span style={{ display: "inline-flex", color: COLORS.primary[500], fontSize: 20 }}>v</span>
-              <h3 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: COLORS.primary[500] }}>
-                Disa Aktarma Secenekleri
-              </h3>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: 14 }}>
-              <button
-                onClick={handleExportCsv}
-                style={exportButtonStyle}
-                onMouseEnter={onExportButtonEnter}
-                onMouseLeave={onExportButtonLeave}
-              >
-                <span style={{ fontSize: 24 }}>[CSV]</span>
-                CSV Indir
-              </button>
-              <button
-                onClick={handleExportExcel}
-                style={exportButtonStyle}
-                onMouseEnter={onExportButtonEnter}
-                onMouseLeave={onExportButtonLeave}
-              >
-                <span style={{ fontSize: 24 }}>[XLS]</span>
-                Excel Indir
-              </button>
-              <button
-                onClick={handlePrint}
-                style={exportButtonStyle}
-                onMouseEnter={onExportButtonEnter}
-                onMouseLeave={onExportButtonLeave}
-              >
-                <span style={{ fontSize: 24 }}>[PRN]</span>
-                Yazdir
-              </button>
-            </div>
-          </Card>
-        )}
-
-        {importModal && (
-          <Modal open={importModal} title="Olculeri Ice Aktar" onClose={() => setImportModal(false)}>
-            <div style={{ padding: "20px", fontSize: 14, display: "grid", gap: 14 }}>
-              <div style={{ color: COLORS.gray[400], lineHeight: 1.6 }}>
-                CSV/TXT/XLS dosyasi yukleyin.
-                <br />
-                Beklenen sutunlar: <code>boy,en,adet,grain,u1,u2,k1,k2,delik-1,delik-2,bilgi</code>
-              </div>
-
-              <input
-                type="file"
-                accept=".csv,.txt,.xls,.xlsx"
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  if (!file) return;
-                  await handleImportFile(file);
-                  event.target.value = "";
-                }}
-                style={{
-                  display: "block",
-                  padding: "8px",
-                }}
-              />
-
-              {importError && (
-                <div style={{ padding: "10px 12px", borderRadius: 6, background: `${COLORS.error.DEFAULT}12`, color: COLORS.error.DEFAULT, fontSize: 12 }}>
-                  {importError}
-                </div>
-              )}
-
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", flexWrap: "wrap" }}>
-                <Button variant="secondary" onClick={handleTemplateDownload}>
-                  Ornek CSV Indir
-                </Button>
-                <Button variant="secondary" onClick={() => setImportModal(false)}>
-                  Kapat
-                </Button>
-              </div>
-            </div>
-          </Modal>
-        )}
-      </div>
+      </Modal>
     </div>
   );
 }

@@ -191,10 +191,10 @@ export function ReportsPage() {
         <Card title="Yönetici Özeti">
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: 16 }}>
             {[
-              { label: "Toplam Sipariş", value: totalOrders, color: COLORS.primary[600], suffix: "" },
-              { label: "Tamamlanan", value: completed, color: COLORS.success.DEFAULT, suffix: `%${completionRate}` },
-              { label: "Bekleyen", value: pending, color: COLORS.warning.DEFAULT, suffix: "İşlemde" },
-              { label: "Geciken", value: delayed, color: COLORS.error.DEFAULT, suffix: `%${delayRate}` }
+              { label: "Toplam Sipariş", value: totalOrders, color: COLORS.accent, suffix: "" },
+              { label: "Tamamlanan", value: completed, color: COLORS.success, suffix: `%${completionRate}` },
+              { label: "Bekleyen", value: pending, color: COLORS.warning, suffix: "İşlemde" },
+              { label: "Geciken", value: delayed, color: COLORS.danger, suffix: `%${delayRate}` }
             ].map((stat) => (
               <div key={stat.label} style={{ border: `1px solid ${COLORS.border}`, borderRadius: RADIUS.lg, padding: 20, textAlign: "center" }}>
                 <div style={{ fontSize: 14, fontWeight: 600, marginBottom: 8, color: stat.color }}>{stat.label}</div>
@@ -220,10 +220,10 @@ export function ReportsPage() {
               <div key={station.name} style={{ marginBottom: 12 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
                   <span>{station.name}</span>
-                  <span style={{ fontWeight: 600, color: station.rate >= 95 ? COLORS.success.DEFAULT : station.rate >= 80 ? COLORS.warning.DEFAULT : COLORS.error.DEFAULT }}>%{station.rate}</span>
+                  <span style={{ fontWeight: 600, color: station.rate >= 95 ? COLORS.success : station.rate >= 80 ? COLORS.warning : COLORS.danger }}>%{station.rate}</span>
                 </div>
                 <div style={{ height: 4, background: COLORS.border, borderRadius: 2 }}>
-                  <div style={{ width: `${station.rate}%`, height: "100%", background: station.rate >= 95 ? COLORS.success.DEFAULT : station.rate >= 80 ? COLORS.warning.DEFAULT : COLORS.error.DEFAULT, borderRadius: 2 }} />
+                  <div style={{ width: `${station.rate}%`, height: "100%", background: station.rate >= 95 ? COLORS.success : station.rate >= 80 ? COLORS.warning : COLORS.danger, borderRadius: 2 }} />
                 </div>
               </div>
             )) : (
@@ -252,3 +252,4 @@ export function ReportsPage() {
     </div>
   );
 }
+
