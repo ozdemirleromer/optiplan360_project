@@ -188,7 +188,9 @@ class OrchestratorService:
 
         job.state = self._coerce_state(new_state)
         if error_code is not _UNSET:
-            job.error_code = error_code.value if isinstance(error_code, JobErrorCode) else error_code
+            job.error_code = (
+                error_code.value if isinstance(error_code, JobErrorCode) else error_code
+            )
         if error_message is not _UNSET:
             job.error_message = error_message
 
@@ -477,10 +479,14 @@ class OrchestratorService:
     def _trigger_optiplan_exe(self, job: OptiJob, xlsx_files: list[str]) -> None:
         """Mode A: OptiPlanning.exe'yi CLI uzerinden tetikle."""
         # 2-A: Tek OPTI_RUNNING kilidi — esit zamanli calismayi engelle
-        running_count = self.db.query(OptiJob).filter(
-            OptiJob.state == OptiJobStateEnum.OPTI_RUNNING,
-            OptiJob.id != job.id,
-        ).count()
+        running_count = (
+            self.db.query(OptiJob)
+            .filter(
+                OptiJob.state == OptiJobStateEnum.OPTI_RUNNING,
+                OptiJob.id != job.id,
+            )
+            .count()
+        )
         if running_count > 0:
             raise ValidationError(
                 "Zaten aktif bir OPTI_RUNNING job var. Esit zamanli calisma engellendi."
