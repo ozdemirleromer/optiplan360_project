@@ -95,7 +95,7 @@ class BaseFinanceTest(unittest.TestCase):
         self.engine.dispose()
 
 class TestInvoices(BaseFinanceTest):
-    def test_create_invoice(self):
+    def _create_invoice(self):
         payload = {
             "account_id": self.account_id,
             "subtotal": 1000,
@@ -110,10 +110,13 @@ class TestInvoices(BaseFinanceTest):
         self.assertEqual(data["remaining_amount"], 1200)
         self.assertEqual(data["status"], "PENDING")
         self.assertIsNotNone(data["invoice_number"])
-        return data["id"]
-
+        return data["id"]
+
+    def test_create_invoice(self):
+        self._create_invoice()
+
     def test_list_invoices(self):
-        self.test_create_invoice()
+        self._create_invoice()
         resp = self.client.get("/api/v1/payments/invoices")
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(len(resp.json()), 1)
@@ -191,3 +194,4 @@ class TestPaymentPromises(BaseFinanceTest):
 
 if __name__ == "__main__":
     unittest.main()
+

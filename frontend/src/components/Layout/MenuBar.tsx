@@ -47,7 +47,7 @@ export function MenuBar({ page, onNav }: MenuBarProps) {
       {/* Menüler Sağda */}
       <nav className="menubar-nav">
         {NAV_ITEMS.map((item) => (
-          <button
+          <button type="button"
             key={item.id}
             className={`menubar-nav-item ${isActive(item.page) ? "is-active" : ""}`}
             onClick={() => handleNavClick(item.page)}
@@ -59,3 +59,4 @@ export function MenuBar({ page, onNav }: MenuBarProps) {
     </div>
   );
 }
+

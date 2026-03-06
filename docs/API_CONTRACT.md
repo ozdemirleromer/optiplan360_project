@@ -114,10 +114,12 @@ interface User {
 | GET | `/customers/lookup?phone=...` | Müşteri CRM araması |
 | POST | `/jobs` | Yeni iş oluştur |
 | GET | `/jobs` | İş listesi |
-| GET | `/jobs/:id` | İş detayı + audit trail |
-| POST | `/jobs/:id/retry` | Başarısız işi yeniden kuyruğa al |
-| POST | `/jobs/:id/approve` | HOLD durumundaki işi onayla |
-| POST | `/orders/:orderId/import/xlsx` | Sipariş için XLSX import işi oluştur |
+| GET | `/jobs/:id` | İş detayı + audit trail |
+| POST | `/jobs/:id/retry` | Başarısız işi yeniden kuyruğa al |
+| POST | `/jobs/:id/approve` | HOLD durumundaki işi onayla |
+| GET | `/jobs/worker/status` | Worker circuit + run metrics |
+| POST | `/jobs/worker/reset` | Worker circuit breaker reset |
+| POST | `/orders/:orderId/import/xlsx` | Sipariş için XLSX import işi oluştur |
 
 ---
 
@@ -331,11 +333,26 @@ Hata `400`:
 
 ---
 
-### 3.8 POST /orders/:orderId/import/xlsx
-
-`POST /jobs` ile aynı body yapısı; `order_id` URL'den alınır.
-
----
+### 3.8 POST /orders/:orderId/import/xlsx
+
+`POST /jobs` ile aynı body yapısı; `order_id` URL'den alınır.
+
+---
+
+### 3.9 GET /jobs/worker/status
+
+Worker snapshot + gözlem metrikleri döner.
+
+Örnek alanlar:
+- `circuit_state`, `cooldown_remaining_seconds`, `last_error`
+- `run_metrics.total_runs`, `run_metrics.failed_runs`, `run_metrics.timeout_failures`
+- `run_metrics.last_duration_ms`
+
+### 3.10 POST /jobs/worker/reset
+
+Worker breaker durumunu sıfırlar (`CLOSED`).
+
+---
 
 ## 4. Hata Kodları
 

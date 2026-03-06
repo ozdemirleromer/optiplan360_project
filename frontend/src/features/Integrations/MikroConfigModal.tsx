@@ -232,7 +232,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
               </p>
             </div>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             aria-label="Kapat"
             style={{
@@ -287,7 +287,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
               padding: 4, background: `${COLORS.muted}10`, borderRadius: RADIUS.md,
             }}>
               {tabs.map(tab => (
-                <button
+                <button type="button"
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   style={{
@@ -452,7 +452,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         SQL Server bağlantısını şifreler. Production ortamında aktif olması tavsiye edilir.
                       </div>
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() => handleChange("encrypt", !config.encrypt)}
                       style={{
                         padding: "6px 14px",
@@ -491,7 +491,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
                         Production ortamında pasif tutulması tavsiye edilir.
                       </div>
                     </div>
-                    <button
+                    <button type="button"
                       onClick={() => handleChange("trustServerCertificate", !config.trustServerCertificate)}
                       style={{
                         padding: "6px 14px",
@@ -678,5 +678,6 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
     </div>
   );
 }
+
 
 

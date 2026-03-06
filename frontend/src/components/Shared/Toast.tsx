@@ -79,7 +79,7 @@ const Toast: React.FC<ToastProps> = ({ notification, onClose }) => {
           </p>
         )}
         {notification.action && (
-          <button
+          <button type="button"
             onClick={() => {
               notification.action.onClick();
               onClose();
@@ -91,7 +91,7 @@ const Toast: React.FC<ToastProps> = ({ notification, onClose }) => {
         )}
       </div>
 
-      <button
+      <button type="button"
         onClick={onClose}
         className="flex-shrink-0 text-gray-400 hover:text-gray-600 transition-colors"
         aria-label="Bildirimi kapat"
@@ -102,3 +102,4 @@ const Toast: React.FC<ToastProps> = ({ notification, onClose }) => {
     </div>
   );
 };
+

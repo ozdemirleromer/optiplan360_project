@@ -31,8 +31,25 @@ function resolveTheme(themeOrName: ThemeDef | ThemeName): ThemeDef {
 function applyCssVariables(theme: ThemeDef): void {
   if (typeof document === "undefined") return;
 
-  const c = theme.colors as any;
-  const d = theme.design as any;
+  type LegacyScale = { [key: string]: string | undefined; DEFAULT?: string; dark?: string; highlight?: string };
+  type LegacyColors = ThemeDef["colors"] & {
+    border2?: string;
+    gray?: Record<string, string>;
+    titlebar?: { bg?: string; text?: string; close?: string };
+    primary?: string | LegacyScale;
+    accent?: string | LegacyScale;
+    success?: string | LegacyScale;
+    warning?: string | LegacyScale;
+    danger?: string | LegacyScale;
+    border?: string | LegacyScale;
+    bg?: ThemeDef["colors"]["bg"] & { subtle?: string };
+  };
+  type LegacyDesign = ThemeDef["design"] & {
+    radius?: ThemeDef["design"]["radius"] & { xl?: number };
+    shadows?: ThemeDef["design"]["shadows"] & { glow?: string };
+  };
+  const c = theme.colors as LegacyColors;
+  const d = theme.design as LegacyDesign;
   const root = document.documentElement;
   root.setAttribute("data-ui-theme", theme.name);
 

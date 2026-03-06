@@ -118,7 +118,7 @@ export function TelegramConfigModal({ isOpen, onClose, onSave, initialConfig }: 
               Telegram bot entegrasyonu ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -150,7 +150,7 @@ export function TelegramConfigModal({ isOpen, onClose, onSave, initialConfig }: 
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Bot Durumu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Telegram botunu aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -297,5 +297,6 @@ export function TelegramConfigModal({ isOpen, onClose, onSave, initialConfig }: 
     </div>
   );
 }
+
 
 

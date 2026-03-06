@@ -126,7 +126,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
               IMAP email entegrasyonu ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -158,7 +158,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Email Entegrasyonu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Email OCR'u aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -225,7 +225,7 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
               <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
                 SSL/TLS
               </label>
-              <button
+              <button type="button"
                 onClick={() => handleChange("useSsl", !config.useSsl)}
                 style={{
                   width: "100%",
@@ -372,5 +372,6 @@ export function EmailConfigModal({ isOpen, onClose, onSave, initialConfig }: Ema
     </div>
   );
 }
+
 
 

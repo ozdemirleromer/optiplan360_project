@@ -100,7 +100,7 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
                                    Facebook (Meta) Cloud API yapılandırması
                               </p>
                          </div>
-                         <button
+                         <button type="button"
                               onClick={onClose}
                               style={{
                                    background: "none",
@@ -236,4 +236,5 @@ export function WhatsAppConfigModal({ isOpen, onClose, onSave, initialConfig }: 
           </div>
      );
 }
+
 

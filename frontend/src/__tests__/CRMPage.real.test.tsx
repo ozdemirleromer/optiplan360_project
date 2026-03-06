@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { OpportunitiesTab, QuotesTab, ErrorsTab, AuditTab } from '../components/CRM/CRMPage';
+import { OpportunitiesTab, QuotesTab, ErrorsTab, AuditTab } from '../features/CRM/CRMPage';
 import { crmService } from '../services/crmService';
 import { integrationService } from '../services/integrationService';
 

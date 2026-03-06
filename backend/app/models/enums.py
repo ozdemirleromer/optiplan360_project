@@ -168,7 +168,6 @@ class PriceJobStatusEnum(str, enum.Enum):
 
 class JobErrorCode(str, enum.Enum):
     """Orchestrator iş hata kodları — string sabitler yerine bu enum kullanılır."""
-
     CRM_NO_MATCH = "E_CRM_NO_MATCH"
     PLATE_SIZE_MISSING = "E_PLATE_SIZE_MISSING"
     NO_PARTS = "E_NO_PARTS"

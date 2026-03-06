@@ -219,7 +219,7 @@ export function AIOrchestratorDashboard() {
 
             {/* Sağ: Bildirim ve Ayarlar */}
             <div className="flex items-center gap-4">
-              <button
+              <button type="button"
                 onClick={reload}
                 disabled={loading}
                 className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all group disabled:opacity-50"
@@ -227,7 +227,7 @@ export function AIOrchestratorDashboard() {
                 <RefreshCw className={`w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors ${loading ? 'animate-spin' : ''}`} />
               </button>
               
-              <button className="relative p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all group">
+              <button type="button" className="relative p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all group">
                 <Bell className="w-5 h-5 text-slate-400 group-hover:text-cyan-400 transition-colors" />
                 {notifications > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 text-white text-xs rounded-full flex items-center justify-center font-bold animate-pulse">
@@ -236,7 +236,7 @@ export function AIOrchestratorDashboard() {
                 )}
               </button>
 
-              <button className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all group">
+              <button type="button" className="p-2.5 rounded-xl bg-slate-800/50 hover:bg-slate-800 border border-white/5 transition-all group">
                 <Settings className="w-5 h-5 text-slate-400 group-hover:text-purple-400 transition-colors" />
               </button>
             </div>
@@ -359,10 +359,10 @@ export function AIOrchestratorDashboard() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button className="px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-400 text-xs font-medium transition-all">
+                        <button type="button" className="px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/20 text-cyan-400 text-xs font-medium transition-all">
                           Detay
                         </button>
-                        <button className="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-400 text-xs font-medium transition-all">
+                        <button type="button" className="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20 text-purple-400 text-xs font-medium transition-all">
                           Düzenle
                         </button>
                       </div>
@@ -377,11 +377,11 @@ export function AIOrchestratorDashboard() {
           <div className="px-6 py-4 border-t border-white/5 flex items-center justify-between text-sm text-slate-500">
             <span>Toplam {displayOrders.length} sipariş gösteriliyor</span>
             <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
+              <button type="button" className="px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
                 Önceki
               </button>
               <span className="px-3 py-1.5">1 / 1</span>
-              <button className="px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
+              <button type="button" className="px-3 py-1.5 rounded-lg hover:bg-white/5 transition-colors">
                 Sonraki
               </button>
             </div>
@@ -469,3 +469,4 @@ export function AIOrchestratorDashboard() {
 }
 
 export default AIOrchestratorDashboard;
+

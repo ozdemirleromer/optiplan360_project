@@ -224,3 +224,13 @@ Her audit kaydı:
   "created_at": "2026-02-17T10:30:00.000Z"
 }
 ```
+
+---
+
+## 8. Worker Gozlem Metrikleri
+
+`GET /api/v1/orchestrator/jobs/worker/status` yaniti circuit durumuna ek olarak run metrikleri dondurur:
+
+- `run_metrics.total_runs`, `processed_runs`, `failed_runs`, `held_runs`, `idle_runs`, `blocked_runs`
+- `run_metrics.timeout_failures` (timeout kaynakli worker hata sayisi)
+- `run_metrics.last_duration_ms` (son worker dongu suresi)

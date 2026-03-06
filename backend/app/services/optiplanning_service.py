@@ -1,6 +1,7 @@
 import logging
 import os
 import subprocess
+import tempfile
 from datetime import datetime, timezone
 from types import SimpleNamespace
 from typing import Any, List
@@ -42,7 +43,9 @@ class OptiPlanningService:
             "tmp",
             "optiplan_exports",
         )
-        candidates = [preferred_dir, backend_tmp, project_tmp]
+        system_tmp = os.path.join(tempfile.gettempdir(), "optiplan_exports")
+        candidates = [preferred_dir, backend_tmp, project_tmp, system_tmp]
+        errors: list[str] = []
 
         for candidate in candidates:
             try:
@@ -52,9 +55,11 @@ class OptiPlanningService:
                     f.write("ok")
                 os.remove(probe)
                 return candidate
-            except Exception:
+            except Exception as exc:
+                errors.append(f"{candidate}: {exc}")
                 continue
 
+        logger.warning("Export klasoru fallback denemeleri basarisiz: %s", "; ".join(errors))
         raise AppValidationError(
             "E_EXPORT_DIR_UNWRITABLE: Export klasoru yazilabilir degil. "
             f"Denenen yollar: {candidates}"

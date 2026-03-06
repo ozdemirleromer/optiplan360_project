@@ -33,7 +33,7 @@ export const EngineeringGrid: React.FC<EngineeringGridProps> = ({
 }) => {
   const [editingCell, setEditingCell] = useState<{ rowId: number; field: string } | null>(null);
 
-  const handleCellChange = (rowId: number, field: string, value: any) => {
+  const handleCellChange = (rowId: number, field: string, value: unknown) => {
     if (readOnly) return;
     onRowChange?.(rowId, { [field]: value });
   };
@@ -187,7 +187,7 @@ export const EngineeringGrid: React.FC<EngineeringGridProps> = ({
                 <td className="grid-col-edges">
                   <div className="edges-container">
                     {edges.map((edge) => (
-                      <button
+                      <button type="button"
                         key={edge}
                         className={`edge-btn ${row.edges?.includes(edge) ? "active" : ""}`}
                         onClick={() => {
@@ -226,3 +226,4 @@ export const EngineeringGrid: React.FC<EngineeringGridProps> = ({
     </div>
   );
 };
+

@@ -705,7 +705,7 @@ export default function OrchestratorPage() {
 
         {/* KPI Durum Filtreleri */}
         <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap" }}>
-          <button
+          <button type="button"
             onClick={() => setStateFilter("")}
             style={{
               display: "flex", alignItems: "center", gap: 5,
@@ -724,7 +724,7 @@ export default function OrchestratorPage() {
             const active = stateFilter === key;
             const color = OPTI_STATE_COLORS[key as OptiJobState];
             return (
-              <button
+              <button type="button"
                 key={key}
                 onClick={() => setStateFilter(active ? "" : key)}
                 style={{
@@ -956,4 +956,5 @@ export default function OrchestratorPage() {
     </div>
   );
 }
+
 

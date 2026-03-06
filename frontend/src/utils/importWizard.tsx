@@ -270,13 +270,13 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
 
       {/* Actions */}
       <div className="flex gap-3">
-        <button
+        <button type="button"
           onClick={onCancel}
           className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
         >
           İptal Et
         </button>
-        <button
+        <button type="button"
           onClick={onConfirm}
           disabled={validation.failed > 0}
           className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
@@ -287,3 +287,4 @@ export const ImportPreview: React.FC<ImportPreviewProps> = ({
     </div>
   );
 };
+

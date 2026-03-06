@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { Settings, Play, Eye, Download, FileJson, RefreshCw, BarChart2 } from 'lucide-react';
-import NestingVisualizer from '../../components/Optimization/NestingVisualizer';
-import RoomSettingsPanel, { RoomDimensions } from '../../components/Optimization/RoomSettingsPanel';
+import NestingVisualizer from '../../features/Optimization/NestingVisualizer';
+import RoomSettingsPanel, { RoomDimensions } from '../../features/Optimization/RoomSettingsPanel';
 import { NestingData } from '../../types';
 
 const OptimizationWorkbench: React.FC = () => {
@@ -19,7 +19,7 @@ const OptimizationWorkbench: React.FC = () => {
      });
 
      // Load preview data
-     const loadPreview = async () => {
+     const loadPreview = useCallback(async () => {
           setLoading(true);
           try {
                // API call placeholder - backend router'daki /preview/{order_id} endpoint'ini kullanır
@@ -31,11 +31,11 @@ const OptimizationWorkbench: React.FC = () => {
           } finally {
                setLoading(false);
           }
-     };
+     }, [orderId]);
 
      useEffect(() => {
           loadPreview();
-     }, [orderId]);
+     }, [loadPreview]);
 
      return (
           <div className="min-h-screen bg-slate-950 text-slate-200">
@@ -53,14 +53,14 @@ const OptimizationWorkbench: React.FC = () => {
                          </div>
 
                          <div className="flex items-center gap-3">
-                              <button
+                              <button type="button"
                                    onClick={loadPreview}
                                    className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg flex items-center gap-2 border border-slate-700 transition-all active:scale-95"
                               >
                                    <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
                                    Yenile
                               </button>
-                              <button className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center gap-2 font-medium shadow-lg shadow-blue-900/20 transition-all active:scale-95">
+                              <button type="button" className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg flex items-center gap-2 font-medium shadow-lg shadow-blue-900/20 transition-all active:scale-95">
                                    <Play className="w-4 h-4" />
                                    Optimizasyonu Başlat
                               </button>
@@ -127,14 +127,14 @@ const OptimizationWorkbench: React.FC = () => {
                          <div className="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl min-h-[600px]">
                               {/* Tabs */}
                               <div className="flex border-b border-slate-800">
-                                   <button
+                                   <button type="button"
                                         onClick={() => setActiveTab('visualizer')}
                                         className={`px-6 py-4 text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'visualizer' ? 'bg-slate-800/50 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:text-white hover:bg-slate-800/30'}`}
                                    >
                                         <Eye className="w-4 h-4" />
                                         Kesim Şeması Gözlemcisi
                                    </button>
-                                   <button
+                                   <button type="button"
                                         onClick={() => setActiveTab('params')}
                                         className={`px-6 py-4 text-sm font-medium transition-all flex items-center gap-2 ${activeTab === 'params' ? 'bg-slate-800/50 text-blue-400 border-b-2 border-blue-500' : 'text-slate-400 hover:text-white hover:bg-slate-800/30'}`}
                                    >
@@ -143,7 +143,7 @@ const OptimizationWorkbench: React.FC = () => {
                                    </button>
 
                                    <div className="ml-auto flex items-center gap-2 px-4">
-                                        <button className="p-2 text-slate-400 hover:text-white transition-colors" title="PDF Dışa Aktar">
+                                        <button type="button" className="p-2 text-slate-400 hover:text-white transition-colors" title="PDF Dışa Aktar">
                                              <Download className="w-5 h-5" />
                                         </button>
                                    </div>
@@ -178,3 +178,4 @@ const OptimizationWorkbench: React.FC = () => {
 };
 
 export default OptimizationWorkbench;
+

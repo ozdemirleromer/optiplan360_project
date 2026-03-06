@@ -104,7 +104,7 @@ export function SMSConfigModal({ isOpen, onClose, onSave, initialConfig }: SMSCo
                                    Müşteri bildirimleri için SMS entegrasyonu
                               </p>
                          </div>
-                         <button
+                         <button type="button"
                               onClick={onClose}
                               style={{
                                    background: "none",
@@ -244,4 +244,5 @@ export function SMSConfigModal({ isOpen, onClose, onSave, initialConfig }: SMSCo
           </div>
      );
 }
+
 

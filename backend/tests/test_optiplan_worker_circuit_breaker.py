@@ -13,6 +13,20 @@ def reset_circuit_breaker_state(monkeypatch):
     monkeypatch.setattr(worker_module, "_half_open_probe_in_progress", False)
     monkeypatch.setattr(worker_module, "_last_run_at", None)
     monkeypatch.setattr(worker_module, "_last_error", None)
+    monkeypatch.setattr(
+        worker_module,
+        "_worker_metrics",
+        {
+            "total_runs": 0,
+            "processed_runs": 0,
+            "failed_runs": 0,
+            "held_runs": 0,
+            "idle_runs": 0,
+            "blocked_runs": 0,
+            "timeout_failures": 0,
+            "last_duration_ms": None,
+        },
+    )
 
 
 def test_failure_threshold_opens_circuit():
@@ -76,3 +90,49 @@ def test_reset_circuit_breaker_returns_closed_state(monkeypatch):
     assert snapshot["consecutive_failures"] == 0
     assert snapshot["half_open_probe_in_progress"] is False
     assert worker_module._last_error is None
+
+
+def test_record_worker_outcome_tracks_timeout_failures():
+    worker_module._record_worker_outcome(
+        status="failed",
+        duration_ms=1200,
+        error_msg="Subprocess timeout (180s)",
+    )
+    worker_module._record_worker_outcome(
+        status="processed",
+        duration_ms=200,
+        error_msg=None,
+    )
+
+    assert worker_module._worker_metrics["total_runs"] == 2
+    assert worker_module._worker_metrics["failed_runs"] == 1
+    assert worker_module._worker_metrics["processed_runs"] == 1
+    assert worker_module._worker_metrics["timeout_failures"] == 1
+    assert worker_module._worker_metrics["last_duration_ms"] == 200
+
+
+def test_get_worker_status_includes_run_metrics(monkeypatch):
+    worker_module._worker_metrics["total_runs"] = 7
+    worker_module._worker_metrics["failed_runs"] = 2
+
+    class _Query:
+        def filter(self, *args, **kwargs):
+            return self
+
+        def count(self):
+            return 0
+
+    class _DB:
+        def query(self, *args, **kwargs):
+            return _Query()
+
+        def close(self):
+            return None
+
+    monkeypatch.setattr(worker_module, "SessionLocal", lambda: _DB())
+
+    status = worker_module.get_worker_status()
+
+    assert "run_metrics" in status
+    assert status["run_metrics"]["total_runs"] == 7
+    assert status["run_metrics"]["failed_runs"] == 2

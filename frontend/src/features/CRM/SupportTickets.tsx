@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, Badge, Button } from '../../components/Shared';
 import { crmService, CRMTicket } from '../../services/crmService';
 import { useAuthStore } from '../../stores/authStore';
@@ -10,7 +10,7 @@ import {
      RefreshCw
 } from 'lucide-react';
 
-export default function SupportTickets() {
+export default function SupportTickets() {
      const [tickets, setTickets] = useState<CRMTicket[]>([]);
      const [selectedTicket, setSelectedTicket] = useState<CRMTicket | null>(null);
      const [loading, setLoading] = useState(true);
@@ -21,7 +21,7 @@ export default function SupportTickets() {
 
      const { user } = useAuthStore();
 
-     const loadTickets = async () => {
+     const loadTickets = useCallback(async () => {
           try {
                setLoading(true);
                const data = await crmService.listTickets(filterStatus ? { status: filterStatus } : undefined);
@@ -31,7 +31,7 @@ export default function SupportTickets() {
           } finally {
                setLoading(false);
           }
-     };
+     }, [filterStatus]);
 
      const loadTicketDetail = async (id: string) => {
           try {
@@ -44,7 +44,7 @@ export default function SupportTickets() {
 
      useEffect(() => {
           loadTickets();
-     }, [filterStatus]);
+     }, [loadTickets]);
 
      const handleSendReply = async (e: React.FormEvent) => {
           e.preventDefault();
@@ -71,7 +71,7 @@ export default function SupportTickets() {
           }
      };
 
-     const getStatusBadgeVariant = (status: string) => {
+     const getStatusBadgeVariant = (status: string): "default" | "success" | "warning" | "danger" | "info" => {
           switch (status) {
                case 'OPEN': return 'info';
                case 'IN_PROGRESS': return 'warning';
@@ -159,7 +159,7 @@ export default function SupportTickets() {
                                                        >
                                                             <div className="flex justify-between items-start mb-2">
                                                                  <h4 className={`text-sm font-semibold m-0 line-clamp-1 pr-2 ${isSelected ? 'text-[var(--primary)]' : 'text-[var(--text-main)]'}`}>{t.subject}</h4>
-                                                                 <Badge variant={getStatusBadgeVariant(t.status) as any}>{getStatusLabel(t.status)}</Badge>
+                                                                 <Badge variant={getStatusBadgeVariant(t.status)}>{getStatusLabel(t.status)}</Badge>
                                                             </div>
                                                             <div className="text-xs text-[var(--text-muted)] mb-3">{t.accountName || 'Bilinmiyor'}</div>
                                                             <div className="flex justify-between items-center text-xs mt-auto pt-2 border-t border-[var(--border)] border-opacity-50">

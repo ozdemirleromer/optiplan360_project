@@ -1,35 +1,20 @@
-import { lazy, Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 
-import { CariCardsIntroScreen } from "../../components/CRM/CariCardsIntroScreen";
 import { TopBar } from "../../components/Layout/TopBar";
-import { StockCardsIntroScreen } from "../../components/Stock/StockCardsIntroScreen";
 import { COLORS, TYPOGRAPHY } from "../../components/Shared/constants";
-
-const CRMDashboardTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.CRMDashboardTab })),
-);
-const AccountsTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.AccountsTab })),
-);
-const OpportunitiesTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.OpportunitiesTab })),
-);
-const QuotesTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.QuotesTab })),
-);
-const SyncHealthTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.SyncHealthTab })),
-);
-const ErrorsTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.ErrorsTab })),
-);
-const AuditTab = lazy(() =>
-  import("../../components/CRM/CRMPage").then((m) => ({ default: m.AuditTab })),
-);
-const StockCardComponent = lazy(() =>
-  import("../../components/Stock/StockCardComponent").then((m) => ({ default: m.StockCardComponent })),
-);
-const PaymentDashboard = lazy(() => import("../../components/Payment/PaymentDashboard"));
+import {
+  AccountsTab,
+  AuditTab,
+  CariCardsIntroScreen,
+  CRMDashboardTab,
+  ErrorsTab,
+  OpportunitiesTab,
+  PaymentDashboard,
+  QuotesTab,
+  StockCardComponent,
+  StockCardsIntroScreen,
+  SyncHealthTab,
+} from "./cardManagementFeatureAdapters";
 
 const tabs = [
   { id: "dashboard", label: "Ozet Panel" },
@@ -146,4 +131,3 @@ export function CardManagementPage() {
 }
 
 export default CardManagementPage;
-

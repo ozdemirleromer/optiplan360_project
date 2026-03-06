@@ -205,7 +205,7 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
     <div className="fixed inset-0 bg-black z-50 flex flex-col">
       <div className="flex items-center justify-between p-4 bg-gray-900">
         <h2 className="text-white font-semibold">Barkod Taray</h2>
-        <button
+        <button type="button"
           onClick={onClose}
           className="text-white hover:text-gray-300"
         >
@@ -229,3 +229,4 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({ onScan, onClose 
     </div>
   );
 };
+

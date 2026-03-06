@@ -1,6 +1,6 @@
-﻿# TODO Agent-2 UI v1
+# TODO Agent-2 UI v1
 
-Durum: Completed (Wave-1)
+Durum: Completed (Wave-1) / Completed (Wave-2)
 Alan: apps/admin-ui/*, frontend/*, docs/A11Y_CHECKLIST.md
 
 ## Sprint Sirasi
@@ -17,5 +17,5 @@ Alan: apps/admin-ui/*, frontend/*, docs/A11Y_CHECKLIST.md
 6. [x] Add/update UI tests and report evidence
 
 ## Next Wave (Agent-2)
-1. [ ] UI state map consistency final check
-2. [ ] Full A11Y regression audit (contrast + keyboard flow)
+1. [x] UI state map consistency final check
+2. [x] Full A11Y regression audit (contrast + keyboard flow)

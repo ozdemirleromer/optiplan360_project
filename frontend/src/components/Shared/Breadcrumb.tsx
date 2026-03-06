@@ -51,7 +51,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
           )}
 
           {item.href || item.onClick ? (
-            <button
+            <button type="button"
               onClick={() => handleClick(item)}
               className="text-blue-600 hover:text-blue-700 underline transition-colors"
             >
@@ -95,3 +95,4 @@ export const BreadcrumbSchema: React.FC<{ items: BreadcrumbItem[] }> = ({ items 
     />
   );
 };
+

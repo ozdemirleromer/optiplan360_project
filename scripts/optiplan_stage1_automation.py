@@ -130,6 +130,60 @@ def _find_main_optiplan_window():
     return candidates[-1]
 
 
+def _find_main_optiplan_window_by_pid(pid: int):
+    candidates = []
+    for w in Desktop(backend="win32").windows(process=pid):
+        try:
+            if not w.is_visible():
+                continue
+            title = w.window_text() or ""
+            title_norm = _normalize_ui_text(title)
+            class_name = (w.class_name() or "").strip()
+
+            if "commandline" in title_norm and "excel" in title_norm:
+                continue
+
+            if title_norm.startswith("optiplanning - ["):
+                candidates.append(w)
+                continue
+
+            if "professional (hp)" in title_norm and class_name.startswith("WWindow"):
+                candidates.append(w)
+        except Exception:
+            continue
+    if not candidates:
+        return None
+    return candidates[-1]
+
+
+def _is_invalid_window_handle(exc: Exception) -> bool:
+    txt = f"{type(exc).__name__}: {exc}".lower()
+    return (
+        "invalidwindowhandle" in txt
+        or "window handle" in txt
+        or "not a vaild window handle" in txt
+        or "not a valid window handle" in txt
+    )
+
+
+def _resolve_live_main_window(app: Application, pid: int, timeout_sec: float = 5.0):
+    def _find_live():
+        win = _find_main_optiplan_window_by_pid(pid)
+        if win:
+            return win
+        win = _first_visible_window_for_pid(pid)
+        if win:
+            return win
+        return _find_main_optiplan_window()
+
+    raw = _wait_for(
+        _find_live,
+        timeout_sec=timeout_sec,
+        description="live OptiPlanning main window",
+    )
+    return app.window(handle=raw.handle)
+
+
 def _start_or_attach(exe_path: str, start_if_closed: bool, timeout_sec: float):
     main = _find_main_optiplan_window()
     if main:
@@ -152,27 +206,46 @@ def _start_or_attach(exe_path: str, start_if_closed: bool, timeout_sec: float):
     return app, main
 
 
-def _menu_select_first(main_window, paths: Iterable[str]):
+def _menu_select_first(main_window, paths: Iterable[str], refresh_window=None):
     last_exc: Optional[Exception] = None
     for path in paths:
-        try:
-            main_window.set_focus()
-            main_window.menu_select(path)
-            return
-        except Exception as exc:
-            last_exc = exc
+        for _ in range(2):
+            try:
+                main_window.set_focus()
+                main_window.menu_select(path)
+                return
+            except Exception as exc:
+                last_exc = exc
+                if refresh_window and _is_invalid_window_handle(exc):
+                    main_window = refresh_window()
+                    continue
+                break
     raise RuntimeError(f"Menu secimi basarisiz: {list(paths)}; son hata: {last_exc}")
 
 
-def _invoke_menu_or_keys(main_window, paths: Iterable[str], fallback_keys: Optional[str] = None):
+def _invoke_menu_or_keys(
+    main_window,
+    paths: Iterable[str],
+    fallback_keys: Optional[str] = None,
+    refresh_window=None,
+):
     try:
-        _menu_select_first(main_window, paths)
+        _menu_select_first(main_window, paths, refresh_window=refresh_window)
         return
     except Exception:
         if not fallback_keys:
             raise
-    main_window.set_focus()
-    main_window.type_keys(fallback_keys, set_foreground=True)
+    for _ in range(2):
+        try:
+            main_window.set_focus()
+            main_window.type_keys(fallback_keys, set_foreground=True)
+            return
+        except Exception as exc:
+            if refresh_window and _is_invalid_window_handle(exc):
+                main_window = refresh_window()
+                continue
+            raise
+    raise RuntimeError("Klavye kisayolu uygulanamadi")
 
 
 def _wait_visible_dialog(pid: int, title_contains: str, timeout_sec: float):
@@ -379,7 +452,12 @@ def run_stage1(config: UiConfig) -> None:
         timeout_sec=config.timeout_sec,
     )
     pid = raw_main.process_id()
-    main = app.window(handle=raw_main.handle)
+    main = _resolve_live_main_window(app, pid, timeout_sec=config.timeout_sec)
+
+    def _refresh_main():
+        nonlocal main
+        main = _resolve_live_main_window(app, pid, timeout_sec=min(6.0, config.timeout_sec))
+        return main
 
     # If a save dialog is already open from a previous run, continue from that point.
     save_dialog_raw = _find_visible_dialog(pid, ".opjx")
@@ -398,6 +476,7 @@ def run_stage1(config: UiConfig) -> None:
                     "File->Close\tCtrl+K",
                 ],
                 fallback_keys="^k",
+                refresh_window=_refresh_main,
             )
             time.sleep(config.settle_sec)
             save_confirm = _find_save_confirmation_dialog(pid)
@@ -411,9 +490,7 @@ def run_stage1(config: UiConfig) -> None:
             # If there is nothing to close, continue.
             pass
 
-        live_main_raw = _find_main_optiplan_window()
-        if live_main_raw:
-            main = app.window(handle=live_main_raw.handle)
+        _refresh_main()
 
         # 1) New order/job, with deterministic retry on transient modal errors.
         last_new_error: list[str] = []
@@ -426,6 +503,7 @@ def run_stage1(config: UiConfig) -> None:
                         "Dosya->Yeni",
                         "File->New",
                     ],
+                    refresh_window=_refresh_main,
                 )
             except Exception as exc:
                 # Some environments open the save dialog even when menu_select raises.
@@ -442,18 +520,17 @@ def run_stage1(config: UiConfig) -> None:
                             "File->Close\tCtrl+K",
                         ],
                         fallback_keys="^k",
+                        refresh_window=_refresh_main,
                     )
                     time.sleep(config.settle_sec)
-                    live_main_raw = _find_main_optiplan_window()
-                    if not live_main_raw:
-                        raise RuntimeError("Kapat sonrasi OptiPlanning ana pencere bulunamadi")
-                    main = app.window(handle=live_main_raw.handle)
+                    _refresh_main()
                     _menu_select_first(
                         main,
                         paths=[
                             "Dosya->Yeni",
                             "File->New",
                         ],
+                        refresh_window=_refresh_main,
                     )
                 else:
                     # Last fallback: keyboard shortcut only if main window is enabled.
@@ -477,6 +554,7 @@ def run_stage1(config: UiConfig) -> None:
                             "File->Close\tCtrl+K",
                         ],
                         fallback_keys="^k",
+                        refresh_window=_refresh_main,
                     )
                     time.sleep(config.settle_sec)
                     save_confirm = _find_save_confirmation_dialog(pid)
@@ -488,9 +566,7 @@ def run_stage1(config: UiConfig) -> None:
                         time.sleep(config.settle_sec)
                 except Exception:
                     pass
-                live_main_raw = _find_main_optiplan_window()
-                if live_main_raw:
-                    main = app.window(handle=live_main_raw.handle)
+                _refresh_main()
                 continue
 
             # Wait briefly for save dialog. Retry if it doesn't appear.
@@ -510,6 +586,7 @@ def run_stage1(config: UiConfig) -> None:
                             "File->Close\tCtrl+K",
                         ],
                         fallback_keys="^k",
+                        refresh_window=_refresh_main,
                     )
                     time.sleep(config.settle_sec)
                     save_confirm = _find_save_confirmation_dialog(pid)
@@ -521,9 +598,7 @@ def run_stage1(config: UiConfig) -> None:
                         time.sleep(config.settle_sec)
                 except Exception:
                     pass
-                live_main_raw = _find_main_optiplan_window()
-                if live_main_raw:
-                    main = app.window(handle=live_main_raw.handle)
+                _refresh_main()
                 continue
 
         if save_dialog_raw is None:
@@ -561,10 +636,7 @@ def run_stage1(config: UiConfig) -> None:
     )
 
     # Refetch main window (title/handle can change after "New")
-    live_main_raw = _find_main_optiplan_window()
-    if not live_main_raw:
-        raise RuntimeError("OptiPlanning ana pencere bulunamadi (save sonrasi)")
-    main = app.window(handle=live_main_raw.handle)
+    _refresh_main()
 
     # 3) New worklist/job (+)
     _invoke_menu_or_keys(
@@ -574,6 +646,7 @@ def run_stage1(config: UiConfig) -> None:
             "Edit->New Worklist/Job\t+",
         ],
         fallback_keys="{VK_ADD}",
+        refresh_window=_refresh_main,
     )
     time.sleep(config.settle_sec)
 

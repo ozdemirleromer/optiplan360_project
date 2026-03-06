@@ -119,7 +119,7 @@ export function GoogleConfigModal({ isOpen, onClose, onSave, initialConfig }: Go
               Google Cloud OCR servisi ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -151,7 +151,7 @@ export function GoogleConfigModal({ isOpen, onClose, onSave, initialConfig }: Go
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Servis Durumu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Google Vision servisini aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -295,5 +295,6 @@ export function GoogleConfigModal({ isOpen, onClose, onSave, initialConfig }: Go
     </div>
   );
 }
+
 
 

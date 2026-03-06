@@ -78,6 +78,7 @@ from app.exceptions import (
 
 
 
+from app.constants.excel_schema import VALID_GRAIN_VALUES
 from app.models import Customer, Order, OrderPart, User
 
 
@@ -1142,10 +1143,16 @@ class OrderService:
 
 
 
-            if part.grain not in {0, 1, 2, 3}:
+            grain_value = getattr(part, "grain_code", None) or getattr(part, "grain", None)
+            grain_valid = False
 
+            if isinstance(grain_value, int):
+                grain_valid = grain_value in {0, 1, 2, 3}
+            elif isinstance(grain_value, str):
+                value = grain_value.strip()
+                grain_valid = value in VALID_GRAIN_VALUES or value in {"0", "1", "2", "3"}
 
-
+            if not grain_valid:
                 errors.append(VError(field="grain", message="Geçersiz grain değeri", row=i))
 
 
@@ -2079,6 +2086,7 @@ class OrderService:
 
 
         )
+
 
 
 

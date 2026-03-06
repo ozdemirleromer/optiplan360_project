@@ -244,7 +244,7 @@ const DataTableInner = <T extends { id: string | number }>(
               }}
             />
             {search && (
-              <button
+              <button type="button"
                 onClick={() => {
                   setSearch("");
                   setPage(1);
@@ -645,5 +645,6 @@ export const DataTableExample = () => {
 };
 
 export default DataTable;
+
 
 

@@ -25,7 +25,7 @@ export const NotificationDropdown = () => {
 
   return (
     <div style={{ position: "relative" }}>
-      <button
+      <button type="button"
         onClick={() => setOpen(!open)}
         style={{
           position: "relative",
@@ -154,5 +154,6 @@ export const NotificationDropdown = () => {
     </div>
   );
 };
+
 
 

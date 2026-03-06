@@ -168,7 +168,13 @@ function resolveTheme(themeOrName?: ThemeDef | ThemeName): ThemeDef {
 
 function buildTypography(theme: ThemeDef) {
 
-  const design = theme.design as any;
+  type TypographyOptions = {
+    letterSpacing?: keyof typeof LETTER_SPACING_MAP;
+    lineHeight?: keyof typeof LINE_HEIGHT_MAP;
+    headingWeight?: number;
+    bodyWeight?: number;
+  };
+  const design = theme.design as ThemeDef["design"] & { typography?: TypographyOptions };
 
   const letterSpacing = LETTER_SPACING_MAP[design.typography?.letterSpacing ?? "normal"] ?? LETTER_SPACING_MAP.normal;
 

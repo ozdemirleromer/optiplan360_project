@@ -1,1 +1,2 @@
-export { OptiPlanStrictOrderEntry as OptiPlanUI } from "./OptiPlanStrictOrderEntry";
+export * from "../../features/Optimization/OptiPlanUI";
+

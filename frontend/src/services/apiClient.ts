@@ -1,6 +1,6 @@
 const DEFAULT_API_BASE_URL = "/api";
 
-const LOCAL_API_FALLBACK_PORT = "8080";
+const LOCAL_API_FALLBACK_PORT = "8000";
 
 const RETRYABLE_PROXY_STATUS = new Set([404, 502, 503, 504]);
 
@@ -301,6 +301,12 @@ async function fetchWithApiFallback(path: string, request: RequestInit): Promise
 
       if (!hasNextCandidate) {
 
+        if (lastResponse) {
+
+          return lastResponse;
+
+        }
+
         throw error;
 
       }
@@ -594,4 +600,6 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   return transformed as T;
 
 }
+
+
 

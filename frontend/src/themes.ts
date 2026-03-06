@@ -84,7 +84,9 @@ export function getStoredTheme(): ThemeName {
         return name;
       }
     }
-  } catch { }
+  } catch {
+    // Ignore malformed storage payload and use default theme.
+  }
   return DEFAULT_THEME;
 }
 

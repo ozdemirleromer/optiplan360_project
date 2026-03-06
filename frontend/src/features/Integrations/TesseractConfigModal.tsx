@@ -104,7 +104,7 @@ export function TesseractConfigModal({ isOpen, onClose, onSave, initialConfig }:
               Yerel OCR motoru ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -136,7 +136,7 @@ export function TesseractConfigModal({ isOpen, onClose, onSave, initialConfig }:
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Servis Durumu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Tesseract OCR'u aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -238,7 +238,7 @@ export function TesseractConfigModal({ isOpen, onClose, onSave, initialConfig }:
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Ön İşleme (Preprocessing)</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Görüntü iyileştirme adımlarını uygula</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("preprocessingEnabled", !config.preprocessingEnabled)}
               style={{
                 padding: "6px 12px",
@@ -302,5 +302,6 @@ export function TesseractConfigModal({ isOpen, onClose, onSave, initialConfig }:
     </div>
   );
 }
+
 
 

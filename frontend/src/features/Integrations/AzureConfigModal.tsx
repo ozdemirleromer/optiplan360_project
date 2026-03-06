@@ -125,7 +125,7 @@ export function AzureConfigModal({ isOpen, onClose, onSave, initialConfig }: Azu
               Microsoft Azure OCR servisi ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -157,7 +157,7 @@ export function AzureConfigModal({ isOpen, onClose, onSave, initialConfig }: Azu
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Servis Durumu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>Azure OCR servisini aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -302,5 +302,6 @@ export function AzureConfigModal({ isOpen, onClose, onSave, initialConfig }: Azu
     </div>
   );
 }
+
 
 

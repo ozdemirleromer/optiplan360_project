@@ -73,3 +73,8 @@ out/
 *.sqlite
 *.sqlite3
 appdb.backup
+
+# Windows metadata / IDE artifacts
+desktop.ini.vs/
+backend/C*/
+

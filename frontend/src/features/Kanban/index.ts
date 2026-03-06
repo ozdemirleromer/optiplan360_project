@@ -1,4 +1,5 @@
-import { Kanban } from "../../components/Kanban";
-
-export { Kanban };
-export default Kanban;
+import { Kanban } from "./Kanban";
+
+export { Kanban } from "./Kanban";
+export { KanbanCard } from "./KanbanCard";
+export default Kanban;

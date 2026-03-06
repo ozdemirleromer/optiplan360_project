@@ -17,7 +17,6 @@ import {
   HeadphonesIcon,
   LayoutDashboard,
   LogOut,
-  MessageCircle,
   Package,
   Plug,
   Search,
