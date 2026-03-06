@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { THEMES } from "./themes";
 import { syncRuntimeTheme } from "./themeRuntime";
-import { COLORS, getRuntimeTheme, primaryRgba } from "./components/Shared/constants";
+import { COLORS, getRuntimeTheme } from "./components/Shared/constants";
 
 describe("themeRuntime", () => {
   beforeEach(() => {

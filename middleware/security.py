@@ -15,6 +15,13 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def _require_secret_env(var_name: str) -> str:
+    value = os.getenv(var_name, "").strip()
+    if not value:
+        raise RuntimeError(f"{var_name} environment degiskeni zorunludur")
+    return value
+
 class SecurityMiddleware(BaseHTTPMiddleware):
     """
     Güvenlik ara katmanı - Bulut entegrasyonları için
@@ -183,7 +190,7 @@ class SecurityMiddleware(BaseHTTPMiddleware):
             )
         
         # Signature doğrulama
-        secret = os.getenv("CLOUD_SECRET_KEY", "default_secret")
+        secret = _require_secret_env("CLOUD_SECRET_KEY")
         expected_signature = hmac.new(
             secret.encode(),
             f"{timestamp}{request.url}".encode(),
@@ -233,7 +240,7 @@ class CloudSecurityManager:
             "whatsapp": os.getenv("WHATSAPP_API_KEY", ""),
             "mikro_sql": os.getenv("MIKRO_SQL_API_KEY", ""),
             "backup": os.getenv("BACKUP_API_KEY", ""),
-            "internal": os.getenv("INTERNAL_API_KEY", "optiplan360_internal_key_2024")
+            "internal": os.getenv("INTERNAL_API_KEY", "")
         }
     
     def validate_api_key(self, service: str, provided_key: str) -> bool:
@@ -247,7 +254,7 @@ class CloudSecurityManager:
     
     def generate_request_signature(self, url: str, timestamp: int) -> str:
         """Request signature oluştur"""
-        secret = os.getenv("CLOUD_SECRET_KEY", "default_secret")
+        secret = _require_secret_env("CLOUD_SECRET_KEY")
         message = f"{timestamp}{url}"
         return hmac.new(
             secret.encode(),
@@ -287,3 +294,5 @@ async def verify_api_key(request: Request, credentials: Optional[HTTPAuthorizati
         )
     
     return {"service": service, "valid": True}
+
+

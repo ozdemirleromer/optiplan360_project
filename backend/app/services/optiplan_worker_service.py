@@ -22,7 +22,8 @@ import os
 import platform
 import subprocess
 import sys
-import threading
+import threading
+import time
 from datetime import datetime, timezone
 from typing import Optional
 
@@ -87,6 +88,16 @@ _circuit_opened_at: Optional[datetime] = None
 _half_open_probe_in_progress = False
 _last_run_at: Optional[datetime] = None
 _last_error: Optional[str] = None
+_worker_metrics = {
+    "total_runs": 0,
+    "processed_runs": 0,
+    "failed_runs": 0,
+    "held_runs": 0,
+    "idle_runs": 0,
+    "blocked_runs": 0,
+    "timeout_failures": 0,
+    "last_duration_ms": None,
+}
 
 
 def _get_circuit_snapshot(now: Optional[datetime] = None) -> dict:
@@ -131,8 +142,27 @@ def _release_half_open_probe():
     with _lock:
         if _circuit_state == CIRCUIT_STATE_HALF_OPEN:
             _half_open_probe_in_progress = False
-
-
+
+
+def _record_worker_outcome(status: str, duration_ms: int, error_msg: Optional[str] = None):
+    with _lock:
+        _worker_metrics["total_runs"] += 1
+        _worker_metrics["last_duration_ms"] = duration_ms
+        if status == "processed":
+            _worker_metrics["processed_runs"] += 1
+        elif status in {"failed", "error"}:
+            _worker_metrics["failed_runs"] += 1
+        elif status == "held":
+            _worker_metrics["held_runs"] += 1
+        elif status == "idle":
+            _worker_metrics["idle_runs"] += 1
+        elif status in {"circuit_open", "circuit_half_open", "claim_failed"}:
+            _worker_metrics["blocked_runs"] += 1
+
+        if error_msg and "timeout" in error_msg.lower():
+            _worker_metrics["timeout_failures"] += 1
+
+
 def _claim_job(db: Session, job: OptiJob) -> bool:
     """
     OPTI_IMPORTED -> OPTI_RUNNING atomik gecis.
@@ -307,15 +337,20 @@ def poll_and_run_once() -> dict:
     global _half_open_probe_in_progress, _last_run_at
 
     now = datetime.now(tz=timezone.utc)
+    started = time.perf_counter()
     _last_run_at = now
 
     # Circuit breaker kontrolu
     with _lock:
         _transition_circuit_if_ready(now)
         if _circuit_state == CIRCUIT_STATE_OPEN:
+            duration_ms = int((time.perf_counter() - started) * 1000)
+            _record_worker_outcome("circuit_open", duration_ms)
             return {"status": "circuit_open", **_get_circuit_snapshot(now)}
         if _circuit_state == CIRCUIT_STATE_HALF_OPEN:
             if _half_open_probe_in_progress:
+                duration_ms = int((time.perf_counter() - started) * 1000)
+                _record_worker_outcome("circuit_half_open", duration_ms)
                 return {"status": "circuit_half_open", **_get_circuit_snapshot(now)}
             _half_open_probe_in_progress = True
 
@@ -331,11 +366,15 @@ def poll_and_run_once() -> dict:
 
         if not job:
             _release_half_open_probe()
+            duration_ms = int((time.perf_counter() - started) * 1000)
+            _record_worker_outcome("idle", duration_ms)
             return {"status": "idle"}
 
         # Job'i claim et (OPTI_RUNNING)
         if not _claim_job(db, job):
             _release_half_open_probe()
+            duration_ms = int((time.perf_counter() - started) * 1000)
+            _record_worker_outcome("claim_failed", duration_ms)
             return {"status": "claim_failed", "job_id": job.id}
 
         # XLSX hazirla
@@ -343,7 +382,9 @@ def poll_and_run_once() -> dict:
             xlsx_path = _prepare_xlsx(db, job)
         except Exception as exc:
             _finalize_job(db, job, False, f"XLSX hazirlama hatasi: {exc}")
-            _record_failure(str(exc))
+            _record_failure(str(exc))
+            duration_ms = int((time.perf_counter() - started) * 1000)
+            _record_worker_outcome("failed", duration_ms, str(exc))
             return {"status": "failed", "job_id": job.id, "error": str(exc)}
 
         # pywinauto ortami mevcut mu kontrol et
@@ -365,6 +406,8 @@ def poll_and_run_once() -> dict:
             ):
                 _hold_job(db, job, log)
                 _release_half_open_probe()
+                duration_ms = int((time.perf_counter() - started) * 1000)
+                _record_worker_outcome("held", duration_ms, log)
                 return {
                     "status": "held",
                     "job_id": job.id,
@@ -374,12 +417,16 @@ def poll_and_run_once() -> dict:
 
             _finalize_job(db, job, success, log)
 
-            if success:
-                _record_success()
-                return {"status": "processed", "job_id": job.id, "engine": WORKER_ENGINE}
-            else:
-                _record_failure(log)
-                return {
+            if success:
+                _record_success()
+                duration_ms = int((time.perf_counter() - started) * 1000)
+                _record_worker_outcome("processed", duration_ms)
+                return {"status": "processed", "job_id": job.id, "engine": WORKER_ENGINE}
+            else:
+                _record_failure(log)
+                duration_ms = int((time.perf_counter() - started) * 1000)
+                _record_worker_outcome("failed", duration_ms, log)
+                return {
                     "status": "failed",
                     "job_id": job.id,
                     "error": log[-200:],
@@ -392,20 +439,24 @@ def poll_and_run_once() -> dict:
                 job,
                 True,
                 f"XLSX hazir: {xlsx_path}. pywinauto ortami yok, kullanici elle aktaracak.",
-            )
-            _record_success()
-            return {
+            )
+            _record_success()
+            duration_ms = int((time.perf_counter() - started) * 1000)
+            _record_worker_outcome("processed", duration_ms)
+            return {
                 "status": "processed",
                 "job_id": job.id,
                 "engine": "xlsx_only",
                 "xlsx_path": xlsx_path,
             }
 
-    except Exception as exc:
-        logger.error("poll_and_run_once beklenmeyen hata: %s", exc, exc_info=True)
-        db.rollback()
-        _record_failure(str(exc))
-        return {"status": "error", "error": str(exc)}
+    except Exception as exc:
+        logger.error("poll_and_run_once beklenmeyen hata: %s", exc, exc_info=True)
+        db.rollback()
+        _record_failure(str(exc))
+        duration_ms = int((time.perf_counter() - started) * 1000)
+        _record_worker_outcome("error", duration_ms, str(exc))
+        return {"status": "error", "error": str(exc)}
     finally:
         db.close()
 
@@ -459,6 +510,7 @@ def get_worker_status() -> dict:
         **snapshot,
         "last_run_at": _last_run_at.isoformat() if _last_run_at else None,
         "last_error": _last_error,
+        "run_metrics": dict(_worker_metrics),
         "engine": WORKER_ENGINE,
         "supported_engines": [WORKER_ENGINE],
         "queue_count": queue_count,
@@ -477,4 +529,5 @@ def reset_circuit_breaker():
         _circuit_opened_at = None
         _half_open_probe_in_progress = False
         _last_error = None
+        _worker_metrics["blocked_runs"] = 0
     logger.info("Worker circuit breaker sifirlandi (admin)")

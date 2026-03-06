@@ -3,7 +3,7 @@
 // Content Security Policy
 // Add to index.html or configure in server
  
-const _CSP_HEADER = {
+export const CSP_HEADER = {
   'Content-Security-Policy': (
     "default-src 'self'; " +
     "script-src 'self' 'unsafe-inline'; " +

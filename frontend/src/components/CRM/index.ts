@@ -1,11 +1,2 @@
-export {
-  CRMPage,
-  CRMDashboardTab,
-  DashboardTab,
-  AccountsTab,
-  OpportunitiesTab,
-  QuotesTab,
-  SyncHealthTab,
-  ErrorsTab,
-  AuditTab,
-} from "./CRMPage";
+export * from "../../features/CRM/index";
+export { default } from "../../features/CRM/index";

@@ -119,7 +119,7 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
               Amazon Web Services OCR servisi ayarları
             </p>
           </div>
-          <button
+          <button type="button"
             onClick={onClose}
             style={{
               background: "none",
@@ -151,7 +151,7 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
               <div style={{ fontSize: 14, fontWeight: 500, color: COLORS.text }}>Servis Durumu</div>
               <div style={{ fontSize: 12, color: COLORS.muted }}>AWS Textract servisini aktif/pasif yap</div>
             </div>
-            <button
+            <button type="button"
               onClick={() => handleChange("enabled", !config.enabled)}
               style={{
                 padding: "6px 12px",
@@ -300,5 +300,6 @@ export function AWSConfigModal({ isOpen, onClose, onSave, initialConfig }: AWSCo
     </div>
   );
 }
+
 
 

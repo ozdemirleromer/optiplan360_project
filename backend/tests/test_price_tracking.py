@@ -5,7 +5,7 @@ Price Tracking integration tests:
 3) Router access control
 """
 import unittest
-from datetime import datetime
+from datetime import datetime, UTC
 from pathlib import Path
 from unittest.mock import patch
 
@@ -266,7 +266,7 @@ class TestPriceTrackingRouterPermissions(unittest.TestCase):
                 "supplier": "Demo Supplier",
                 "rows_extracted": 0,
                 "error_message": None,
-                "created_at": datetime.utcnow().isoformat(),
+                "created_at": datetime.now(UTC).isoformat(),
             }
             resp = self.client.post(
                 "/api/v1/price-tracking/upload",
@@ -322,3 +322,4 @@ class TestPriceTrackingRouterPermissions(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+

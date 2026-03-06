@@ -110,7 +110,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                                    Sistem e-postalarının (şifre sıfırlama vb.) gönderim ayarları
                               </p>
                          </div>
-                         <button
+                         <button type="button"
                               onClick={onClose}
                               style={{
                                    background: "none",
@@ -173,7 +173,7 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
                                    <label style={{ display: "block", fontSize: 13, fontWeight: 500, color: COLORS.text, marginBottom: 6 }}>
                                         Güvenlik
                                    </label>
-                                   <button
+                                   <button type="button"
                                         onClick={() => handleChange("useTls", !config.useTls)}
                                         style={{
                                              width: "100%",
@@ -291,4 +291,5 @@ export function SMTPConfigModal({ isOpen, onClose, onSave, initialConfig }: SMTP
           </div>
      );
 }
+
 

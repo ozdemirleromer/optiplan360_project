@@ -1,4 +1,4 @@
-﻿import type { Order, OrderInput, OrderUpdate, OrderNote, BulkStatusUpdate, BulkDeleteRequest, BulkOperationResult, OrderStatus } from "../types";
+import type { Order, OrderInput, OrderUpdate, OrderNote, BulkStatusUpdate, BulkDeleteRequest, BulkOperationResult } from "../types";
 
 import { apiRequest, getApiBaseUrl } from "./apiClient";
 

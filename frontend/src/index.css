@@ -182,17 +182,6 @@ button:active {
   transform: none;
 }
 
-button[data-force-enabled="true"],
-input[type="button"][data-force-enabled="true"],
-input[type="submit"][data-force-enabled="true"],
-input[type="reset"][data-force-enabled="true"],
-[role="button"][data-force-enabled="true"] {
-  pointer-events: auto !important;
-  cursor: pointer !important;
-  opacity: 1 !important;
-  filter: none !important;
-}
-
 .text-gradient-primary {
   background: linear-gradient(135deg, var(--primary) 0%, #ff8a00 52%, var(--accent) 100%);
   -webkit-background-clip: text;
@@ -311,4 +300,11 @@ input[type="reset"][data-force-enabled="true"],
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Global Select Options Dark Theme Fix */
+.app-shell select option,
+body select option {
+  background-color: var(--bg-card, #1e1e1e);
+  color: var(--text-main, #e0e4ea);
 }

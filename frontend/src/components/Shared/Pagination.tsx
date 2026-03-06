@@ -100,7 +100,7 @@ export const Pagination: React.FC<PaginationProps> = ({
 
       {/* Pagination buttons */}
       <div className="flex items-center justify-center gap-1">
-        <button
+        <button type="button"
           onClick={() => handlePageClick(1)}
           disabled={current === 1}
           className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -109,7 +109,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <ChevronsLeft className="w-4 h-4" />
         </button>
 
-        <button
+        <button type="button"
           onClick={() => handlePageClick(current - 1)}
           disabled={current === 1}
           className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -124,7 +124,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               …
             </span>
           ) : (
-            <button
+            <button type="button"
               key={page}
               onClick={() => handlePageClick(page as number)}
               className={`
@@ -141,7 +141,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           ),
         )}
 
-        <button
+        <button type="button"
           onClick={() => handlePageClick(current + 1)}
           disabled={current === totalPages}
           className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -150,7 +150,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           <ChevronRight className="w-4 h-4" />
         </button>
 
-        <button
+        <button type="button"
           onClick={() => handlePageClick(totalPages)}
           disabled={current === totalPages}
           className="p-2 text-gray-600 hover:text-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -178,3 +178,4 @@ export const usePagination = (initialPage = 1, pageSize = 20) => {
 
   return { current, setCurrent: handlePageChange, pageSize };
 };
+

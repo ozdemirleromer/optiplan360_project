@@ -104,7 +104,7 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
                                    Analiz ve Darboğaz Motoru AI Ayarları
                               </p>
                          </div>
-                         <button
+                         <button type="button"
                               onClick={onClose}
                               style={{
                                    background: "none",
@@ -270,4 +270,5 @@ export function AIConfigModal({ isOpen, onClose, onSave, initialConfig }: AIConf
           </div>
      );
 }
+
 

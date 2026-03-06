@@ -38,8 +38,8 @@ export default function PublicOrderTracking({ token }: { token: string }) {
         }
         const data = await res.json();
         setOrder(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Siparis verisi alinamadi.");
       } finally {
         setLoading(false);
       }
@@ -123,3 +123,4 @@ export default function PublicOrderTracking({ token }: { token: string }) {
     </div>
   );
 }
+

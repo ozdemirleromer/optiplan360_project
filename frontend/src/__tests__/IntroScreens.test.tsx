@@ -1,8 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { CariCardsIntroScreen } from "../components/CRM/CariCardsIntroScreen";
-import { StockCardsIntroScreen } from "../components/Stock/StockCardsIntroScreen";
+import { CariCardsIntroScreen } from "../features/CRM/CariCardsIntroScreen";
+import { StockCardsIntroScreen } from "../features/Stock/StockCardsIntroScreen";
 import { APP_NAVIGATION_EVENT, type AppNavigationDetail } from "../utils/appNavigation";
 
 function captureNavigationEvents() {

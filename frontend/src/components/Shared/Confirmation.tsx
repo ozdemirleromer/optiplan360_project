@@ -28,7 +28,7 @@
 
 
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 
 import { AlertTriangle, Trash2, AlertCircle } from 'lucide-react';
@@ -80,6 +80,8 @@ interface ConfirmationState extends ConfirmationOptions {
 
 
 }
+
+const noopSetState = (_next: ConfirmationState) => undefined;
 
 
 
@@ -247,13 +249,13 @@ const ConfirmationDialog: React.FC = () => {
 
 
 
-  const setState = context?.setState ?? ((_next: ConfirmationState) => undefined);
+  const setState = context?.setState ?? noopSetState;
 
 
 
 
 
-  const handleConfirm = () => {
+  const handleConfirm = useCallback(() => {
 
 
     if (state.onResolve) {
@@ -266,10 +268,10 @@ const ConfirmationDialog: React.FC = () => {
 
 
     setState({ ...state, isOpen: false });
-  };
+  }, [setState, state]);
 
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
 
 
     if (state.onResolve) {
@@ -284,7 +286,7 @@ const ConfirmationDialog: React.FC = () => {
     setState({ ...state, isOpen: false });
 
 
-  };
+  }, [setState, state]);
 
 
 
@@ -404,10 +406,7 @@ const ConfirmationDialog: React.FC = () => {
     };
 
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
-
-  }, [state.isOpen]);
+  }, [state.isOpen, handleCancel]);
 
 
 
@@ -644,7 +643,7 @@ const ConfirmationDialog: React.FC = () => {
           <div className="flex gap-3">
 
 
-            <button
+            <button type="button"
 
 
               onClick={handleCancel}
@@ -665,7 +664,7 @@ const ConfirmationDialog: React.FC = () => {
 
 
 
-            <button
+            <button type="button"
 
 
               onClick={handleConfirm}
@@ -714,5 +713,6 @@ const ConfirmationDialog: React.FC = () => {
 
 
 };
+
 
 

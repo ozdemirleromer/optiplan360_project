@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { FileText, Users, ShoppingCart, Zap, Settings, Plus, Trash2, Download, Upload } from "lucide-react";
+import React from "react";
+import { Zap, Settings, Plus, Trash2, Download, Upload } from "lucide-react";
 import "./ribbon.css";
 
 export type RibbonTab = "DOSYA" | "CARİ" | "SİPARİŞ" | "OPTİMİZASYON" | "AYARLAR";
@@ -12,14 +12,6 @@ interface RibbonBarProps {
 
 export const RibbonBar: React.FC<RibbonBarProps> = ({ activeTab, onTabChange, onAction }) => {
   const tabs: RibbonTab[] = ["DOSYA", "CARİ", "SİPARİŞ", "OPTİMİZASYON", "AYARLAR"];
-
-  const tabIcons = {
-    DOSYA: FileText,
-    CARİ: Users,
-    SİPARİŞ: ShoppingCart,
-    OPTİMİZASYON: Zap,
-    AYARLAR: Settings,
-  };
 
   // Icon groups per tab
   const getIconsForTab = (tab: RibbonTab) => {
@@ -61,7 +53,7 @@ export const RibbonBar: React.FC<RibbonBarProps> = ({ activeTab, onTabChange, on
       {/* Tab Bar (Top stripe, 28px) */}
       <div className="ribbon-tabs">
         {tabs.map((tab) => (
-          <button
+          <button type="button"
             key={tab}
             className={`ribbon-tab ${activeTab === tab ? "active" : ""}`}
             onClick={() => onTabChange(tab)}
@@ -77,7 +69,7 @@ export const RibbonBar: React.FC<RibbonBarProps> = ({ activeTab, onTabChange, on
           const IconComponent = item.icon;
           return (
             <div key={idx} className="ribbon-icon-group">
-              <button
+              <button type="button"
                 className="ribbon-icon-btn"
                 onClick={() => onAction?.(item.label)}
                 title={item.label}
@@ -92,3 +84,4 @@ export const RibbonBar: React.FC<RibbonBarProps> = ({ activeTab, onTabChange, on
     </div>
   );
 };
+

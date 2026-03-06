@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { IntegrationsPage } from '../components/Admin/IntegrationsPage';
+import { IntegrationsPage } from '../features/Admin/IntegrationsPage';
 import { adminService } from '../services/adminService';
 
 vi.mock('../services/adminService');

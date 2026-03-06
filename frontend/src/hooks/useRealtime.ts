@@ -13,7 +13,7 @@ export interface WebSocketEvent {
      type: string;
 
 
-     data: any;
+     data: unknown;
 
 
 }

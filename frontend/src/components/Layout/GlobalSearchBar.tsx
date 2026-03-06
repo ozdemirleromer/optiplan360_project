@@ -28,8 +28,8 @@ export const GlobalSearchBar = () => {
           <X size={14} />
         </button>
       ) : (
-        <span className="global-search-hint">Ctrl+F</span>
-      )}
+        <span className="global-search-hint">Ctrl+K</span>
+      )}
     </div>
   );
 };

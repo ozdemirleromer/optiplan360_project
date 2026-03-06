@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
   const proxyTargetFromEnv = (env.VITE_API_PROXY_TARGET || "").trim();
   const apiProxyTarget =
     proxyTargetFromEnv ||
-    (/^https?:\/\//i.test(baseFromEnv) ? baseFromEnv : "http://127.0.0.1:8080");
+    (/^https?:\/\//i.test(baseFromEnv) ? baseFromEnv : "http://127.0.0.1:8000");
 
   return {
     plugins: [react()],
@@ -59,3 +59,4 @@ export default defineConfig(({ mode }) => {
     },
   };
 });
+

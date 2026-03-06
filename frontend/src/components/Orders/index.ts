@@ -1,7 +1,3 @@
-export { Orders } from "./Orders";
-
-export { OrderEditor } from "./OrderEditor";
-
-export { OrderNotesPanel } from "./OrderNotesPanel";
-
+export * from "../../features/Orders/index";
+export { default } from "../../features/Orders/index";
 

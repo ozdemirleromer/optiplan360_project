@@ -256,7 +256,7 @@ export default function AIAssistantPage() {
           {TABS.map((tab) => {
             const active = activeTab === tab.id;
             return (
-              <button
+              <button type="button"
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 style={{
@@ -564,4 +564,5 @@ export default function AIAssistantPage() {
     </div>
   );
 }
+
 

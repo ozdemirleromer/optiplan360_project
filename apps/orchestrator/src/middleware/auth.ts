@@ -10,7 +10,15 @@ export interface AuthRequest extends Request {
   };
 }
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-key-change-in-production";
+function resolveJwtSecret(): string {
+  const secret = (process.env.JWT_SECRET || "").trim();
+  if (!secret || secret.length < 32) {
+    throw new Error("JWT_SECRET env var zorunlu ve en az 32 karakter olmalıdır.");
+  }
+  return secret;
+}
+
+const JWT_SECRET = resolveJwtSecret();
 
 /**
  * Generate JWT token for user
@@ -102,3 +110,4 @@ export function devBypassAuth(req: Request, res: Response, next: NextFunction): 
   }
   next();
 }
+

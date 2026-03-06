@@ -7,6 +7,7 @@ $projectRoot = Resolve-Path (Join-Path $scriptRoot "..")
 $backendPath = Join-Path $projectRoot "backend"
 $venvPath = Join-Path $backendPath ".venv"
 $venvPython = Join-Path $venvPath "Scripts\python.exe"
+$runtimeExportPath = Join-Path $backendPath "runtime_exports"
 
 if (-Not (Test-Path -Path $venvPython)) {
     Write-Host "Creating backend virtual environment at $venvPath ..."
@@ -22,5 +23,9 @@ if (-Not (Test-Path -Path $venvPython)) {
 
 # Run uvicorn using the backend venv python
 Push-Location $backendPath
+if (-Not (Test-Path -Path $runtimeExportPath)) {
+    New-Item -ItemType Directory -Path $runtimeExportPath | Out-Null
+}
+$env:OPTIPLAN_EXPORT_DIR = $runtimeExportPath
 & $venvPython -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 Pop-Location

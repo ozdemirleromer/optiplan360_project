@@ -38,7 +38,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
 
       <div className="flex gap-3">
         {action && (
-          <button
+          <button type="button"
             onClick={action.onClick}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
           >
@@ -47,7 +47,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         )}
 
         {secondaryAction && (
-          <button
+          <button type="button"
             onClick={secondaryAction.onClick}
             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg transition-colors"
           >
@@ -194,3 +194,4 @@ export const useLoading = (initialState = false) => {
 
   return { isLoading, setIsLoading, withLoading };
 };
+

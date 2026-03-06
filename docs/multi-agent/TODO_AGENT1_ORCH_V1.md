@@ -1,4 +1,4 @@
-﻿# TODO Agent-1 ORCH v1
+# TODO Agent-1 ORCH v1
 
 Durum: Completed
 Alan: apps/orchestrator/*, docs/API_CONTRACT.md, docs/STATE_MACHINE.md
@@ -19,5 +19,5 @@ Alan: apps/orchestrator/*, docs/API_CONTRACT.md, docs/STATE_MACHINE.md
 7. [x] Fix xml validation edge-case (invalid XML should raise E_XML_INVALID)
 
 ## Next Wave (Agent-1)
-1. [ ] Timeout/retry gozlem metrikleri
-2. [ ] API contract ve state dokuman final senkronu
+1. [x] Timeout/retry gozlem metrikleri
+2. [x] API contract ve state dokuman final senkronu

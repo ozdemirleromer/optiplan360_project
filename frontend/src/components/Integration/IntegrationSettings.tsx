@@ -1,1 +1,1 @@
-// Dosya silinmek üzere işaretlendi.
+export * from "../../features/Integration/IntegrationSettings";

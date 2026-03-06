@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { StockAndCustomerDefinitionModal } from '../components/Stock/StockAndCustomerDefinitionModal';
+import { StockAndCustomerDefinitionModal } from '../features/Stock/StockAndCustomerDefinitionModal';
 
 describe('StockAndCustomerDefinitionModal - Real API Integration Tests', () => {
   const mockProps = {

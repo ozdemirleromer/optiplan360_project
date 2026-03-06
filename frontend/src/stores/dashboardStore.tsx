@@ -163,7 +163,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <button type="button"
             className="p-1 text-gray-400 hover:text-gray-600 rounded"
             title="Ayarlar"
           >
@@ -171,7 +171,7 @@ export const WidgetContainer: React.FC<WidgetContainerProps> = ({
           </button>
 
           {onRemove && (
-            <button
+            <button type="button"
               onClick={() => onRemove(widget.id)}
               className="p-1 text-gray-400 hover:text-red-600 rounded transition-colors"
               title="Kaldır"
@@ -220,3 +220,4 @@ export const DashboardGrid: React.FC<DashboardGridProps> = ({
     </div>
   );
 };
+

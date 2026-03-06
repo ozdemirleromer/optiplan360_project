@@ -6,7 +6,8 @@ load_dotenv()
 
 import os
 import time
-from datetime import datetime
+from contextlib import asynccontextmanager
+from datetime import UTC, datetime
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
@@ -486,8 +487,7 @@ def _run_startup_schema_fixes() -> None:
         logger.info("Schema self-heal: eksik kolon bulunmadi.")
 
 
-@app.on_event("startup")
-def startup_event():
+def _run_startup_tasks():
 
     # Eksik tablolari otomatik olustur (migrate edilmemislerse)
 
@@ -577,6 +577,13 @@ def startup_event():
         db.close()
 
 
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    _run_startup_tasks()
+    yield
+
+app.router.lifespan_context = lifespan
+
 from fastapi import WebSocket, WebSocketDisconnect
 
 from .websockets import manager
@@ -649,7 +656,7 @@ def health_check(db: Session = Depends(get_db), response: Response = None):
 
     return {
         "status": overall,
-        "timestamp": datetime.utcnow().isoformat(),
+        "timestamp": datetime.now(UTC).isoformat(),
         "version": "1.0.0",
         "database": "healthy" if db_healthy else "unhealthy",
         "service": "OPTIPLAN360 API",
@@ -660,3 +667,5 @@ def health_check(db: Session = Depends(get_db), response: Response = None):
 
 
 # config_router.py'e taşındı – app/routers/config_router.py
+
+

@@ -137,7 +137,7 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
                                    <FileType size={16} style={{ position: "absolute", left: 12, top: 10, color: COLORS.muted }} />
                                    <select
                                         value={formatType}
-                                        onChange={(e) => setFormatType(e.target.value as any)}
+                                        onChange={(e) => setFormatType(e.target.value as "XML" | "OSI" | "EXCEL")}
                                         style={{
                                              width: "100%", padding: "8px 12px 8px 36px",
                                              borderRadius: RADIUS.md, border: `1px solid ${COLORS.border}`,
@@ -257,4 +257,5 @@ export function OptiPlanningConfigModal({ isOpen, onClose, onSave, initialConfig
           </div>
      );
 }
+
 

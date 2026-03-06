@@ -104,7 +104,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               >
                 <span>{c.icon}</span>
                 <span style={{ flex: 1 }}>{t.msg}</span>
-                <button
+                <button type="button"
                   onClick={() =>
                     setToasts((prev) => prev.filter((x) => x.id !== t.id))
                   }
@@ -143,4 +143,5 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useToast = () => useContext(ToastContext);
+
 

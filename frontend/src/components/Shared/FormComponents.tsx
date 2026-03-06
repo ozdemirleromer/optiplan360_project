@@ -497,7 +497,7 @@ export const Select = ({
             )}
 
             {filteredOptions.map((opt) => (
-              <button
+              <button type="button"
                 key={opt.value}
                 role="option"
                 aria-selected={value === opt.value}
@@ -958,5 +958,6 @@ export default {
   DateInput,
   Validators,
 };
+
 
 

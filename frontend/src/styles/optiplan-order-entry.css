@@ -1,0 +1,333 @@
+/* ═══════════════════════════════════════════════════════════════
+   OptiPlan — Order Entry  |  Typography & Layout System
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Font Import ──────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+/* ── CSS Variables ────────────────────────────────────────────── */
+:root {
+    --oe-font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+    --oe-font-sans: 'Inter', system-ui, sans-serif;
+
+    /* Spacing scale */
+    --oe-space-1: 4px;
+    --oe-space-2: 8px;
+    --oe-space-3: 12px;
+    --oe-space-4: 16px;
+    --oe-space-5: 20px;
+
+    /* Type scale */
+    --oe-text-xs: 10px;
+    --oe-text-sm: 11px;
+    --oe-text-base: 13px;
+    --oe-text-md: 14px;
+    --oe-text-lg: 16px;
+}
+
+/* ── Top Bar ──────────────────────────────────────────────────── */
+.oe-header-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: var(--op-surface-bg);
+    border-bottom: 2px solid var(--op-accent);
+    padding: 10px 20px;
+    min-height: 44px;
+}
+
+.oe-header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.oe-header-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ── "YENİ SİPARİŞ" Badge ────────────────────────────────────── */
+.oe-badge {
+    display: inline-flex;
+    align-items: center;
+    background: var(--op-accent);
+    color: #fff;
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-xs);
+    font-weight: 700;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* ── Meta Blocks (SİP NO / TERMİN / DURUM) ───────────────────── */
+.oe-meta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.oe-meta-label {
+    font-family: var(--oe-font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--op-text);
+    opacity: 0.50;
+    line-height: 1;
+}
+
+.oe-meta-value {
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-md);
+    font-weight: 700;
+    color: var(--op-text);
+    line-height: 1.2;
+}
+
+.oe-separator {
+    width: 1px;
+    height: 22px;
+    background: var(--op-border);
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────── */
+.oe-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 30px;
+    padding: 0 14px;
+    font-family: var(--oe-font-sans);
+    font-size: var(--oe-text-sm);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border: 1px solid var(--op-border);
+    background: var(--op-surface-bg);
+    color: var(--op-text);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s, background 0.15s;
+    white-space: nowrap;
+}
+
+.oe-btn:hover {
+    border-color: var(--op-accent);
+    color: var(--op-accent);
+}
+
+.oe-btn:focus-visible {
+    outline: 2px solid var(--op-accent);
+    outline-offset: 1px;
+}
+
+.oe-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.oe-btn-danger {
+    border-color: var(--op-danger);
+    color: var(--op-danger);
+}
+
+.oe-btn-danger:hover {
+    border-color: var(--op-danger);
+    color: var(--op-danger);
+    background: rgba(185, 28, 28, 0.08);
+}
+
+.oe-btn-outline {
+    border-color: var(--op-accent);
+    color: var(--op-accent);
+    background: transparent;
+}
+
+.oe-btn-outline:hover {
+    background: rgba(0, 120, 212, 0.08);
+}
+
+.oe-btn-primary {
+    background: var(--op-accent);
+    border-color: var(--op-accent);
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.oe-btn-primary:hover {
+    background: #005fa3;
+    border-color: #005fa3;
+    color: #fff;
+}
+
+/* ── File Action Buttons ─────────────────────────────────────── */
+.oe-file-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid var(--op-border);
+    color: var(--op-text);
+    font-family: var(--oe-font-sans);
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    padding: 6px 0;
+}
+
+.oe-file-btn:hover {
+    border-color: var(--op-accent);
+    color: var(--op-accent);
+    background: rgba(0, 120, 212, 0.05);
+}
+
+.oe-file-btn .mb-1 {
+    margin-bottom: 2px;
+    opacity: 0.8;
+}
+
+/* ── Big Optimization Button ─────────────────────────────────── */
+.oe-optim-btn {
+    width: 100%;
+    height: 52px;
+    margin-top: auto;
+    background: transparent;
+    border: 1px solid var(--op-danger);
+    color: var(--op-danger);
+    font-family: var(--oe-font-sans);
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: inset 0 0 0 1px transparent;
+}
+
+.oe-optim-btn:hover:not(:disabled) {
+    background: var(--op-danger);
+    color: #fff;
+}
+
+.oe-optim-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Detail Cards ─────────────────────────────────────────────── */
+.oe-card-title {
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--op-accent);
+    padding: 6px 12px;
+    margin: -12px -12px 10px -12px;
+    border-bottom: 1px solid var(--op-border);
+    background: var(--op-main-bg);
+}
+
+.oe-field-label {
+    font-family: var(--oe-font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--op-text);
+    opacity: 0.55;
+}
+
+.oe-metric-value {
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-lg);
+    font-weight: 700;
+    color: var(--op-text);
+    line-height: 1.3;
+}
+
+/* ── Table ────────────────────────────────────────────────────── */
+.oe-table-th {
+    font-family: var(--oe-font-mono);
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--op-text);
+    opacity: 0.65;
+    padding: 8px 10px;
+    background: var(--op-surface-bg);
+    border-bottom: 1px solid var(--op-border);
+    white-space: nowrap;
+}
+
+.oe-table-input {
+    background: transparent;
+    border: none;
+    color: var(--op-text);
+    font-family: var(--oe-font-sans);
+    font-size: var(--oe-text-base);
+    outline: none;
+    width: 100%;
+    padding: 5px 6px;
+    transition: background 0.1s;
+}
+
+.oe-table-input:focus {
+    background: rgba(0, 120, 212, 0.06);
+}
+
+.oe-table-input-mono {
+    font-family: var(--oe-font-mono);
+    font-size: 12px;
+    text-align: right;
+}
+
+/* ── Table Toolbar ────────────────────────────────────────────── */
+.oe-table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--op-surface-bg);
+    border-bottom: 1px solid var(--op-border);
+    border-top: 1px solid var(--op-border);
+    padding: 8px 16px;
+}
+
+.oe-table-toolbar-label {
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--op-text);
+    opacity: 0.65;
+}
+
+/* ── Table Footer ─────────────────────────────────────────────── */
+.oe-table-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--op-border);
+    background: var(--op-surface-bg);
+    padding: 8px 16px;
+}
+
+.oe-table-footer-summary {
+    font-family: var(--oe-font-mono);
+    font-size: var(--oe-text-sm);
+    color: var(--op-text);
+    opacity: 0.50;
+}
