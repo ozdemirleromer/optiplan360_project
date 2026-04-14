@@ -24,7 +24,14 @@ type RibbonPage =
   | "orchestrator"
   | "product-search"
   | "crm-tickets"
-  | "export-page";
+  | "export-page"
+  | "siparis-fisi"
+  | "teklif-fisi"
+  | "stok-karti"
+  | "cari-karti"
+  | "ocr-pool"
+  | "ocr-kontrol"
+  | "siparis-kontrol";
 
 type RibbonTab = "dosya" | "cari" | "siparis" | "optimizasyon";
 
@@ -58,6 +65,13 @@ const PAGE_TO_TAB: Record<RibbonPage, RibbonTab> = {
   "product-search": "siparis",
   "crm-tickets": "cari",
   "export-page": "siparis",
+  "siparis-fisi": "siparis",
+  "teklif-fisi": "siparis",
+  "stok-karti": "siparis",
+  "cari-karti": "cari",
+  "ocr-pool": "siparis",
+  "ocr-kontrol": "siparis",
+  "siparis-kontrol": "siparis",
 };
 
 const TAB_LABELS: Record<RibbonTab, string> = {
@@ -104,6 +118,7 @@ const TOOL_GROUPS: Record<
       actions: [
         { label: "Sipariş Listesi", icon: <ClipboardList className="h-5 w-5" />, page: "orders" },
         { label: "Yeni Sipariş", icon: <Package className="h-5 w-5" />, page: "order-editor" },
+        { label: "OCR Havuzu", icon: <File className="h-5 w-5" />, page: "ocr-pool" },
         { label: "Kanban", icon: <Wrench className="h-5 w-5" />, page: "kanban" },
       ],
     },

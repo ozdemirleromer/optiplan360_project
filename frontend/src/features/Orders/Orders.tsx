@@ -76,25 +76,39 @@ export function Orders({ onEdit }: OrdersProps) {
 
 
 
-  const filters = [
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = {
+      NEW: 0,
+      IN_PRODUCTION: 0,
+      READY: 0,
+      DELIVERED: 0,
+      DONE: 0,
+      HOLD: 0,
+      CANCELLED: 0,
+    };
 
-    { key: "ALL", label: "Tümü", count: orders.length },
+    orders.forEach((order) => {
+      if (counts[order.status] !== undefined) {
+        counts[order.status] += 1;
+      }
+    });
 
-    { key: "NEW", label: "Yeni", count: orders.filter((o) => o.status === "NEW").length },
+    return counts;
+  }, [orders]);
 
-    { key: "IN_PRODUCTION", label: "Üretimde", count: orders.filter((o) => o.status === "IN_PRODUCTION").length },
-
-    { key: "READY", label: "Hazır", count: orders.filter((o) => o.status === "READY").length },
-
-    { key: "DELIVERED", label: "Teslim", count: orders.filter((o) => o.status === "DELIVERED").length },
-
-    { key: "DONE", label: "Tamamlanan", count: orders.filter((o) => o.status === "DONE").length },
-
-    { key: "HOLD", label: "Bekletme", count: orders.filter((o) => o.status === "HOLD").length },
-
-    { key: "CANCELLED", label: "İptal", count: orders.filter((o) => o.status === "CANCELLED").length },
-
-  ];
+  const filters = useMemo(
+    () => [
+      { key: "ALL", label: "Tümü", count: orders.length },
+      { key: "NEW", label: "Yeni", count: statusCounts.NEW },
+      { key: "IN_PRODUCTION", label: "Üretimde", count: statusCounts.IN_PRODUCTION },
+      { key: "READY", label: "Hazır", count: statusCounts.READY },
+      { key: "DELIVERED", label: "Teslim", count: statusCounts.DELIVERED },
+      { key: "DONE", label: "Tamamlanan", count: statusCounts.DONE },
+      { key: "HOLD", label: "Bekletme", count: statusCounts.HOLD },
+      { key: "CANCELLED", label: "İptal", count: statusCounts.CANCELLED },
+    ],
+    [orders.length, statusCounts],
+  );
 
 
 

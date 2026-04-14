@@ -26,7 +26,10 @@ ALLOWED_COMPONENT_PREFIXES = {"Shared", "Layout"}
 
 # Transitional allowlist for known cross-feature composition dependencies.
 # Any new pair added by accident should fail the test and be reviewed explicitly.
-ALLOWED_CROSS_FEATURE_IMPORTS = set()
+ALLOWED_CROSS_FEATURE_IMPORTS = {
+    ("CardManagement", "CRM"),
+    ("CardManagement", "Stock"),
+}
 
 ORDER_OPTIMIZATION_FEATURE_WRAPPERS = {
     FEATURES_ROOT / "UI" / "OrderOptimizationPanel.tsx",

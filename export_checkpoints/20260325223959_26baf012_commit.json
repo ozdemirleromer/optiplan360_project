@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325223959_26baf012_commit",
+  "islem_id": "test-tx-001",
+  "phase": "commit",
+  "status": "committed",
+  "temp_path": null,
+  "final_path": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpf34u0w2_\\test.xlsx",
+  "metadata": {
+    "transaction_id": "20260325223959_26baf012",
+    "filename": "test.xlsx",
+    "target_dir": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpf34u0w2_"
+  },
+  "created_at": "2026-03-25T22:39:59.565249+00:00",
+  "updated_at": "2026-03-25T22:39:59.565250+00:00",
+  "error_message": null
+}

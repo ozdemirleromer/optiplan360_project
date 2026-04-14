@@ -28,7 +28,7 @@ interface UIState {
 
 
 
-const DEFAULT_THEME_NAME: ThemeName = 'industrialGrid';
+const DEFAULT_THEME_NAME: ThemeName = 'dark';
 
 
 
@@ -56,11 +56,9 @@ export const useUIStore = create<UIState>()(
 
       setThemeName: (name) => {
 
-        void name;
+        syncRuntimeTheme(name);
 
-        syncRuntimeTheme(DEFAULT_THEME_NAME);
-
-        set({ themeName: DEFAULT_THEME_NAME });
+        set({ themeName: name });
 
       },
 
@@ -95,5 +93,7 @@ export const useUIStore = create<UIState>()(
   ),
 
 );
+
+
 
 

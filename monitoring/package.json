@@ -1,0 +1,17 @@
+{
+  "name": "@optiplan360/monitoring-stack",
+  "version": "1.0.0",
+  "description": "Complete monitoring stack for OptiPlan360",
+  "scripts": {
+    "monitoring:up": "docker-compose -f monitoring/docker-compose.yml up -d",
+    "monitoring:down": "docker-compose -f monitoring/docker-compose.yml down",
+    "monitoring:logs": "docker-compose -f monitoring/docker-compose.yml logs -f",
+    "monitoring:restart": "docker-compose -f monitoring/docker-compose.yml restart",
+    "monitoring:status": "docker-compose -f monitoring/docker-compose.yml ps",
+    "monitoring:config": "docker-compose -f monitoring/docker-compose.yml config",
+    "monitoring:validate": "docker-compose -f monitoring/docker-compose.yml config --quiet"
+  },
+  "devDependencies": {
+    "docker-compose": "^2.20.0"
+  }
+}

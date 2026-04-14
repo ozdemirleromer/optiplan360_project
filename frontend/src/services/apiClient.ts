@@ -253,6 +253,11 @@ async function fetchWithApiFallback(path: string, request: RequestInit): Promise
 
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
+  // If the caller already passes a full API route (/api/*), avoid prefixing /api/v1 again.
+  if (normalizedPath.startsWith("/api/")) {
+    return fetch(normalizedPath, request);
+  }
+
   const baseCandidates = buildApiBaseCandidates();
 
   let lastResponse: Response | null = null;
@@ -573,17 +578,28 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
     }
 
-    const message =
+    const message = (() => {
+      if (typeof data === "string" && data.trim()) {
+        return data.trim();
+      }
+      if (typeof data !== "object" || data === null) {
+        return `HTTP ${response.status}`;
+      }
 
-      typeof data === "object" && data !== null
+      const payload = data as {
+        detail?: string;
+        message?: string;
+        error?: { message?: string; code?: string };
+      };
 
-        ? (data as { detail?: string; message?: string }).detail ||
-
-          (data as { detail?: string; message?: string }).message ||
-
-          `HTTP ${response.status}`
-
-        : (typeof data === "string" && data.trim()) || `HTTP ${response.status}`;
+      return (
+        payload.detail ||
+        payload.message ||
+        payload.error?.message ||
+        payload.error?.code ||
+        `HTTP ${response.status}`
+      );
+    })();
 
     throw new Error(message);
 

@@ -748,3 +748,35 @@ paths:
                     example: "QUEUED"
         '400':
           $ref: '#/components/responses/BadRequest'
+
+  # ─── EXPORT WORKFLOW ÖRNEKLER ───
+  examples:
+    WorkflowExportRecordResponseSuccessExample:
+      summary: Başarılı export yanıtı
+      value:
+        success: true
+        message: "Export tamamlandı"
+        durum: "BASARILI"
+        generatedFiles: ["output.xml"]
+        generatedFileDetails: []
+        exportManifest: null
+
+    WorkflowExportRecordResponseExample:
+      summary: Kısmi başarılı export yanıtı
+      value:
+        success: true
+        message: "Kısmi export"
+        durum: "KISMI_BASARILI"
+        generatedFiles: []
+        generatedFileDetails: []
+        exportManifest: null
+
+    WorkflowExportRecordResponseFailureExample:
+      summary: Hatalı export yanıtı
+      value:
+        success: false
+        message: "Export başarısız"
+        durum: "HATALI"
+        generatedFiles: []
+        generatedFileDetails: []
+        exportManifest: null

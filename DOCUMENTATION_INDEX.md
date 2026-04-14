@@ -1,8 +1,20 @@
 # Documentation Index
 
-Tarih: 2026-03-03
+Tarih: 2026-03-22
 
 Bu dosya, proje icin guncel ve hizli dokuman erisim noktalarini listeler.
+
+## Canonical Governance Pack
+- `docs/governance-pack/OptiPlan360_Master_Spec_v4.md` - Ana baglayici master spesifikasyon
+- `docs/governance-pack/OptiPlan360_Extended_Modules_Annex_v1.md` - Genisletilmis modul kapsami
+- `docs/governance-pack/OptiPlan360_Phase1_Implementation_Spec_v3.md` - Canonical Phase 1 implementasyon kurallari
+- `docs/governance-pack/OptiPlan360_Phase2_Implementation_Spec_v2.md` - Canonical Phase 2 implementasyon kurallari
+- `docs/governance-pack/OptiPlan360_Phase2_UI_Spec_7Fields_v2.md` - Canonical Phase 2 UI ve 7 alan kurali
+- `docs/governance-pack/OptiPlan360_Phase3_UIUX_Spec_v2.md` - Canonical Phase 3 UI/UX kurallari
+- `docs/governance-pack/AGENTS.md` - Dokuman canonicalization ve agent davranis kurallari
+- `docs/governance-pack/Docs_Cleanup_Prompt.md` - Dokuman temizleme gorev promptu
+- `docs/governance-pack/Docs_Naming_Policy.md` - Adlandirma politikasi
+- `docs/governance-pack/Docs_Archive_Plan.md` - Arsivleme plani ve legacy eslesmeleri
 
 ## Core Governance
 - `AI_UNIVERSAL_ONEFILE_PROTOCOL.md` - Universal single-source AI execution contract

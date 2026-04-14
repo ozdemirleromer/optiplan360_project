@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325210732_71d49168_begin",
+  "islem_id": "test-tx-001",
+  "phase": "begin",
+  "status": "pending",
+  "temp_path": null,
+  "final_path": null,
+  "metadata": {
+    "transaction_id": "20260325210732_71d49168",
+    "filename": "test.xlsx",
+    "target_dir": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpaf1fqk6y"
+  },
+  "created_at": "2026-03-25T21:07:32.146875",
+  "updated_at": "2026-03-25T21:07:32.146878",
+  "error_message": null
+}

@@ -3,11 +3,12 @@ OptiPlan 360 — Config Router (Genişletilmiş)
 Uygulama konfigürasyonu, izin sorgulama ve sistem ayarları endpoint'leri.
 """
 
-import json
-import logging
-import os
+import json
+import logging
+import os
+from pathlib import Path
 from datetime import UTC, datetime
-from typing import Dict, Optional
+from typing import Any, Dict, Literal, Optional
 
 from app.auth import get_current_user, require_admin
 from app.database import get_db
@@ -21,7 +22,26 @@ from sqlalchemy.orm import Session
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1/config", tags=["config"])
+router = APIRouter(prefix="/api/v1/config", tags=["config"])
+
+CONFIG_ROOT = Path(__file__).resolve().parents[6] / "config"
+PATHS_CONFIG_FILE = CONFIG_ROOT / "paths.json"
+RULES_CONFIG_FILE = CONFIG_ROOT / "rules.json"
+
+
+def _read_json_file(path: Path, fallback: Any) -> Any:
+    try:
+        with path.open("r", encoding="utf-8") as handle:
+            payload = json.load(handle)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return fallback
+
+    return payload if payload is not None else fallback
+
+
+def _write_json_file(path: Path, payload: Any) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 # ═══════════════════════════════════════════════════
@@ -60,13 +80,96 @@ class FeatureToggle(BaseModel):
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
 
 
-class NotificationConfig(BaseModel):
+class NotificationConfig(BaseModel):
     email_enabled: bool = False
     whatsapp_enabled: bool = False
     sms_enabled: bool = False
     webhook_url: Optional[str] = None
     daily_digest: bool = True
-    urgent_only: bool = False
+    urgent_only: bool = False
+
+
+class PathsConfig(BaseModel):
+    optiplanningExePath: str
+    optiplanningImportFolder: str
+    optiplanningExportFolder: str
+    optiplanningRulesFolder: str
+    machineDropFolder: str
+    tempFolder: str
+    xlsxTemplatePath: str
+
+
+class RulesUpdate(BaseModel):
+    cm_to_mm_multiplier: int = Field(ge=1)
+    retry_count_max: int = Field(ge=0)
+    opti_mode_default: Literal["A", "B", "C"]
+
+
+DEFAULT_PATHS_CONFIG: dict[str, str] = {
+    "optiplanningExePath": "C:/Biesse/OptiPlanning/System/OptiPlanning.exe",
+    "optiplanningImportFolder": "C:/Biesse/OptiPlanning/ImpFile",
+    "optiplanningExportFolder": "C:/Biesse/OptiPlanning/Tmp/Sol",
+    "optiplanningRulesFolder": "C:/Biesse/OptiPlanning/Opf",
+    "machineDropFolder": "C:/Biesse/OptiPlanning/Tx",
+    "tempFolder": "C:/Biesse/OptiPlanning/Tmp",
+    "xlsxTemplatePath": "./templates/Excel_sablon.xlsx",
+}
+
+DEFAULT_RULES_CONFIG: dict[str, Any] = {
+    "cm_to_mm_multiplier": 10,
+    "trimByThickness": {
+        "18": 10,
+        "3": 5,
+        "4": 5,
+        "5": 5,
+        "8": 5,
+    },
+    "backingThicknesses": [3, 4, 5, 8],
+    "edgeMapping": {
+        "Bant Yok": None,
+        "040": 0.4,
+        "1mm": 1,
+        "2mm": 2,
+    },
+    "grainMapping": {
+        "0": 0,
+        "1": 1,
+        "2": 2,
+        "3": 3,
+    },
+    "mergePolicy": {
+        "defaultDisabled": True,
+        "requiresOperatorApproval": True,
+    },
+    "defaultPlateSize": {
+        "width_mm": 2100,
+        "height_mm": 2800,
+    },
+    "retry_count_max": 3,
+    "retry_backoff_minutes": [1, 3, 9],
+    "optiModeDefault": "C",
+    "timeouts": {
+        "optiXmlMinutes": 20,
+        "osiAckMinutes": 5,
+    },
+    "ackMode": "file_move",
+}
+
+
+def _load_config_payload(path: Path, fallback: dict[str, Any]) -> dict[str, Any]:
+    payload = _read_json_file(path, fallback)
+    if not isinstance(payload, dict):
+        return dict(fallback)
+
+    merged = dict(fallback)
+    merged.update(payload)
+    return merged
+
+
+def _rules_public_view(payload: dict[str, Any]) -> dict[str, Any]:
+    public = dict(payload)
+    public["opti_mode_default"] = public.get("optiModeDefault", public.get("opti_mode_default"))
+    return public
 
 
 # ═══════════════════════════════════════════════════
@@ -112,7 +215,7 @@ def get_app_config():
 
 
 @router.get("/status")
-def get_system_status(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
+def get_system_status(db: Session = Depends(get_db), _: User = Depends(get_current_user)):
     """Sistem durumunu getir."""
     from sqlalchemy import text
 
@@ -129,11 +232,50 @@ def get_system_status(db: Session = Depends(get_db), _: User = Depends(get_curre
     mikro_cfg = mikro_db.get_config()
     mikro_status = "connected" if mikro_cfg else "not_configured"
 
-    return SystemStatus(
+    return SystemStatus(
         database=db_status,
         mikro_connection=mikro_status,
-        uptime_hours=24.5,  # Gerçek uptime hesaplanmalı
-    )
+        uptime_hours=24.5,  # Gerçek uptime hesaplanmalı
+    )
+
+
+@router.get("/paths")
+def get_paths_config():
+    """Admin UI için paths.json içeriğini döndürür."""
+
+    payload = _load_config_payload(PATHS_CONFIG_FILE, DEFAULT_PATHS_CONFIG)
+    return PathsConfig.model_validate(payload).model_dump()
+
+
+@router.post("/paths")
+def update_paths_config(body: PathsConfig):
+    """Admin UI'dan gelen paths değişikliklerini kaydeder."""
+
+    payload = body.model_dump()
+    _write_json_file(PATHS_CONFIG_FILE, payload)
+    return payload
+
+
+@router.get("/rules")
+def get_rules_config():
+    """Admin UI için rules.json içeriğini public sözleşmeyle döndürür."""
+
+    payload = _load_config_payload(RULES_CONFIG_FILE, DEFAULT_RULES_CONFIG)
+    return _rules_public_view(payload)
+
+
+@router.post("/rules")
+def update_rules_config(body: RulesUpdate):
+    """Admin UI'dan gelen rules değişikliklerini kaydeder."""
+
+    existing = _load_config_payload(RULES_CONFIG_FILE, DEFAULT_RULES_CONFIG)
+    updated = dict(existing)
+    updated["cm_to_mm_multiplier"] = body.cm_to_mm_multiplier
+    updated["retry_count_max"] = body.retry_count_max
+    updated["optiModeDefault"] = body.opti_mode_default
+    updated.pop("opti_mode_default", None)
+    _write_json_file(RULES_CONFIG_FILE, updated)
+    return _rules_public_view(updated)
 
 
 # ═══════════════════════════════════════════════════

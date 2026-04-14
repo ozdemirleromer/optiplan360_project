@@ -1974,7 +1974,14 @@ def get_azure_stats(
 
 
 
-        "configured": config_status,
+        "serviceId": "azure",
+        "configured": bool(config_status.get("ocr") if isinstance(config_status, dict) else config_status),
+        "totalJobs": None,
+        "jobsThisMonth": None,
+        "successRate": None,
+        "avgConfidence": None,
+        "lastUsed": service._get_config("azure_ocr_last_test"),
+        "telemetryAvailable": False,
 
 
 
@@ -2005,6 +2012,7 @@ def get_azure_stats(
 
 
         "test_status": service._get_config("azure_ocr_test_status"),
+        "details": {},
 
 
 

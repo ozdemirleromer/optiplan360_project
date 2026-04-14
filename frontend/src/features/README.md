@@ -52,11 +52,10 @@ Asagidaki moduller de fiziksel olarak `components` altindan `features` altina ta
 Asagidaki moduller de fiziksel olarak `components` altindan `features` altina tasindi ve eski yollar wrapper olarak korunuyor:
 
 1. `AI` (AIChatbot)
-2. `Forms` (RefactoredExamples)
-3. `Grid` (OrderOptimizationGrid)
-4. `UI` (OrderOptimizationPanel, meta/constants/styles)
-5. `Ribbon` (OrderOptimizationRibbon)
-6. `Optimization` (NestingVisualizer, RoomSettingsPanel, OptiPlanUI, OptiPlanStrictOrderEntry)
+2. `Grid` (OrderOptimizationGrid)
+3. `UI` (OrderOptimizationPanel, meta/constants/styles)
+4. `Ribbon` (OrderOptimizationRibbon)
+5. `Optimization` (NestingVisualizer, RoomSettingsPanel, OptiPlanUI, OptiPlanStrictOrderEntry)
 
 ## Durum (2026-03-06 / Wave-4)
 

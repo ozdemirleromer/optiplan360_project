@@ -1,0 +1,15 @@
+
+> frontend@1.0.0 test:ci
+> node ./scripts/run_vitest_ci.mjs OCRKontrolPage OCRPoolPage
+
+
+[1m[46m RUN [49m[22m [36mv3.2.4 [39m[90mC:/optiplan360_project/frontend[39m
+
+ [32mÔ£ô[39m src/features/OptiPlanWorkflow/OCRPoolPage.test.tsx [2m([22m[2m22 tests[22m[2m)[22m[33m 710[2mms[22m[39m
+ [32mÔ£ô[39m src/features/OptiPlanWorkflow/OCRKontrolPage.test.tsx [2m([22m[2m35 tests[22m[2m)[22m[33m 1649[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m57 passed[39m[22m[90m (57)[39m
+[2m   Start at [22m 01:10:48
+[2m   Duration [22m 3.18s[2m (transform 495ms, setup 140ms, collect 944ms, tests 2.36s, environment 710ms, prepare 125ms)[22m
+

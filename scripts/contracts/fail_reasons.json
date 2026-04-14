@@ -1,0 +1,8 @@
+{
+  "allowed": [
+    "command-exit-nonzero",
+    "timeout",
+    "spawn-error",
+    "missing-artifact"
+  ]
+}

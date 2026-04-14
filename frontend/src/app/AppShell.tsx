@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, lazy, Suspense } from "react";
 
 import { MobileHeader, Sidebar } from "../components/Layout";
-import { HorizontalLayout } from "../components/Layout/HorizontalLayout";
 import { SpotlightSearch } from "../components/Layout/SpotlightSearch";
 
 import { AIChatbot } from "../features/AI/AIChatbot";
@@ -38,21 +37,25 @@ import { useKeyboardShortcuts } from "../hooks/useKeyboardShortcuts";
 import { subscribeToAppNavigation } from "../utils/appNavigation";
 
 
-import "./styles/animations.css";
+import "../styles/animations.css";
 
-import "./styles/responsive.css";
+import "../styles/responsive.css";
 
-import "./styles/theme-layouts.css";
+import "../styles/theme-layouts.css";
 
-import "./styles/premium-shell.css";
+import "../styles/premium-shell.css";
 
 
 
 const Kanban = lazy(() => import("../features/Kanban"));
 
-const ModularIntegrationsPage = lazy(() => import("../features/Integrations/ModularIntegrationsPage"));
+const ModularIntegrationsPage = lazy(() =>
+  import("../features/Integrations/ModularIntegrationsPage").then((m) => ({ default: m.ModularIntegrationsPage })),
+);
 
-const IntegrationHealth = lazy(() => import("../features/Integration/IntegrationHealth"));
+const IntegrationHealth = lazy(() =>
+  import("../features/Integration/IntegrationHealth").then((m) => ({ default: m.IntegrationHealth })),
+);
 
 
 
@@ -95,6 +98,17 @@ const OrchestratorPage = lazy(() => import("../features/Orchestrator"));
 const SpecSearchPage = lazy(() => import("../features/Products/SpecSearchPage"));
 const OptiPlanUIPage = lazy(() => import("../features/Optimization/OptiPlanUI").then(m => ({ default: m.OptiPlanUI })));
 const OptiPlanOrderEntryPage = lazy(() => import("../features/Orders/OrderOptimization/OptiPlanStrictOrderEntry").then(m => ({ default: m.OptiPlanStrictOrderEntry })));
+
+const Phase1QueuePage = lazy(() => import("../features/Phase1/Phase1QueuePage").then(m => ({ default: m.Phase1QueuePage })));
+const OCRPoolPage = lazy(() => import("../features/OptiPlanWorkflow/OCRPoolPage").then(m => ({ default: m.OCRPoolPage })));
+const OCRKontrolPage = lazy(() => import("../features/OptiPlanWorkflow/OCRKontrolPage").then(m => ({ default: m.OCRKontrolPage })));
+const SiparisKontrolPage = lazy(() => import("../features/OptiPlanWorkflow/SiparisKontrolPage").then(m => ({ default: m.SiparisKontrolPage })));
+const ExportXmlFirePage = lazy(() => import("../features/OptiPlanWorkflow/ExportXmlFirePage").then(m => ({ default: m.ExportXmlFirePage })));
+
+const SiparisFisiPage = lazy(() => import("../features/Orders/SiparisFisiPage"));
+const TeklifFisiPage = lazy(() => import("../features/CRM/TeklifWorkspace"));
+const StokKartiPage = lazy(() => import("../features/CardManagement/StokKartiPage"));
+const CariKartiPage = lazy(() => import("../features/CardManagement/CariKartiPage"));
 
 
 
@@ -140,9 +154,19 @@ type Page =
   | "orchestrator"
   | "product-search"
   | "crm-tickets"
-  | "optiplan-desktop"
   | "optiplan-ui"
   | "optiplan-order"
+  | "ocr-pool"
+  | "ocr-pool-legacy"
+  | "ocr-kontrol"
+  | "siparis-kontrol"
+  | "siparis-fisi"
+  | "teklif-fisi"
+  | "stok-karti"
+  | "cari-karti"
+  | "siparis-duzenleme"
+  | "optiplan-job"
+  | "ocr-havuzu"
   | "export-page";
 
 
@@ -200,11 +224,6 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
       return "dashboard";
     }
 
-    const requestedPage = new URLSearchParams(window.location.search).get("page");
-    if (requestedPage === "optiplan-desktop") {
-      return "optiplan-desktop";
-    }
-
     return "dashboard";
   });
 
@@ -213,6 +232,8 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
+
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [cursorCoords, setCursorCoords] = useState({ x: 0, y: 0 });
@@ -286,7 +307,7 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
 
     { keys: ["F12"], description: "Konfigürasyon", action: () => setPage("config") },
 
-    { keys: ["Ctrl", "Shift", "o"], description: "OptiPlan Desktop", action: () => setPage("optiplan-desktop") },
+    { keys: ["Ctrl", "n"], description: "Yeni sipariş", action: () => { setPage("order-editor"); setOrderId(null); } },
 
   ]);
 
@@ -330,6 +351,51 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
 
 
 
+  // URL query param sync
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const paramPage = params.get("page");
+    if (paramPage) setPage(paramPage as Page);
+    const paramOrderId = params.get("orderId");
+    if (paramOrderId) setOrderId(paramOrderId);
+  }, []);
+
+  // Title sync
+  useEffect(() => {
+    const titleMap: Partial<Record<Page, string>> = {
+      dashboard: "Dashboard",
+      orders: "Siparişler",
+      "order-editor": "Yeni Sipariş",
+      kanban: "Kanban",
+      "siparis-fisi": orderId ? `Sipariş Fişi #${orderId}` : "Sipariş Fişi",
+      "teklif-fisi": "Teklif Fişi",
+      "stok-karti": "Stok Kartı",
+      "cari-karti": "Cari Kartı",
+      "optiplan-job": orderId ? `OptiPlanning #${orderId}` : "OptiPlanning",
+      "ocr-pool": "OCR Havuzu",
+      "ocr-havuzu": "OCR Havuzu",
+      "ocr-kontrol": "OCR Kontrol",
+      "siparis-kontrol": "Sipariş Kontrol",
+      "siparis-duzenleme": "Sipariş Kontrol",
+      "export-page": "Export",
+    };
+    const title = titleMap[page] ?? page;
+    document.title = `${title} | Optiplan360`;
+  }, [page, orderId]);
+
+  // URL update on page/orderId change
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    params.set("page", page);
+    const noOrderIdPages = ["teklif-fisi", "stok-karti", "cari-karti"];
+    if (orderId && !noOrderIdPages.includes(page)) {
+      params.set("orderId", orderId);
+    } else {
+      params.delete("orderId");
+    }
+    window.history.replaceState({}, "", `/?${params.toString()}`);
+  }, [page, orderId]);
+
   useEffect(() => {
 
     void fetchOrders();
@@ -364,9 +430,11 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
 
   useEffect(() => {
 
-    return subscribeToAppNavigation(({ page: nextPage }) => {
+    return subscribeToAppNavigation(({ page: nextPage, orderId: nextOrderId }) => {
 
       setPage(nextPage as Page);
+
+      setOrderId(nextOrderId ?? null);
 
       setMobileMenuOpen(false);
 
@@ -393,9 +461,21 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
 
   const openEditor = (order: Order | null) => {
 
-    setEditingOrder(order);
+    if (order) {
 
-    setPage("order-editor");
+      setOrderId(order.id);
+
+      setPage("siparis-fisi");
+
+    } else {
+
+      setOrderId(null);
+
+      setPage("order-editor");
+
+    }
+
+    setEditingOrder(order);
 
   };
 
@@ -523,12 +603,34 @@ function AuthenticatedApp({ authUser }: { authUser: User }) {
 
         return <SupportTickets />;
 
-      case "optiplan-desktop":
-        return <HorizontalLayout />;
       case "optiplan-ui":
         return <OptiPlanUIPage />;
       case "optiplan-order":
         return <OptiPlanOrderEntryPage />;
+      case "ocr-pool":
+        return <Phase1QueuePage />;
+      case "ocr-pool-legacy":
+        return <OCRPoolPage />;
+      case "ocr-kontrol":
+        return <OCRKontrolPage />;
+      case "siparis-kontrol":
+        return <SiparisKontrolPage />;
+      case "siparis-fisi":
+        return <SiparisFisiPage preferredOrderId={orderId} title={orderId ? `Sipariş Fişi #${orderId}` : "Sipariş Fişi"} />;
+      case "teklif-fisi":
+        return <TeklifFisiPage />;
+      case "stok-karti":
+        return <StokKartiPage />;
+      case "cari-karti":
+        return <CariKartiPage />;
+      case "siparis-duzenleme":
+        return <SiparisKontrolPage />;
+      case "ocr-havuzu":
+        return <Phase1QueuePage />;
+      case "optiplan-job":
+        return <ExportXmlFirePage preferredRecordId={orderId} />;
+      case "export-page":
+        return <ExportXmlFirePage />;
       default:
 
         return <InfoPage title="Sayfa bulunamadi" detail="Istenen sayfa tanimli degil." />;
@@ -778,6 +880,8 @@ export default function App() {
   return <MainApp />;
 
 }
+
+
 
 
 

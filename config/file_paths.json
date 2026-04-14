@@ -1,0 +1,10 @@
+{
+  "ocr_input_whatsapp_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_whatsapp_raw",
+  "ocr_input_scanner_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_scanner_raw",
+  "ocr_input_manual_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_manuel_raw",
+  "ocr_input_email_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_email_raw",
+  "ocr_output_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_islenmis",
+  "ocr_archive_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_arsiv",
+  "xml_read_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_xml",
+  "ocr_rejected_dir": "C:\\Users\\Ömer ÖZDEMİR\\.codex\\memories\\optiplan_workflow_tests\\4skhcjfu_hatali"
+}

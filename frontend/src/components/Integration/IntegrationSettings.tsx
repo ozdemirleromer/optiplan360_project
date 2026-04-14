@@ -1,1 +1,1 @@
-export * from "../../features/Integration/IntegrationSettings";
+export { IntegrationSettings, default } from "../../features/Integration/IntegrationSettings";

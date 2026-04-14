@@ -68,7 +68,7 @@ export const Kanban: React.FC<KanbanProps> = ({ onEdit }) => {
         breadcrumbs={["Ana Islemler", "Uretim Akisi"]}
       />
       <div className="app-page-container">
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(280px, 100%),1fr))", gap: 14 }}>
           {columns.map((column) => {
             const columnOrders = orders.filter((order) => order.status === column.status);
             const isOverColumn = dragOverColumn === column.id && draggedOrder?.status !== column.status;

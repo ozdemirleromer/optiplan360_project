@@ -1,0 +1,48 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "status",
+    "failReason",
+    "totalDurationMs",
+    "totalSteps",
+    "steps"
+  ],
+  "properties": {
+    "generatedAt": { "type": "string" },
+    "status": { "type": "string", "enum": ["passed", "failed"] },
+    "failReason": { "type": ["string", "null"] },
+    "totalDurationMs": { "type": "number" },
+    "totalSteps": { "type": "number" },
+    "steps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "command",
+          "args",
+          "timeoutMs",
+          "startedAt",
+          "finishedAt",
+          "exitCode",
+          "durationMs",
+          "failReason"
+        ],
+        "properties": {
+          "label": { "type": "string" },
+          "command": { "type": "string" },
+          "args": { "type": "array", "items": { "type": "string" } },
+          "timeoutMs": { "type": "number" },
+          "startedAt": { "type": "string" },
+          "finishedAt": { "type": "string" },
+          "exitCode": { "type": "number" },
+          "durationMs": { "type": "number" },
+          "failReason": { "type": ["string", "null"] }
+        }
+      }
+    }
+  }
+}

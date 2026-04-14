@@ -1,0 +1,49 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generatedAt",
+    "phase",
+    "status",
+    "failReason",
+    "phases",
+    "summary"
+  ],
+  "properties": {
+    "generatedAt": { "type": "string" },
+    "phase": { "type": "string" },
+    "status": { "type": "string", "enum": ["passed", "failed"] },
+    "failReason": { "type": ["string", "null"] },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["totalDurationMs", "totalSteps"],
+      "properties": {
+        "totalDurationMs": { "type": "number" },
+        "totalSteps": { "type": "number" }
+      }
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["phase", "status", "command", "failReason"],
+        "properties": {
+          "phase": { "type": "string" },
+          "status": { "type": "string", "enum": ["passed", "failed"] },
+          "command": { "type": "string" },
+          "failReason": { "type": ["string", "null"] },
+          "artifacts": {
+            "type": ["object", "null"],
+            "additionalProperties": false,
+            "properties": {
+              "ciWorkflowContractReport": { "type": "string" },
+              "workflowContractGatesReport": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

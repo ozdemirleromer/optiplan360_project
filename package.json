@@ -9,6 +9,25 @@
     "frontend:dev": "npm --prefix frontend run dev -- --host 127.0.0.1 --strictPort --port 3001",
     "frontend:build": "npm --prefix frontend run build",
     "smoke:docker": "powershell -ExecutionPolicy Bypass -File scripts/smoke_docker.ps1",
-    "smoke:docker:full": "powershell -ExecutionPolicy Bypass -File scripts/smoke_docker.ps1 -CheckDocs"
+    "smoke:docker:full": "powershell -ExecutionPolicy Bypass -File scripts/smoke_docker.ps1 -CheckDocs",
+    "test:admin:release-gate": "npm --prefix frontend run test:ci -- src/features/Admin",
+    "test:admin:configpage": "npm --prefix frontend run test:ci -- src/features/Admin/ConfigPage",
+    "test:admin:telemetry-shared": "npm --prefix frontend run test:ci -- src/features/Admin/shared",
+    "test:telemetry-admin": "npm --prefix frontend run test:ci -- src/features/Admin/shared",
+    "test:orders:release-gate": "npm --prefix frontend run test:ci -- src/features/Orders",
+    "test:orders-workspace": "npm --prefix frontend run test:ci -- workflowWorkspaceUI workflowWorkspaceUtils",
+    "test:orders:ui-contracts": "npm --prefix frontend run test:ci -- workflowUiContract workflowWorkspaceUI",
+    "test:orders:ui-contracts:silent": "npm --prefix frontend run test:ci -- --silent=true workflowUiContract workflowWorkspaceUI",
+    "test:orders-unifiedworkspace": "npm --prefix frontend run test:ci -- workflowWorkspace",
+    "test:system-backbone-regression": "npm --prefix frontend run test:ci -- src/features/SystemBackbone",
+    "test:backend-mikro-sql-client": ".\\.venv\\Scripts\\python.exe -m pytest backend/tests/test_mikro_sql_client.py -q",
+    "test:ci-tooling-contracts": "npm --prefix frontend run test:ci -- orderNavigationContract AppShell.moduleRoutes AppShell.route",
+    "test:ci-workflow-contracts:suite": "npm --prefix frontend run test:ci -- workflowUiContract workflowWorkspace exportStatusContract",
+    "test:ci-workflow-contracts:strict-unknown": "npm --prefix frontend run test:ci -- workflowUiContract workflowWorkspace exportStatusContract",
+    "test:required-check-contract": "npm --prefix frontend run test:ci -- orderNavigationContract",
+    "test:mega-release-gate": "npm --prefix frontend run test:ci",
+    "test:mega-release-gate:strict": "npm --prefix frontend run test:ci",
+    "phase:core-structure": "npm --prefix frontend run test:ci -- src/features/Admin src/features/Orders src/features/SystemBackbone",
+    "phase:hardening": "npm --prefix frontend run test:ci -- workflowUiContract workflowWorkspace orderNavigationContract AppShell"
   }
 }

@@ -1,7 +1,7 @@
-﻿# RUN PROMPT V1
+# RUN PROMPT V1
 
 Durum: Aktif
-Tarih: 2026-02-17
+Tarih: 2026-03-22
 Kullanim: Bu metni AI coding agent'e dogrudan verin.
 
 ## Prompt
@@ -16,12 +16,15 @@ Calisma Sekli:
 - Her degisiklikte ilgili testleri calistir; calismiyorsa sebebini acik yaz.
 
 Kaynak Onceligi (celiski olursa bu sirayi uygula):
-1) AGENT_ONEFILE_INSTRUCTIONS.md
-2) docs/RESMI_KARAR_DOKUMANI_V1.md
-3) docs/API_CONTRACT.md + docs/STATE_MACHINE.md
-4) OPTIPLAN360_MASTER_HANDOFF.md
-5) CLAUDE.md
-6) Diger dokumanlar
+1) docs/governance-pack/OptiPlan360_Master_Spec_v4.md
+2) docs/governance-pack/AGENTS.md
+3) docs/governance-pack/OptiPlan360_Extended_Modules_Annex_v1.md
+4) AGENT_ONEFILE_INSTRUCTIONS.md
+5) docs/RESMI_KARAR_DOKUMANI_V1.md
+6) docs/API_CONTRACT.md + docs/STATE_MACHINE.md
+7) OPTIPLAN360_MASTER_HANDOFF.md
+8) CLAUDE.md
+9) Diger dokumanlar
 
 Kilit Teknik Kararlar:
 - Canonical orchestrator API: /jobs
@@ -33,6 +36,8 @@ Kilit Teknik Kararlar:
 - A11Y minimum: aria-modal, ESC, focus trap, form aria baglantilari, 44x44
 - Veri katmani: Production PostgreSQL, local/test SQLite
 - Mikro entegrasyon fazlari: P1 read-only zorunlu, P2 kontrollu write-back
+- OptiPlan360 canonical faz kurallari governance-pack altindaki spec dosyalari ile yonetilir
+- Phase 2 sabit kural: 7 alan modeli
 
 Uygulama Kurallari:
 - Router sadece HTTP in/out yapar, is mantigi service katmaninda kalir.
@@ -40,6 +45,7 @@ Uygulama Kurallari:
 - Hata yonetiminde merkezi AppError hiyerarsisi disina cikma.
 - Type map zorunlu: backend response -> frontend type mapping yap.
 - Atomic file write kurali uygula (.tmp -> rename).
+- Archive altindaki legacy dokumanlari aktif source olarak kullanma.
 
 Teslim Formati (her gorev sonunda):
 1) Yapilanlar (kisa)
@@ -55,15 +61,21 @@ Cikis Kriteri:
 ```
 
 ## Uygulama Adimlari
-1. Once P0 maddelerini bitir (OPTIPLAN360_TAM_PAKET_SATIS_OPTIPLANNING_MIKRO.md).
-2. Sonra P1 maddelerine gec.
-3. P2 write-back adimlarini yalnizca onayli pilotta ac.
-4. Her sprint sonunda C1-C5 kabul kriterlerini yeniden kontrol et.
+1. Once canonical governance-pack belgelerini oku.
+2. Gerekli ise ilgili phase spec dosyasini kullan.
+3. Archive altindaki legacy dosyalari yalniz tarihsel referans olarak degerlendir.
+4. Her sprint sonunda kabul kriterlerini yeniden kontrol et.
 
 ## Ilgili Dosyalar
-- AGENT_ONEFILE_INSTRUCTIONS.md
-- CLAUDE.md
-- docs/RESMI_KARAR_DOKUMANI_V1.md
-- docs/API_CONTRACT.md
-- docs/STATE_MACHINE.md
-- OPTIPLAN360_TAM_PAKET_SATIS_OPTIPLANNING_MIKRO.md
+- `docs/governance-pack/OptiPlan360_Master_Spec_v4.md`
+- `docs/governance-pack/AGENTS.md`
+- `docs/governance-pack/OptiPlan360_Extended_Modules_Annex_v1.md`
+- `docs/governance-pack/OptiPlan360_Phase1_Implementation_Spec_v3.md`
+- `docs/governance-pack/OptiPlan360_Phase2_Implementation_Spec_v2.md`
+- `docs/governance-pack/OptiPlan360_Phase2_UI_Spec_7Fields_v2.md`
+- `docs/governance-pack/OptiPlan360_Phase3_UIUX_Spec_v2.md`
+- `AGENT_ONEFILE_INSTRUCTIONS.md`
+- `CLAUDE.md`
+- `docs/RESMI_KARAR_DOKUMANI_V1.md`
+- `docs/API_CONTRACT.md`
+- `docs/STATE_MACHINE.md`

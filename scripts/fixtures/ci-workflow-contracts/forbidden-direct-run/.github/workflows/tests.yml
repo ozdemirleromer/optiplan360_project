@@ -1,0 +1,9 @@
+name: Unit Tests
+jobs:
+  encoding-check:
+    runs-on: ubuntu-latest
+  ci-contract-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify CI workflow contracts
+        run: npm run test:ci-workflow-contracts

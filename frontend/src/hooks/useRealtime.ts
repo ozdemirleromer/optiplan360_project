@@ -71,7 +71,6 @@ export function useRealtime(onEvent: (event: WebSocketEvent) => void) {
           socket.onopen = () => {
 
 
-               console.log('[Realtime] Connected to live updates.');
 
 
           };
@@ -92,7 +91,6 @@ export function useRealtime(onEvent: (event: WebSocketEvent) => void) {
                     if (payload && payload.type) {
 
 
-                    console.log(`[Realtime] Event Received: ${payload.type}`, payload.data);
 
 
                          onEvent(payload);
@@ -119,7 +117,6 @@ export function useRealtime(onEvent: (event: WebSocketEvent) => void) {
           socket.onclose = () => {
 
 
-               console.log('[Realtime] Disconnected. Reconnection handles can be added here.');
 
 
           };
@@ -144,5 +141,4 @@ export function useRealtime(onEvent: (event: WebSocketEvent) => void) {
 
 
 }
-
 

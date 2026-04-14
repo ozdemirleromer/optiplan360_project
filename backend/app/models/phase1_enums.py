@@ -1,0 +1,111 @@
+"""
+Phase 1-4 canonical enum tanımları — master spec v3.
+Bu dosyadaki değerler, workflow model, servis ve router katmanlarının ortak sözleşmesidir.
+"""
+import enum
+
+
+class Phase1RecordStatus(str, enum.Enum):
+    """Workflow kaydının yaşam döngüsü durumları (master spec v3)."""
+    RECEIVED = "RECEIVED"
+    DUPLICATE = "DUPLICATE"
+    PROCESSING = "PROCESSING"
+    OCR_PROCESSING = "OCR_PROCESSING"
+    PHASE2_PENDING = "PHASE2_PENDING"
+    OCR_RETRY_PENDING = "OCR_RETRY_PENDING"
+    FAULTY = "FAULTY"
+    MANUAL_REVIEW_REQUIRED = "MANUAL_REVIEW_REQUIRED"
+    PHASE2_IN_PROGRESS = "PHASE2_IN_PROGRESS"
+    PHASE3_PENDING = "PHASE3_PENDING"
+    PHASE3_IN_PROGRESS = "PHASE3_IN_PROGRESS"
+    PHASE4_PENDING = "PHASE4_PENDING"
+    PHASE4_PREVIEW_READY = "PHASE4_PREVIEW_READY"
+    PHASE4_EXPORT_RUNNING = "PHASE4_EXPORT_RUNNING"
+    PHASE4_EXPORT_FAILED = "PHASE4_EXPORT_FAILED"
+    PHASE4_RETRY_PENDING = "PHASE4_RETRY_PENDING"
+    COMPLETED = "COMPLETED"
+
+
+class ApprovalStatus(str, enum.Enum):
+    """Phase 2 hücre onay durumları."""
+    UNREVIEWED = "UNREVIEWED"
+    LOW_CONFIDENCE = "LOW_CONFIDENCE"
+    APPROVED_AS_IS = "APPROVED_AS_IS"
+    OVERRIDDEN = "OVERRIDDEN"
+    READ_ONLY = "READ_ONLY"
+
+
+class MatchStatus(str, enum.Enum):
+    """Phase 3 müşteri/stok eşleşme durumu."""
+    UNMATCHED = "UNMATCHED"
+    MATCHED = "MATCHED"
+    MANUAL_MATCHED = "MANUAL_MATCHED"
+    BLOCKED = "BLOCKED"
+
+
+class FolderHealthStatus(str, enum.Enum):
+    """Klasör sağlık durumu."""
+    HEALTHY = "HEALTHY"
+    WARNING = "WARNING"
+    OFFLINE = "OFFLINE"
+    ERROR = "ERROR"
+
+
+class AuditEventType(str, enum.Enum):
+    """Tüm audit event türleri (canonical)."""
+    FILE_DETECTED = "FILE_DETECTED"
+    DUPLICATE_DETECTED = "DUPLICATE_DETECTED"
+    FILE_LOCKED = "FILE_LOCKED"
+    FILE_MOVED_TO_PROCESSING = "FILE_MOVED_TO_PROCESSING"
+    PREPROCESS_STARTED = "PREPROCESS_STARTED"
+    PREPROCESS_COMPLETED = "PREPROCESS_COMPLETED"
+    OCR_REQUEST_STARTED = "OCR_REQUEST_STARTED"
+    OCR_REQUEST_COMPLETED = "OCR_REQUEST_COMPLETED"
+    OCR_PARSE_FAILED = "OCR_PARSE_FAILED"
+    OCR_RETRY_SCHEDULED = "OCR_RETRY_SCHEDULED"
+    STATUS_CHANGED = "STATUS_CHANGED"
+    CELL_APPROVED = "CELL_APPROVED"
+    CELL_OVERRIDDEN = "CELL_OVERRIDDEN"
+    FAULTY_MARKED = "FAULTY_MARKED"
+    PHASE3_MOVE_ATTEMPTED = "PHASE3_MOVE_ATTEMPTED"
+    PHASE3_MOVE_SUCCEEDED = "PHASE3_MOVE_SUCCEEDED"
+    PHASE3_MOVE_REJECTED = "PHASE3_MOVE_REJECTED"
+    ERP_CUSTOMER_MATCHED = "ERP_CUSTOMER_MATCHED"
+    ERP_STOCK_MATCHED = "ERP_STOCK_MATCHED"
+    ROWS_MERGED = "ROWS_MERGED"
+    SCRAP_NOTE_ADDED = "SCRAP_NOTE_ADDED"
+    PHASE4_PREVIEW_CREATED = "PHASE4_PREVIEW_CREATED"
+    PHASE4_EXPORT_STARTED = "PHASE4_EXPORT_STARTED"
+    PHASE4_EXPORT_SUCCEEDED = "PHASE4_EXPORT_SUCCEEDED"
+    PHASE4_EXPORT_FAILED = "PHASE4_EXPORT_FAILED"
+    MANIFEST_CREATED = "MANIFEST_CREATED"
+    RETRY_DECISION_TAKEN = "RETRY_DECISION_TAKEN"
+
+
+class ErrorSeverity(str, enum.Enum):
+    """Hata ciddiyeti seviyeleri."""
+    INFO = "INFO"
+    WARNING = "WARNING"
+    RETRYABLE = "RETRYABLE"
+    FATAL = "FATAL"
+
+
+class SourceType(str, enum.Enum):
+    """Kaynak klasör tipleri."""
+    WHATSAPP_RAW = "whatsapp_raw"
+    SCANNER_RAW = "scanner_raw"
+    MANUEL_RAW = "manuel_raw"
+    EMAIL_RAW = "email_raw"
+
+
+class ActorType(str, enum.Enum):
+    """Audit aksiyonunu kimin tetiklediği."""
+    HUMAN = "human"
+    SYSTEM = "system"
+
+
+# Phase 2 için onaylanabilir alanlar
+CRITICAL_FIELDS = frozenset({"BOY", "EN", "ADET"})
+
+# Confidence eşiği — bu altı LOW_CONFIDENCE
+LOW_CONFIDENCE_THRESHOLD = 80

@@ -1,0 +1,16 @@
+{
+  "workflowAllowList": [
+    ".github/workflows/tests.yml"
+  ],
+  "contracts": [
+    {
+      "path": ".github/workflows/tests.yml",
+      "allOf": [
+        "encoding-check:"
+      ],
+      "forbiddenAllOf": [
+        "run: npm run test:ci-workflow-contracts"
+      ]
+    }
+  ]
+}

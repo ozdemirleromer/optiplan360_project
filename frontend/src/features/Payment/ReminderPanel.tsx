@@ -43,16 +43,18 @@ export default function ReminderPanel({ invoices, onRefresh }: ReminderPanelProp
     [invoices],
   );
 
-  const grouped = useMemo(
-    () => ({
-      pending: invoicesWithReminders.filter((invoice) => invoice.reminderStatus === "PENDING"),
-      sent: invoicesWithReminders.filter((invoice) => invoice.reminderStatus === "SENT"),
-      read: invoicesWithReminders.filter((invoice) => invoice.reminderStatus === "READ"),
-      ignored: invoicesWithReminders.filter((invoice) => invoice.reminderStatus === "IGNORED"),
-      bounced: invoicesWithReminders.filter((invoice) => invoice.reminderStatus === "BOUNCED"),
-    }),
-    [invoicesWithReminders],
-  );
+  const grouped = useMemo(() => {
+    const acc = { pending: [] as Invoice[], sent: [] as Invoice[], read: [] as Invoice[], ignored: [] as Invoice[], bounced: [] as Invoice[] };
+    for (const invoice of invoicesWithReminders) {
+      const s = invoice.reminderStatus;
+      if (s === "PENDING") acc.pending.push(invoice);
+      else if (s === "SENT") acc.sent.push(invoice);
+      else if (s === "READ") acc.read.push(invoice);
+      else if (s === "IGNORED") acc.ignored.push(invoice);
+      else if (s === "BOUNCED") acc.bounced.push(invoice);
+    }
+    return acc;
+  }, [invoicesWithReminders]);
 
   const handleSendReminder = async (invoice: Invoice, mode: "send" | "retry") => {
     if (sendingIds.includes(invoice.id)) {

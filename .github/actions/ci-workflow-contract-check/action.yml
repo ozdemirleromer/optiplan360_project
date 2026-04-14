@@ -1,0 +1,33 @@
+name: CI Workflow Contract Check
+description: Setup Node and verify CI workflow contracts.
+inputs:
+  node-version:
+    description: Node.js version
+    required: false
+    default: '20'
+  run-suite:
+    description: Run config+selftest+strict suite instead of single verify command
+    required: false
+    default: 'true'
+  strict-unknown:
+    description: Fail if unknown workflow files are detected outside allowlist
+    required: false
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Verify CI workflow contracts
+      shell: bash
+      run: |
+        if [ "${{ inputs.run-suite }}" = "true" ]; then
+          npm run test:ci-workflow-contracts:suite
+        elif [ "${{ inputs.strict-unknown }}" = "true" ]; then
+          npm run test:ci-workflow-contracts:strict-unknown
+        else
+          npm run test:ci-workflow-contracts
+        fi

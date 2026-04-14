@@ -1,0 +1,263 @@
+/* OCR Control Component Styles */
+
+/* Custom scrollbar for dense grid */
+.ocr-grid-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.ocr-grid-container::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+.ocr-grid-container::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 2px;
+}
+
+.ocr-grid-container::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Dense table styles */
+.ocr-dense-table {
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  line-height: 1.2;
+}
+
+.ocr-dense-table th,
+.ocr-dense-table td {
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #334155;
+}
+
+/* Cell states */
+.ocr-cell-normal {
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.ocr-cell-selected {
+  background-color: #1e3a8a;
+  border-color: #3b82f6;
+  color: #dbeafe;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.ocr-cell-low-confidence {
+  background-color: #92400e;
+  border-color: #d97706;
+  color: #fef3c7;
+}
+
+.ocr-cell-approved {
+  background-color: #064e3b;
+  border-color: #10b981;
+  color: #d1fae5;
+}
+
+.ocr-cell-overridden {
+  background-color: #581c87;
+  border-color: #a855f7;
+  color: #f3e8ff;
+}
+
+.ocr-cell-readonly {
+  background-color: #1e293b;
+  color: #64748b;
+}
+
+/* Zoom animation */
+.zoom-transition {
+  transition: transform 0.2s ease-out;
+}
+
+/* Split panel styles */
+.split-panel-handle {
+  background: #334155;
+  cursor: col-resize;
+  position: relative;
+}
+
+.split-panel-handle:hover {
+  background: #475569;
+}
+
+.split-panel-handle::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 20px;
+  background: #64748b;
+  border-radius: 1px;
+}
+
+/* Document viewer styles */
+.document-viewer-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.document-image {
+  max-width: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.bbox-highlight {
+  position: absolute;
+  border: 2px solid #fbbf24;
+  background-color: rgba(251, 191, 36, 0.1);
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+}
+
+/* Toast animation */
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 2px solid #1e293b;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Dense ERP styles */
+.erp-dense {
+  --border-width: 1px;
+  --border-color: #334155;
+  --cell-padding: 0.25rem 0.5rem;
+  --row-height: 1.5rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+}
+
+.erp-header {
+  background-color: #334155;
+  color: #e2e8f0;
+  font-weight: 500;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.erp-row:hover {
+  background-color: #334155;
+}
+
+/* Critical field emphasis */
+.critical-field {
+  font-weight: 600;
+  position: relative;
+}
+
+.critical-field::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background-color: #3b82f6;
+}
+
+/* Status indicators */
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-confidence-high {
+  background-color: #10b981;
+}
+
+.status-confidence-low {
+  background-color: #f59e0b;
+}
+
+.status-approved {
+  background-color: #3b82f6;
+}
+
+.status-overridden {
+  background-color: #a855f7;
+}
+
+/* Keyboard navigation focus */
+.keyboard-focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
+}
+
+/* Modal overlay */
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* Button states */
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.btn-primary:disabled {
+  background-color: #374151;
+  border-color: #4b5563;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  background-color: #dc2626;
+  border-color: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .ocr-dense-table {
+    font-size: 0.7rem;
+  }
+  
+  .ocr-dense-table th,
+  .ocr-dense-table td {
+    padding: 0.2rem 0.3rem;
+  }
+}

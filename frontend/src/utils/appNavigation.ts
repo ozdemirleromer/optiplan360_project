@@ -22,28 +22,41 @@ export type AppPage =
   | "orchestrator"
   | "product-search"
   | "crm-tickets"
-  | "export-page";
+  | "siparis-fisi"
+  | "teklif-fisi"
+  | "stok-karti"
+  | "cari-karti"
+  | "siparis-duzenleme"
+  | "optiplan-job"
+  | "ocr-havuzu"
+  | "ocr-pool"
+  | "ocr-kontrol"
+  | "siparis-kontrol"
+  | "optiplan-order"
+  | "export-page"
+  | "optiplan-ui";
 
 export interface AppNavigationDetail {
   page: AppPage;
   source?: string;
+  orderId?: string;
 }
 
 export const APP_NAVIGATION_EVENT = "app:navigate";
 
-export function navigateToAppPage(page: AppPage, source?: string) {
+export function navigateToAppPage(page: AppPage, source?: string, orderId?: string) {
   if (typeof window === "undefined") {
     return;
   }
 
   window.dispatchEvent(
     new CustomEvent<AppNavigationDetail>(APP_NAVIGATION_EVENT, {
-      detail: { page, source },
+      detail: { page, source, orderId },
     }),
   );
 }
 
-export function subscribeToAppNavigation(listener: (detail: AppNavigationDetail) => void) {
+export function subscribeToAppNavigation(listener: (detail: AppNavigationDetail & { orderId?: string }) => void) {
   if (typeof window === "undefined") {
     return () => undefined;
   }

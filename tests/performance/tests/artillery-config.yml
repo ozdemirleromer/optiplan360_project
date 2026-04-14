@@ -1,0 +1,182 @@
+config:
+  target: 'http://localhost:8080'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 120
+      arrivalRate: 50
+      name: "Peak load"
+    - duration: 600
+      arrivalRate: 30
+      name: "Extended load"
+    - duration: 120
+      arrivalRate: 10
+      name: "Cool down"
+
+  processor:
+    path: "./artillery-processor.js"
+    config:
+      target: "http://localhost:8080"
+      auth:
+        username: "testadmin"
+        password: "TestAdmin123!"
+
+scenarios:
+  - name: "API Health Check"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/v1/health"
+          capture:
+            - json: "$.status"
+              as: "health_status"
+
+  - name: "Authentication Flow"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            username: "testadmin"
+            password: "TestAdmin123!"
+          capture:
+            - json: "$.access_token"
+              as: "auth_token"
+      - get:
+          url: "/api/v1/users/me"
+          headers:
+            Authorization: "Bearer {{ auth_token }}"
+
+  - name: "Order Management"
+    weight: 30
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            username: "testadmin"
+            password: "TestAdmin123!"
+          capture:
+            - json: "$.access_token"
+              as: "order_token"
+      - get:
+          url: "/api/v1/orders?limit=50"
+          headers:
+            Authorization: "Bearer {{ order_token }}"
+      - think: 2
+      - post:
+          url: "/api/v1/orders"
+          headers:
+            Authorization: "Bearer {{ order_token }}"
+          json:
+            customer_id: 1
+            product_id: 1
+            quantity: 100
+            thickness: 18
+            width: 2100
+            height: 2970
+
+  - name: "Customer Management"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            username: "testadmin"
+            password: "TestAdmin123!"
+          capture:
+            - json: "$.access_token"
+              as: "customer_token"
+      - get:
+          url: "/api/v1/customers?limit=100"
+          headers:
+            Authorization: "Bearer {{ customer_token }}"
+      - think: 1
+      - get:
+          url: "/api/v1/customers/search?q=test"
+          headers:
+            Authorization: "Bearer {{ customer_token }}"
+
+  - name: "Stock Management"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            username: "testadmin"
+            password: "TestAdmin123!"
+          capture:
+            - json: "$.access_token"
+              as: "stock_token"
+      - get:
+          url: "/api/v1/stock"
+          headers:
+            Authorization: "Bearer {{ stock_token }}"
+      - think: 1
+      - post:
+          url: "/api/v1/stock/{{ $randomInt(1, 10) }}/update"
+          headers:
+            Authorization: "Bearer {{ stock_token }}"
+          json:
+            quantity: "{{ $randomInt(50, 500) }}"
+
+  - name: "Export Operations"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/v1/auth/login"
+          json:
+            username: "testadmin"
+            password: "TestAdmin123!"
+          capture:
+            - json: "$.access_token"
+              as: "export_token"
+      - post:
+          url: "/api/v1/export"
+          headers:
+            Authorization: "Bearer {{ export_token }}"
+          json:
+            format: "xlsx"
+            filters:
+              status: "pending"
+              date_range: "30d"
+      - think: 5
+
+plugins:
+  ensure:
+    enabled: true
+    thresholds:
+      - http.response_time.p95: 1000
+      - http.response_time.p99: 2000
+      - http.codes.200: 95
+      - http.codes.4xx: 5
+      - http.codes.5xx: 0
+
+  metrics-by-endpoint:
+    enabled: true
+    useOnlyRequestNames: true
+
+  html-report:
+    enabled: true
+    reportFilename: "artillery-report.html"
+
+  publish-metrics:
+    enabled: false
+    target:
+      url: "http://localhost:8080/api/v1/metrics"
+      headers:
+        Authorization: "Bearer {{ $processEnvironment.ARTILLERY_TOKEN }}"
+
+http:
+  timeout: 30
+  pool: 50
+  extendedMetrics: true
+
+  # Custom headers for all requests
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      User-Agent: "OptiPlan360-Artillery/{{ $randomString() }}"

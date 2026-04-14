@@ -1,0 +1,4 @@
+name: Extra Workflow
+jobs:
+  extra:
+    runs-on: ubuntu-latest

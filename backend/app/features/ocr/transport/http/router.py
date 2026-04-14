@@ -76,6 +76,13 @@ from app.exceptions import BusinessRuleError, NotFoundError, ValidationError
 
 
 from app.models import AuditLog, Customer, DeviceOCRConfig, OCRJob, OCRLine, Order, OrderPart, User
+from app.features.ocr.channel_telemetry import (
+    OCR_CHANNEL_ORDER,
+    build_channel_breakdown,
+    clear_channel_telemetry,
+    get_channel_label,
+    infer_job_channel,
+)
 from app.services.ocr_order_mapper import OcrOrderMapper
 from app.services.order_service import OrderService
 from app.services.orchestrator_service import OrchestratorService
@@ -4493,193 +4500,150 @@ def lookup_customer_by_phone(
 
 
 
+
+
+# -- OCR Summary Schemas --
+
+class RecentJobSummaryItem(BaseModel):
+    id: str
+    status: str
+    confidence: Optional[float] = None
+    createdAt: Optional[str] = None
+    source_channel: str
+    source_label: str
+
+
+class ChannelBreakdownItem(BaseModel):
+    channelId: str
+    label: str
+    external: bool
+    configured: bool
+    ready: bool
+    telemetryAvailable: bool
+    totalJobs: int
+    successfulJobs: int
+    failedJobs: int
+    last24hJobs: int
+    successRate: Optional[float] = None
+    lastAttemptedAt: Optional[str] = None
+    lastSuccessfulAt: Optional[str] = None
+    lastFailedAt: Optional[str] = None
+    lastErrorAt: Optional[str] = None
+    lastIngestedAt: Optional[str] = None
+    lastSignalAt: Optional[str] = None
+    lastJobId: Optional[str] = None
+    lastEvent: Optional[str] = None
+    lastEventStatus: Optional[str] = None
+    lastError: Optional[str] = None
+    telemetryStale: bool
+    telemetryAgeHours: Optional[float] = None
+    riskLevel: str
+    riskReason: str
+    status: str
+
+
+class OCRSummaryOut(BaseModel):
+    totalJobs: int
+    successfulJobs: int
+    failedJobs: int
+    averageConfidence: float
+    last24hJobs: int
+    totalPagesProcessed: Optional[int] = None
+    topLanguages: List[Any] = []
+    engineBreakdown: List[Any] = []
+    ordersCreated: int
+    conversionRate: float
+    recentJobs: List[RecentJobSummaryItem] = []
+    channelBreakdown: List[ChannelBreakdownItem] = []
+
+
 @router.get("/summary")
-
-
-
-
 def get_ocr_summary(
-
-
-
-
     db: Session = Depends(get_db),
-
-
-
-
     _user: User = Depends(get_current_user),
-
-
-
-
-):
-
-
-
-
-    """OCR istatistiklerini getir"""
-
-
-
-
-
-
-
-
-
+) -> dict:
+    """OCR yönetim paneli özet sözleşmesini döner."""
     from sqlalchemy import func
-
-
-
-
-
-
-
-
-
-    total_jobs = db.query(func.count(OCRJob.id)).scalar() or 0
-
-
-
-
-
-
-
-
-
-    completed = db.query(func.count(OCRJob.id)).filter(OCRJob.status == "COMPLETED").scalar() or 0
-
-
-
-
-
-
-
-
-
-    failed = db.query(func.count(OCRJob.id)).filter(OCRJob.status == "FAILED").scalar() or 0
-
-
-
-
-
-
-
-
-
-    orders_created = db.query(func.count(OCRJob.id)).filter(OCRJob.order_id != None).scalar() or 0
-
-
-
-
-
-
-
-
-
-    # Son 7 gün
-
-
-
-
-
-
-
-
-
-    week_ago = datetime.now(timezone.utc) - __import__("datetime").timedelta(days=7)
-
-
-
-
-
-
-
-
-
-    recent_jobs = (
-
-
-
-
+    from datetime import timedelta
+
+    all_jobs = db.query(OCRJob).order_by(OCRJob.created_at.desc()).all()
+    total_jobs = len(all_jobs)
+    successful_jobs = db.query(func.count(OCRJob.id)).filter(OCRJob.status == "COMPLETED").scalar() or 0
+    failed_jobs = db.query(func.count(OCRJob.id)).filter(OCRJob.status == "FAILED").scalar() or 0
+    orders_created = db.query(func.count(OCRJob.id)).filter(OCRJob.order_id != None).scalar() or 0  # noqa: E711
+
+    confidence_values: List[float] = []
+    for job in all_jobs:
+        if job.confidence is None:
+            continue
+        parsed_conf = float(job.confidence)
+        confidence_values.append(parsed_conf * 100 if parsed_conf <= 1 else parsed_conf)
+    average_confidence = round(sum(confidence_values) / len(confidence_values), 1) if confidence_values else 0.0
+
+    day_ago = datetime.now(timezone.utc) - timedelta(hours=24)
+    last24h_jobs = db.query(func.count(OCRJob.id)).filter(OCRJob.created_at >= day_ago).scalar() or 0
+
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+    recent = (
         db.query(OCRJob)
-
-
-
-
         .filter(OCRJob.created_at >= week_ago)
-
-
-
-
         .order_by(OCRJob.created_at.desc())
-
-
-
-
         .limit(10)
-
-
-
-
         .all()
-
-
-
-
     )
 
+    channel_breakdown = build_channel_breakdown(db, all_jobs)
 
-
-
-
-
-
-
+    conversion_rate = round((orders_created / successful_jobs * 100), 2) if successful_jobs > 0 else 0.0
 
     return {
-
-
-
-
-        "total_jobs": total_jobs,
-
-
-
-
-        "completed": completed,
-
-
-
-
-        "failed": failed,
-
-
-
-
-        "success_rate": round((completed / total_jobs * 100), 2) if total_jobs > 0 else 0,
-
-
-
-
-        "orders_created": orders_created,
-
-
-
-
-        "conversion_rate": round((orders_created / completed * 100), 2) if completed > 0 else 0,
-
-
-
-
-        "recent_jobs": [_job_to_out(job) for job in recent_jobs],
-
-
-
-
+        "totalJobs": total_jobs,
+        "successfulJobs": successful_jobs,
+        "failedJobs": failed_jobs,
+        "averageConfidence": average_confidence,
+        "last24hJobs": last24h_jobs,
+        "totalPagesProcessed": None,
+        "topLanguages": [],
+        "engineBreakdown": [],
+        "ordersCreated": orders_created,
+        "conversionRate": conversion_rate,
+        "recentJobs": [
+            {
+                "id": j.id,
+                "status": j.status,
+                "confidence": float(j.confidence) if j.confidence is not None else None,
+                "createdAt": j.created_at.isoformat() if j.created_at else None,
+                "source_channel": infer_job_channel(j),
+                "source_label": get_channel_label(infer_job_channel(j)),
+            }
+            for j in recent
+        ],
+        "channelBreakdown": channel_breakdown,
     }
 
 
+@router.post("/summary/channels/{channel_id}/reset-telemetry")
+def reset_ocr_channel_telemetry(
+    channel_id: str,
+    db: Session = Depends(get_db),
+    _user: User = Depends(get_current_user),
+) -> dict:
+    normalized_channel = (channel_id or "").strip().upper()
+    if normalized_channel not in OCR_CHANNEL_ORDER:
+        raise ValidationError("Geçersiz OCR kanal kimliği")
 
+    cleared_keys = clear_channel_telemetry(db, normalized_channel)
+    db.commit()
+
+    all_jobs = db.query(OCRJob).order_by(OCRJob.created_at.desc()).all()
+    channel_map = {item["channelId"]: item for item in build_channel_breakdown(db, all_jobs)}
+    channel_state = channel_map.get(normalized_channel, {})
+
+    return {
+        "ok": True,
+        "channelId": normalized_channel,
+        "clearedKeys": cleared_keys,
+        "remainingJobEvidence": bool(channel_state.get("totalJobs", 0)),
+        "channel": channel_state,
+    }
 

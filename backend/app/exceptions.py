@@ -111,3 +111,65 @@ class StatusTransitionError(BusinessRuleError):
         allowed_str = ", ".join(allowed) if allowed else "yok (son durum)"
         msg = f"'{current}' → '{target}' geçişi izin verilmiyor. " f"İzin verilen: {allowed_str}"
         super().__init__(msg, code="INVALID_STATUS_TRANSITION")
+
+
+# ═══════════════════════════════════════════════════
+# MİKRO ENTEGRASYON İSTİSNALARI
+# ═══════════════════════════════════════════════════
+
+
+class MikroIntegrationError(AppError):
+    """Mikro entegrasyon temel hatası (502)."""
+
+    def __init__(self, message: str, operation: str = ""):
+        AppError.__init__(self, 502, "MIKRO_INTEGRATION_ERROR", message)
+
+
+class MikroConnectionError(MikroIntegrationError):
+    """Mikro bağlantı hatası."""
+
+    def __init__(self, message: str, host: str = ""):
+        self.host = host
+        AppError.__init__(self, 502, "MIKRO_CONNECTION_ERROR", f"Mikro bağlantı hatası: {message}")
+
+
+class MikroAuthError(MikroIntegrationError):
+    """Mikro kimlik doğrulama hatası. str() her zaman standart mesajı döner."""
+
+    def __init__(self, message: str = ""):
+        AppError.__init__(self, 401, "MIKRO_AUTH_ERROR", "Kimlik doğrulama başarısız")
+
+
+class MikroTimeoutError(MikroIntegrationError):
+    """Mikro zaman aşımı hatası."""
+
+    def __init__(self, timeout: int = 0, operation: str = ""):
+        self.timeout = timeout
+        parts = [f"Mikro bağlantı timeout ({timeout}s)"]
+        if operation:
+            parts.append(operation)
+        AppError.__init__(self, 504, "MIKRO_TIMEOUT_ERROR", ": ".join(parts))
+
+
+class MikroQueryError(MikroIntegrationError):
+    """Mikro sorgu hatası."""
+
+    def __init__(self, message: str, query: str = ""):
+        self.query = query
+        AppError.__init__(self, 502, "MIKRO_QUERY_ERROR", f"Mikro sorgu hatası: {message}")
+
+
+class MikroDataError(MikroIntegrationError):
+    """Mikro veri hatası."""
+
+    def __init__(self, message: str, table: str = ""):
+        self.table = table
+        AppError.__init__(self, 502, "MIKRO_DATA_ERROR", f"Mikro veri hatası: {message}")
+
+
+class MikroDataIntegrityError(MikroDataError):
+    """Mikro veri bütünlüğü hatası (duplicate key, not-null ihlali vb.)."""
+
+    def __init__(self, message: str, table: str = ""):
+        self.table = table
+        AppError.__init__(self, 409, "MIKRO_DATA_INTEGRITY_ERROR", f"Mikro veri bütünlüğü hatası: {message}")

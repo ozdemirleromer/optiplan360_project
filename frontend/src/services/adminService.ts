@@ -908,6 +908,12 @@ export const adminService = {
 
   },
 
+  resetOcrChannelTelemetry(channelId: string): Promise<Record<string, unknown>> {
+
+    return apiRequest<Record<string, unknown>>(`/ocr/channels/${channelId}/telemetry/reset`, { method: "POST" });
+
+  },
+
 
 
   // System Configuration
@@ -1230,5 +1236,15 @@ export const adminService = {
 
   },
 
-};
+  browseFolder(current: string, probe = false): Promise<{ selected: string | null; supported?: boolean; message?: string }> {
+    const params = new URLSearchParams({ current });
+    if (probe) params.set("probe", "true");
+    return apiRequest<{ selected: string | null; supported?: boolean }>(`/admin/browse-folder?${params.toString()}`);
+  },
 
+  listDirectories(path: string): Promise<{ path: string; parent?: string | null; directories: Array<{ name: string; path: string }>; error?: string }> {
+    const params = new URLSearchParams({ path });
+    return apiRequest(`/admin/list-directories?${params.toString()}`);
+  },
+
+};

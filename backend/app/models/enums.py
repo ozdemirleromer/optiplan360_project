@@ -159,6 +159,34 @@ class OptiModeEnum(str, enum.Enum):
     C = "C"
 
 
+class Phase2DecisionEventTypeEnum(str, enum.Enum):
+    CELL_DECIDED = "CELL_DECIDED"
+    ERROR_MARKED = "ERROR_MARKED"
+    CELL_UNDONE = "CELL_UNDONE"
+
+
+class BlockerReasonCodeEnum(str, enum.Enum):
+    TYPE_INVALID = "TYPE_INVALID"
+    RANGE_OUT_OF_BOUNDS = "RANGE_OUT_OF_BOUNDS"
+    CONFIDENCE_LOW = "CONFIDENCE_LOW"
+    MISSING_VALUE = "MISSING_VALUE"
+    CONSISTENCY_ERROR = "CONSISTENCY_ERROR"
+
+
+class CellApprovalStatusEnum(str, enum.Enum):
+    PENDING = "PENDING"
+    APPROVED = "APPROVED"
+    REJECTED = "REJECTED"
+    MANUAL_OVERRIDE = "MANUAL_OVERRIDE"
+
+
+class ErrorReasonCategoryEnum(str, enum.Enum):
+    OCR_ERROR = "OCR_ERROR"
+    HUMAN_ERROR = "HUMAN_ERROR"
+    DATA_QUALITY = "DATA_QUALITY"
+    SYSTEM_ERROR = "SYSTEM_ERROR"
+
+
 class PriceJobStatusEnum(str, enum.Enum):
     PENDING = "PENDING"
     PROCESSING = "PROCESSING"

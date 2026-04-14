@@ -1,9 +1,11 @@
 import { Settings2 } from "lucide-react";
 
+import { THEMES } from "../../themes";
 import { useUIStore } from "../../stores/uiStore";
 
 export const ThemeToggle = () => {
   const themeName = useUIStore((s) => s.themeName);
+  const theme = THEMES[themeName] ?? THEMES.dark;
 
   return (
     <button
@@ -24,14 +26,13 @@ export const ThemeToggle = () => {
         fontSize: 13,
         fontWeight: 500,
       }}
-      aria-label="Tema profili: Industrial Grid"
-      title="Tema profili: Industrial Grid (kilitli)"
+      aria-label={`Tema profili: ${theme.label}`}
+      title={`Tema profili: ${theme.label}`}
     >
-      <Settings2 size={16} style={{ color: "#38BDF8" }} />
-      <span>{themeName === "industrialGrid" ? "Industrial" : "Locked"}</span>
+      <Settings2 size={16} style={{ color: theme.preview.primary }} />
+      <span>{theme.label}</span>
     </button>
   );
 };
 
 export default ThemeToggle;
-

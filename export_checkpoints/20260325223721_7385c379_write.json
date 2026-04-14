@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325223721_7385c379_write",
+  "islem_id": "recovery-test",
+  "phase": "write",
+  "status": "failed",
+  "temp_path": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\optiplan_export_20260325223721_7385c379\\recovery.xlsx",
+  "final_path": null,
+  "metadata": {
+    "transaction_id": "20260325223721_7385c379",
+    "filename": "recovery.xlsx",
+    "target_dir": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpn8lsb17z"
+  },
+  "created_at": "2026-03-25T22:37:21.223110+00:00",
+  "updated_at": "2026-03-25T22:37:21.268134+00:00",
+  "error_message": "Sistem kapanmas\u0131 nedeniyle yar\u0131m kald\u0131"
+}

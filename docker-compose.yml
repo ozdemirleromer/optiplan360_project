@@ -31,7 +31,7 @@ services:
       DATABASE_URL: postgresql://${DB_USER:-optiplan}:${DB_PASSWORD:-optiplan123}@db:5432/${DB_NAME:-optiplandb}
       SECRET_KEY: ${SECRET_KEY:-supersecretkey_change_in_prod_2026}
       ENVIRONMENT: ${ENVIRONMENT:-development}
-      CORS_ORIGINS: "http://localhost,http://localhost:80,http://localhost:3000"
+      CORS_ORIGINS: "http://localhost,http://localhost:80,http://localhost:3001,http://127.0.0.1,http://127.0.0.1:3001,http://127.0.0.1:8000"
     ports:
       - "8000:8000"
     depends_on:
@@ -55,9 +55,10 @@ services:
     container_name: optiplan_frontend
     restart: unless-stopped
     ports:
-      - "3000:80"
+      - "3001:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl -f http://localhost:80 || exit 1" ]
       interval: 15s

@@ -1,0 +1,43 @@
+/* OptiPlan360 — Theme layout tokens */
+
+:root {
+  --shell-sidebar-width: 240px;
+  --shell-sidebar-collapsed-width: 56px;
+  --shell-header-height: 56px;
+  --shell-content-max-width: 1440px;
+
+  --transition-sidebar: width 0.2s ease, opacity 0.2s ease;
+  --transition-panel: transform 0.2s ease, opacity 0.15s ease;
+}
+
+/* Layout structure */
+.app-shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-shell__sidebar {
+  width: var(--shell-sidebar-width);
+  flex-shrink: 0;
+  transition: var(--transition-sidebar);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.app-shell__sidebar--collapsed {
+  width: var(--shell-sidebar-collapsed-width);
+}
+
+.app-shell__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-shell__content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}

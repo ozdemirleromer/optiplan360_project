@@ -56,7 +56,7 @@ export const Button = ({
   };
 
   const sizeStyles: Record<string, CSSProperties> = {
-    sm: { padding: "8px 12px", fontSize: TYPOGRAPHY.fontSize.xs, minHeight: "40px", minWidth: "40px" },
+    sm: { padding: "8px 12px", fontSize: TYPOGRAPHY.fontSize.xs, minHeight: "44px", minWidth: "44px" },
     md: { padding: "10px 16px", fontSize: TYPOGRAPHY.fontSize.sm, minHeight: "44px", minWidth: "44px" },
     lg: { padding: "12px 20px", fontSize: TYPOGRAPHY.fontSize.base, minHeight: "48px", minWidth: "48px" },
   };

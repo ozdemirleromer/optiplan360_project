@@ -1,0 +1,1 @@
+{"host": "flat-host", "port": 1444, "database": "MIKRO_FLAT", "username": "flat-user", "password": "flat-pass", "timeout_seconds": 17, "trust_server_certificate": false}

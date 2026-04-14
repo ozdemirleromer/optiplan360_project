@@ -1,0 +1,25 @@
+{
+  "name": "@optiplan360/frontend-bundle-optimizer",
+  "version": "1.0.0",
+  "description": "Frontend bundle size optimization and lazy loading for OptiPlan360",
+  "scripts": {
+    "build:analyze": "vite build --mode production && npx vite-bundle-analyzer dist/stats.html",
+    "build:optimized": "vite build --mode production --minify terser",
+    "build:report": "vite build --mode production && npx webpack-bundle-analyzer dist/static/js/*.js",
+    "preview:bundle": "vite preview --port 4173",
+    "optimize:images": "node scripts/optimize-images.mjs",
+    "optimize:deps": "node scripts/optimize-dependencies.mjs",
+    "analyze:chunks": "node scripts/analyze-chunks.mjs",
+    "lighthouse": "npm run build && npx lighthouse http://localhost:4173 --output=reports"
+  },
+  "devDependencies": {
+    "vite-bundle-analyzer": "^0.7.0",
+    "webpack-bundle-analyzer": "^4.9.0",
+    "lighthouse": "^11.4.0",
+    "rollup-plugin-visualizer": "^5.9.0",
+    "terser": "^5.26.0",
+    "sharp": "^0.33.0",
+    "imagemin": "^8.0.0",
+    "svgo": "^3.2.0"
+  }
+}

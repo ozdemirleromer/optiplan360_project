@@ -114,6 +114,19 @@ interface HealthData {
 
 }
 
+function normalizeHealthData(input: unknown): HealthData {
+  const data = (input ?? {}) as Partial<HealthData>;
+  const integrations = (data.integrations ?? {}) as HealthData["integrations"];
+  const errors = Array.isArray(data.errors) ? data.errors : [];
+
+  return {
+    overallStatus: data.overallStatus ?? "UNKNOWN",
+    timestamp: data.timestamp ?? new Date().toISOString(),
+    integrations,
+    errors,
+  };
+}
+
 
 
 
@@ -146,6 +159,8 @@ export function IntegrationHealth() {
 
 
   const isMountedRef = useRef(true);
+  const hasBlockingError = error !== null && health === null;
+  const hasRefreshError = error !== null && health !== null;
 
 
 
@@ -160,10 +175,11 @@ export function IntegrationHealth() {
       setLoading(true);
 
 
-      const data = await mikroService.checkHealth() as HealthData;
+      const data = await mikroService.checkHealth();
+      const normalized = normalizeHealthData(data);
 
 
-      setHealth(data);
+      setHealth(normalized);
 
 
       setError(null);
@@ -373,7 +389,7 @@ export function IntegrationHealth() {
 
 
 
-  if (error) {
+  if (hasBlockingError) {
 
     return (
 
@@ -463,6 +479,20 @@ export function IntegrationHealth() {
       >
 
 
+        {hasRefreshError && (
+          <div
+            style={{
+              padding: 12,
+              borderRadius: RADIUS.md,
+              background: "transparent",
+              color: COLORS.text,
+              border: `1px solid ${COLORS.warning}`,
+              fontSize: 12,
+            }}
+          >
+            Son yenileme hatasi: {error}
+          </div>
+        )}
         {health && (
 
 
@@ -748,13 +778,16 @@ export function IntegrationHealth() {
                           borderRadius: RADIUS.sm,
 
 
-                          background: COLORS.danger,
+                          background: "transparent",
 
 
-                          color: COLORS.danger,
+                          color: COLORS.text,
 
 
                           fontSize: 11,
+
+
+                          border: `1px solid ${COLORS.danger}`,
 
 
                         }}

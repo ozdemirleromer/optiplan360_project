@@ -38,7 +38,6 @@ export function startOrchestratorApp(): void {
 
   const port = Number(process.env.ORCHESTRATOR_PORT ?? 8090);
   app.listen(port, () => {
-    console.log(`[orchestrator] server started on ${port}`);
     runner.start();
   });
 

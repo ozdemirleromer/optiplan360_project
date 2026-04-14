@@ -198,7 +198,7 @@ export function PathsEditor({ paths, onSave, status }: PathsEditorProps) {
         />
       </div>
       <div className="settings-actions">
-        <button className="primary-btn touch-target" onClick={() => void handleSave()}>
+        <button className="primary-btn touch-target" type="submit" disabled={saving}>
           Kaydet
         </button>
       </div>

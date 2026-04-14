@@ -97,7 +97,7 @@ export const ICON_MAPPING = {
   checkCircle: 'CheckCircle2',
 
 
-  checkSquare: 'CheckSquare',
+  checkSquare: 'ClipboardCheck',
 
 
   success: 'CheckCircle2',

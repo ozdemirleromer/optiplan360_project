@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325214510_ebdc1eea_begin",
+  "islem_id": "recovery-test",
+  "phase": "begin",
+  "status": "pending",
+  "temp_path": null,
+  "final_path": null,
+  "metadata": {
+    "transaction_id": "20260325214510_ebdc1eea",
+    "filename": "recovery.xlsx",
+    "target_dir": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmp99gqngio"
+  },
+  "created_at": "2026-03-25T21:45:10.161263",
+  "updated_at": "2026-03-25T21:45:10.161265",
+  "error_message": null
+}

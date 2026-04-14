@@ -241,7 +241,7 @@ export function RolesPermissionsPage() {
 
           {/* Rol Tanımları */}
           <Card title="Rol Tanımları" style={{ marginBottom: "20px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "16px" }}>
               {ROLES.map((role) => {
                 const RoleIcon = role.icon;
                 return (

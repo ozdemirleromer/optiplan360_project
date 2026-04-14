@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325220047_f938b93c_rollback",
+  "islem_id": "test-tx-002",
+  "phase": "rollback",
+  "status": "rolled_back",
+  "temp_path": null,
+  "final_path": null,
+  "metadata": {
+    "transaction_id": "20260325220047_f938b93c",
+    "filename": "test.xlsx",
+    "target_dir": "C:\\Users\\MERZDE~1\\AppData\\Local\\Temp\\tmpf4511ja4"
+  },
+  "created_at": "2026-03-25T22:00:47.841507",
+  "updated_at": "2026-03-25T22:00:47.841509",
+  "error_message": "Test rollback"
+}

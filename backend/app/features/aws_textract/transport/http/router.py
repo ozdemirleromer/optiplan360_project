@@ -1167,7 +1167,14 @@ def get_aws_textract_stats(
 
 
 
+        "serviceId": "aws",
         "configured": service.is_configured(),
+        "totalJobs": None,
+        "jobsThisMonth": None,
+        "successRate": None,
+        "avgConfidence": None,
+        "lastUsed": None,
+        "telemetryAvailable": False,
 
 
 
@@ -1179,6 +1186,7 @@ def get_aws_textract_stats(
 
 
 
+        "details": {},
         "features": {
 
 

@@ -12,37 +12,53 @@ except Exception:  # pragma: no cover - fallback when dependency is missing
             super().__init__()
 
 
-from ..exceptions import AppError, ValidationError
+from ..exceptions import AppError, ValidationError
+from ..integrations.mikro_sql_client import normalize_mikro_sql_config
 
 logger = logging.getLogger(__name__)
 
 # --- Konfigürasyon ---
 # Öncelik: 1) config/mikro_connection.json  2) Ortam değişkenleri
-CONFIG_PATH = os.path.join(
+CONFIG_PATH = os.path.join(
     os.path.dirname(__file__), "..", "..", "..", "config", "mikro_connection.json"
-)
+)
+
+LEGACY_CONFIG_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "..", "config", "mikro_config.json"
+)
+
+
+def _normalize_loaded_file_config(raw_config: Dict[str, Any]) -> Dict[str, str]:
+    config = normalize_mikro_sql_config(raw_config)
+    if not config.get("host") or not config.get("database"):
+        return {}
+
+    source = dict(raw_config.get("sql_server", raw_config))
+    return {
+        "server": config["host"],
+        "port": str(config.get("port", 1433)),
+        "instance": str(config.get("instance", "")),
+        "database": config["database"],
+        "username": str(config.get("username", "")),
+        "password": str(config.get("password", "")),
+        "timeout": str(config.get("connection_timeout", 10)),
+        "encrypt": source.get("encrypt", True),
+        "trust_cert": bool(config.get("trust_server_certificate", False)),
+    }
 
 
-def _load_mikro_config() -> Dict[str, str]:
-    """Config dosyasından veya ortam değişkenlerinden Mikro bağlantı bilgilerini oku"""
-    # Önce config dosyasından oku
-    try:
-        with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            cfg = json.load(f)
-        if cfg.get("host") and cfg.get("database"):
-            return {
-                "server": cfg["host"],
-                "port": str(cfg.get("port", 1433)),
-                "instance": cfg.get("instance", ""),
-                "database": cfg["database"],
-                "username": cfg.get("username", ""),
-                "password": cfg.get("password", ""),
-                "timeout": str(cfg.get("timeout_seconds", 10)),
-                "encrypt": cfg.get("encrypt", True),
-                "trust_cert": cfg.get("trust_server_certificate", False),
-            }
-    except (FileNotFoundError, json.JSONDecodeError):
-        pass
+def _load_mikro_config() -> Dict[str, str]:
+    """Config dosyasından veya ortam değişkenlerinden Mikro bağlantı bilgilerini oku"""
+    # Önce config dosyasından oku
+    for config_path in (CONFIG_PATH, LEGACY_CONFIG_PATH):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = json.load(f)
+            normalized = _normalize_loaded_file_config(cfg)
+            if normalized:
+                return normalized
+        except (FileNotFoundError, json.JSONDecodeError):
+            continue
 
     # Fallback: ortam değişkenleri
     server = os.environ.get("MIKRO_SERVER") or os.environ.get("MIKRO_DB_HOST")
@@ -257,11 +273,35 @@ def validate_cari_kodu(kodu: str) -> bool:
 
 
 def validate_stok_kodu(kodu: str) -> bool:
-    """Mikro'da verilen stok kodu mevcut mu kontrol eder. Onbellekli malzeme listesi kullanilir."""
+    """Mikro'da verilen stok kodu mevcut mu kontrol eder."""
+    conn = None
+    cursor = None
     try:
-        # Onbellekli listeden ara (SQL hit azaltmak icin)
+        conn = _get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT COUNT(1) FROM STOKLAR WHERE STOK_KOD = ?", (kodu,))
+        row = cursor.fetchone()
+        if row and row[0] > 0:
+            return True
+    except Exception:
+        pass
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if conn is not None:
+            conn.close()
+
+    try:
         materials = get_all_materials()
         kodu_upper = kodu.upper()
-        return any(m.get("raw_name", "").upper() == kodu_upper for m in materials)
+        return any(
+            candidate.upper() == kodu_upper
+            for material in materials
+            for candidate in (
+                str(material.get("stock_code", "")),
+                str(material.get("raw_name", "")),
+            )
+            if candidate
+        )
     except Exception:
         return False

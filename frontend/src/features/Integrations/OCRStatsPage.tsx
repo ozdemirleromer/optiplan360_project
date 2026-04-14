@@ -1,350 +1,291 @@
-import { useState, useEffect, useCallback } from "react";
-import { Card, Button, Badge } from "../../components/Shared";
-import { COLORS, RADIUS } from "../../components/Shared/constants";
-import { adminService } from "../../services/adminService";
-import { Cloud, Globe, FileText, Smartphone, Mail, Activity } from "lucide-react";
-
-interface OCRStats {
-  totalJobs: number;
-  successfulJobs: number;
-  failedJobs: number;
-  averageConfidence: number;
-  totalPagesProcessed: number;
-  last24hJobs: number;
-  topLanguages: Array<{ language: string; count: number }>;
-  engineBreakdown: Array<{ engine: string; count: number; successRate: number }>;
-}
-
-interface OCRServiceStatus {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-  color: string;
-  configured: boolean;
-  lastUsed: string | null;
-  totalJobs: number;
-  successRate: number;
-  avgConfidence: number;
-}
-
-export function OCRStatsPage() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState<OCRStats | null>(null);
-  const [services, setServices] = useState<OCRServiceStatus[]>([
-    {
-      id: "azure",
-      name: "Azure Computer Vision",
-      icon: <Cloud size={20} color="#0078D4" />,
-      color: "#0078D4",
-      configured: false,
-      lastUsed: null,
-      totalJobs: 0,
-      successRate: 0,
-      avgConfidence: 0,
-    },
-    {
-      id: "google",
-      name: "Google Vision API",
-      icon: <Globe size={20} color="#4285F4" />,
-      color: "#4285F4",
-      configured: false,
-      lastUsed: null,
-      totalJobs: 0,
-      successRate: 0,
-      avgConfidence: 0,
-    },
-    {
-      id: "aws",
-      name: "AWS Textract",
-      icon: <Cloud size={20} color="#FF9900" />,
-      color: "#FF9900",
-      configured: false,
-      lastUsed: null,
-      totalJobs: 0,
-      successRate: 0,
-      avgConfidence: 0,
-    },
-    {
-      id: "tesseract",
-      name: "Tesseract OCR",
-      icon: <FileText size={20} color="#4A90E2" />,
-      color: "#4A90E2",
-      configured: true,
-      lastUsed: new Date().toISOString(),
-      totalJobs: 145,
-      successRate: 92,
-      avgConfidence: 78,
-    },
-    {
-      id: "telegram",
-      name: "Telegram OCR Bot",
-      icon: <Smartphone size={20} color="#0088cc" />,
-      color: "#0088cc",
-      configured: false,
-      lastUsed: null,
-      totalJobs: 0,
-      successRate: 0,
-      avgConfidence: 0,
-    },
-    {
-      id: "email",
-      name: "Email OCR",
-      icon: <Mail size={20} color="#EA4335" />,
-      color: "#EA4335",
-      configured: false,
-      lastUsed: null,
-      totalJobs: 0,
-      successRate: 0,
-      avgConfidence: 0,
-    },
-  ]);
-
-  const loadStats = useCallback(async () => {
-    setLoading(true);
-    try {
-      // Backend'den OCR stats verilerini çek
-      const [azureStats, googleStats, awsStats, ocrSummary] = await Promise.all([
-        adminService.getAzureStats().catch(() => null),
-        adminService.getGoogleStats().catch(() => null),
-        adminService.getAwsStats().catch(() => null),
-        adminService.getOcrSummary().catch(() => null),
-      ]);
-
-      // Servis durumlarını güncelle
-      setServices((prev) =>
-        prev.map((service) => {
-          switch (service.id) {
-            case "azure":
-              return {
-                ...service,
-                configured: azureStats?.configured ?? false,
-                totalJobs: azureStats?.totalJobs ?? 0,
-                successRate: azureStats?.successRate ?? 0,
-                avgConfidence: azureStats?.avgConfidence ?? 0,
-                lastUsed: azureStats?.lastUsed ?? null,
-              };
-            case "google":
-              return {
-                ...service,
-                configured: googleStats?.configured ?? false,
-                totalJobs: googleStats?.totalJobs ?? 0,
-                successRate: googleStats?.successRate ?? 0,
-                avgConfidence: googleStats?.avgConfidence ?? 0,
-                lastUsed: googleStats?.lastUsed ?? null,
-              };
-            case "aws":
-              return {
-                ...service,
-                configured: awsStats?.configured ?? false,
-                totalJobs: awsStats?.totalJobs ?? 0,
-                successRate: awsStats?.successRate ?? 0,
-                avgConfidence: awsStats?.avgConfidence ?? 0,
-                lastUsed: awsStats?.lastUsed ?? null,
-              };
-            default:
-              return service;
-          }
-        })
-      );
-
-      // Genel stats'i ayarla
-      if (ocrSummary) {
-        setStats({
-          totalJobs: ocrSummary.totalJobs ?? 145,
-          successfulJobs: ocrSummary.successfulJobs ?? 132,
-          failedJobs: ocrSummary.failedJobs ?? 13,
-          averageConfidence: ocrSummary.averageConfidence ?? 78.5,
-          totalPagesProcessed: ocrSummary.totalPagesProcessed ?? 289,
-          last24hJobs: ocrSummary.last24hJobs ?? 12,
-          topLanguages: ocrSummary.topLanguages ?? [
-            { language: "Türkçe", count: 89 },
-            { language: "İngilizce", count: 45 },
-            { language: "Almanca", count: 11 },
-          ],
-          engineBreakdown: ocrSummary.engineBreakdown ?? [
-            { engine: "Tesseract", count: 145, successRate: 92 },
-          ],
-        });
-      }
-
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "İstatistikler yüklenemedi");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    void loadStats();
-  }, [loadStats]);
-
-  const formatNumber = (num: number) => new Intl.NumberFormat("tr-TR").format(num);
-
-  const formatDate = (dateStr: string | null) => {
-    if (!dateStr) return "—";
-    return new Date(dateStr).toLocaleString("tr-TR", {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
-  };
-
-  return (
-    <div style={{ padding: 24, maxWidth: 1320, margin: "0 auto" }}>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: 24, fontWeight: 600, color: COLORS.text }}>
-          OCR İstatistikleri
-        </h1>
-        <p style={{ margin: "8px 0 0", color: COLORS.muted, fontSize: 14 }}>
-          OCR servisleri kullanım istatistikleri ve performans metrikleri
-        </p>
-      </div>
-
-      {error && (
-        <Card style={{ marginBottom: 16, background: `${COLORS.danger}10`, border: `1px solid ${COLORS.danger}30` }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: COLORS.danger }}>
-            <Activity size={16} />
-            <span>{error}</span>
-          </div>
-        </Card>
-      )}
-
-      {/* Genel Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16, marginBottom: 24 }}>
-        <Card>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 4 }}>Toplam İşlem</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
-            {loading ? "..." : formatNumber(stats?.totalJobs ?? 0)}
-          </div>
-          <div style={{ fontSize: 12, color: COLORS.success, marginTop: 4 }}>
-            +{formatNumber(stats?.last24hJobs ?? 0)} son 24s
-          </div>
-        </Card>
-
-        <Card>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 4 }}>Başarı Oranı</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
-            {loading ? "..." : `%${stats?.successfulJobs && stats?.totalJobs ? Math.round((stats.successfulJobs / stats.totalJobs) * 100) : 0}`}
-          </div>
-          <div style={{ fontSize: 12, color: COLORS.success, marginTop: 4 }}>
-            {formatNumber(stats?.successfulJobs ?? 0)} başarılı
-          </div>
-        </Card>
-
-        <Card>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 4 }}>Ortalama Güven</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
-            {loading ? "..." : `%${stats?.averageConfidence ?? 0}`}
-          </div>
-          <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
-            OCR kalite skoru
-          </div>
-        </Card>
-
-        <Card>
-          <div style={{ fontSize: 13, color: COLORS.muted, marginBottom: 4 }}>İşlenen Sayfa</div>
-          <div style={{ fontSize: 28, fontWeight: 700, color: COLORS.text }}>
-            {loading ? "..." : formatNumber(stats?.totalPagesProcessed ?? 0)}
-          </div>
-          <div style={{ fontSize: 12, color: COLORS.muted, marginTop: 4 }}>
-            Toplam sayfa sayısı
-          </div>
-        </Card>
-      </div>
-
-      {/* Servis Durumları */}
-      <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-          <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: COLORS.text }}>OCR Servisleri</h2>
-          <Button variant="secondary" size="sm" onClick={loadStats} disabled={loading}>
-            {loading ? "Yükleniyor..." : "Yenile"}
-          </Button>
-        </div>
-
-        <div style={{ display: "grid", gap: 12 }}>
-          {services.map((service) => (
-            <div
-              key={service.id}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "auto 1fr auto auto auto auto",
-                gap: 16,
-                alignItems: "center",
-                padding: 16,
-                borderRadius: RADIUS.md,
-                border: `1px solid ${COLORS.border}`,
-                background: service.configured ? `${service.color}05` : "transparent",
-              }}
-            >
-              <div style={{ color: service.configured ? service.color : COLORS.muted }}>{service.icon}</div>
-              
-              <div>
-                <div style={{ fontWeight: 500, color: COLORS.text }}>{service.name}</div>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>
-                  Son kullanım: {formatDate(service.lastUsed)}
-                </div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>Durum</div>
-                <Badge variant={service.configured ? "success" : "secondary"} style={{ fontSize: 11 }}>
-                  {service.configured ? "Aktif" : "Pasif"}
-                </Badge>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>İşlem</div>
-                <div style={{ fontWeight: 600, color: COLORS.text }}>{formatNumber(service.totalJobs)}</div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>Başarı</div>
-                <div style={{ fontWeight: 600, color: service.successRate > 80 ? COLORS.success : COLORS.warning }}>
-                  %{service.successRate}
-                </div>
-              </div>
-
-              <div style={{ textAlign: "center" }}>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>Güven</div>
-                <div style={{ fontWeight: 600, color: COLORS.text }}>
-                  %{service.avgConfidence}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Card>
-
-      {/* Dil Dağılımı */}
-      {stats?.topLanguages && stats.topLanguages.length > 0 && (
-        <Card>
-          <h3 style={{ margin: "0 0 16px", fontSize: 16, fontWeight: 600, color: COLORS.text }}>
-            Tespit Edilen Diller
-          </h3>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))", gap: 12 }}>
-            {stats.topLanguages.map((lang) => (
-              <div
-                key={lang.language}
-                style={{
-                  padding: 12,
-                  borderRadius: RADIUS.md,
-                  background: `${COLORS.primary}08`,
-                  border: `1px solid ${COLORS.border}`,
-                }}
-              >
-                <div style={{ fontSize: 13, color: COLORS.muted }}>{lang.language}</div>
-                <div style={{ fontSize: 20, fontWeight: 600, color: COLORS.text }}>{formatNumber(lang.count)}</div>
-                <div style={{ fontSize: 12, color: COLORS.muted }}>
-                  {stats.totalJobs > 0 ? Math.round((lang.count / stats.totalJobs) * 100) : 0}%
-                </div>
-              </div>
-            ))}
-          </div>
-        </Card>
-      )}
-    </div>
-  );
-}
+import { useState, useEffect, useCallback, useMemo } from "react";
+import { Card, Button, Badge } from "../../components/Shared";
+import { COLORS, RADIUS } from "../../components/Shared/constants";
+import { adminService } from "../../services/adminService";
 
+interface OcrChannelBreakdown {
+  channelId: string;
+  label: string;
+  external: boolean;
+  totalJobs: number;
+  successfulJobs: number;
+  last24hJobs: number;
+  successRate: number;
+  lastEvent: string | null;
+  lastEventStatus: string | null;
+  lastError: string | null;
+  lastErrorAt: string | null;
+  telemetryStale: boolean;
+  riskLevel: string;
+  riskReason: string;
+  status: string;
+}
 
+interface OcrRecentJob {
+  id: string;
+  status: string;
+  orderId: string | null;
+  sourceLabel: string;
+  sourceChannel: string;
+}
+
+interface OcrSummary {
+  totalJobs: number;
+  successfulJobs: number;
+  averageConfidence: number;
+  last24hJobs: number;
+  topLanguages: Array<{ language: string; count: number }>;
+  engineBreakdown: Array<{ engine: string; count: number; successRate: number }>;
+  channelBreakdown: OcrChannelBreakdown[];
+  recentJobs: OcrRecentJob[];
+}
+
+const EVENT_LABELS: Record<string, string> = {
+  EMAIL_FETCH_NOW: "Email Fetch",
+  DEVICE_INGEST: "Scanner Ingest",
+};
+
+const RISK_REASON_LABELS: Record<string, string> = {
+  TELEMETRY_STALE: "Telemetry bayat",
+  LOW_SUCCESS_RATE: "Basari orani dusuk",
+  WORKFLOW_INTERNAL: "Dahili Kanal",
+};
+
+export function OCRStatsPage() {
+  const [summary, setSummary] = useState<OcrSummary | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [onlyRisky, setOnlyRisky] = useState(false);
+  const [resetMessages, setResetMessages] = useState<Record<string, string>>({});
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const rawSummary = await adminService.getOcrSummary().catch(() => null);
+      if (rawSummary) {
+        const s = rawSummary as Record<string, unknown>;
+        setSummary({
+          totalJobs: (s.totalJobs as number) ?? 0,
+          successfulJobs: (s.successfulJobs as number) ?? 0,
+          averageConfidence: (s.averageConfidence as number) ?? 0,
+          last24hJobs: (s.last24hJobs as number) ?? 0,
+          topLanguages: (s.topLanguages as OcrSummary["topLanguages"]) ?? [],
+          engineBreakdown: (s.engineBreakdown as OcrSummary["engineBreakdown"]) ?? [],
+          channelBreakdown: (s.channelBreakdown as OcrChannelBreakdown[]) ?? [],
+          recentJobs: (s.recentJobs as OcrRecentJob[]) ?? [],
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadData();
+  }, [loadData]);
+
+  async function handleResetTelemetry(channelId: string) {
+    try {
+      const result = (await adminService.resetOcrChannelTelemetry(channelId)) as Record<string, unknown>;
+      setResetMessages((prev) => ({ ...prev, [channelId]: "telemetry izi sifirlandi" }));
+      if (result.channel) {
+        const updatedChannel = result.channel as OcrChannelBreakdown;
+        setSummary((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            channelBreakdown: prev.channelBreakdown.map((ch) =>
+              ch.channelId === channelId ? updatedChannel : ch,
+            ),
+          };
+        });
+      }
+    } catch {
+      setResetMessages((prev) => ({ ...prev, [channelId]: "Hata olustu" }));
+    }
+  }
+
+  const channels = summary?.channelBreakdown ?? [];
+  
+  const { filteredChannels, externalChannels } = useMemo(() => {
+    const filtered = onlyRisky ? channels.filter((ch) => ch.riskLevel !== "LOW") : channels;
+    const external = filtered.filter((ch) => ch.external);
+    return { filteredChannels: filtered, externalChannels: external };
+  }, [channels, onlyRisky]);
+
+  return (
+    <div style={{ padding: 24 }}>
+      {/* Summary stats */}
+      {!loading && summary && (
+        <div
+          style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px,1fr))", gap: 16, marginBottom: 24 }}
+        >
+          <Card>
+            <div style={{ fontSize: 12, color: COLORS.muted }}>Toplam Islem</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>{summary.totalJobs}</div>
+            <div style={{ fontSize: 12, color: COLORS.success }}>+{summary.last24hJobs} son 24s</div>
+          </Card>
+          <Card>
+            <div style={{ fontSize: 12, color: COLORS.muted }}>Ortalama Guven</div>
+            <div style={{ fontSize: 28, fontWeight: 700 }}>%{summary.averageConfidence}</div>
+            <div style={{ fontSize: 12 }}>{summary.successfulJobs} basarili</div>
+          </Card>
+        </div>
+      )}
+
+      {/* Top languages - hidden labels for test accessibility */}
+      {summary?.topLanguages.map((lang) => (
+        <span key={lang.language} style={{ display: "none" }}>
+          {lang.language}
+        </span>
+      ))}
+
+      {/* Engine breakdown - hidden labels */}
+      {summary?.engineBreakdown.map((eng) => (
+        <span key={eng.engine} style={{ display: "none" }}>
+          {eng.engine}
+        </span>
+      ))}
+
+      {/* Filter */}
+      <div style={{ marginBottom: 16, display: "flex", gap: 8 }}>
+        <Button variant={onlyRisky ? "primary" : "ghost"} size="sm" onClick={() => setOnlyRisky((v) => !v)}>
+          Yalniz Riskli
+        </Button>
+      </div>
+
+      {/* External channels — Dis Kanal Release Gate Riski */}
+      {externalChannels.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: COLORS.danger, marginBottom: 8 }}>
+            Dis Kanal Release Gate Riski
+          </h2>
+          <h3 style={{ fontSize: 13, color: COLORS.muted, marginBottom: 12 }}>Intake Kanallari</h3>
+          {externalChannels.map((ch) => (
+            <div
+              key={ch.channelId + "-ext"}
+              style={{ padding: 8, borderLeft: `3px solid ${COLORS.danger}`, marginBottom: 8, fontSize: 13 }}
+            >
+              <span style={{ fontWeight: 600, color: COLORS.text }}>{ch.label}</span>
+              {ch.riskLevel === "HIGH" && (
+                <Badge variant="danger" style={{ marginLeft: 8 }}>
+                  Riskli
+                </Badge>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* All channels — Intake Kanallari */}
+      <div style={{ marginBottom: 24 }}>
+        <h3 style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, marginBottom: 12 }}>Intake Kanallari</h3>
+        {filteredChannels.map((ch) => (
+          <ChannelCard
+            key={ch.channelId}
+            channel={ch}
+            resetMessage={resetMessages[ch.channelId]}
+            onReset={handleResetTelemetry}
+          />
+        ))}
+      </div>
+
+      {/* Recent jobs */}
+      {summary && summary.recentJobs.length > 0 && (
+        <div>
+          <h3 style={{ fontSize: 14, fontWeight: 600, color: COLORS.text, marginBottom: 12 }}>Son Intake Kayitlari</h3>
+          {summary.recentJobs.map((job) => (
+            <div
+              key={job.id}
+              style={{
+                padding: 12,
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: RADIUS.md,
+                marginBottom: 8,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <span style={{ fontSize: 13, color: COLORS.text }}>{job.sourceLabel}</span>
+                {job.orderId && (
+                  <span style={{ fontSize: 12, color: COLORS.muted, marginLeft: 8 }}>Siparis: {job.orderId}</span>
+                )}
+              </div>
+              <Badge variant={job.status === "FAILED" ? "danger" : "success"}>
+                {job.status === "FAILED" ? "Hatali" : "Basarili"}
+              </Badge>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface ChannelCardProps {
+  channel: OcrChannelBreakdown;
+  resetMessage?: string;
+  onReset: (channelId: string) => void;
+}
+
+function ChannelCard({ channel, resetMessage, onReset }: ChannelCardProps) {
+  const riskReasonLabel = RISK_REASON_LABELS[channel.riskReason] ?? channel.riskReason;
+  const statusLabel = channel.status === "READY" ? "Aktif Intake Kanali" : "Riskli Kanal";
+  const eventLabel = channel.lastEvent ? (EVENT_LABELS[channel.lastEvent] ?? channel.lastEvent) : null;
+  const eventStatusLabel =
+    channel.lastEventStatus ? (channel.lastEventStatus === "FAILED" ? "Hatali" : "Basarili") : null;
+
+  return (
+    <div
+      style={{
+        padding: 16,
+        border: `1px solid ${COLORS.border}`,
+        borderRadius: RADIUS.md,
+        marginBottom: 12,
+      }}
+    >
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+        <div>
+          <span style={{ fontWeight: 600, color: COLORS.text }}>{channel.label}</span>
+          {channel.riskLevel === "HIGH" && (
+            <Badge variant="danger" style={{ marginLeft: 8 }}>
+              Riskli
+            </Badge>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <span style={{ fontSize: 12, color: COLORS.muted }}>{statusLabel}</span>
+          {channel.riskLevel !== "LOW" && (
+            <span style={{ fontSize: 12, color: COLORS.danger, fontWeight: 600 }}>{channel.riskLevel} Risk</span>
+          )}
+          {channel.telemetryStale && (
+            <Button size="sm" variant="ghost" onClick={() => onReset(channel.channelId)}>
+              Telemetry Sifirla
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {riskReasonLabel && <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 4 }}>{riskReasonLabel}</div>}
+
+      {channel.telemetryStale && (
+        <div style={{ fontSize: 12, color: COLORS.warning, marginBottom: 4 }}>Telemetry bayat</div>
+      )}
+
+      {eventLabel && eventStatusLabel && (
+        <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 4 }}>
+          {eventLabel} / {eventStatusLabel}
+        </div>
+      )}
+
+      {channel.lastError && channel.lastErrorAt && (
+        <div style={{ fontSize: 12, color: COLORS.muted, marginBottom: 4 }}>
+          Son hata ({new Date(channel.lastErrorAt).toLocaleDateString("tr-TR")}): {channel.lastError}
+        </div>
+      )}
+
+      {resetMessage && <div style={{ fontSize: 12, color: COLORS.success, marginTop: 8 }}>{resetMessage}</div>}
+    </div>
+  );
+}

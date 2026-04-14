@@ -1,0 +1,26 @@
+/* OptiPlan360 — Responsive breakpoints & layout utilities */
+
+/* Mobile-first breakpoints */
+@media (max-width: 640px) {
+  .hide-mobile { display: none !important; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hide-tablet { display: none !important; }
+}
+
+@media (min-width: 1025px) {
+  .hide-desktop { display: none !important; }
+}
+
+/* Sidebar collapse */
+@media (max-width: 768px) {
+  .sidebar-collapsed { width: 0; overflow: hidden; }
+}
+
+/* Fluid grid helpers */
+.responsive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}

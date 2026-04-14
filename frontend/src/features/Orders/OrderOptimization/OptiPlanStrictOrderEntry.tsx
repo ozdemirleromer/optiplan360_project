@@ -707,7 +707,7 @@ export function OptiPlanStrictOrderEntry() {
                 }}>
                     <div style={{
                         background: "var(--op-surface-bg)", border: "1px solid var(--op-danger)",
-                        padding: "24px 28px", minWidth: 300, maxWidth: 380,
+                        padding: "24px 28px", maxWidth: "clamp(300px, 90vw, 380px)",
                     }}>
                         <div style={{ fontSize: "13px", fontWeight: 700, color: "var(--op-danger)", marginBottom: 8, fontFamily: "'JetBrains Mono', monospace" }}>
                             ⚠ Tüm satırları temizle?
@@ -745,7 +745,7 @@ export function OptiPlanStrictOrderEntry() {
                         background: "var(--op-surface-bg)",
                         borderLeft: `3px solid ${toast.tone === "success" ? "#22c55e" : toast.tone === "danger" ? "var(--op-danger)" : "#f59e0b"}`,
                         padding: "10px 16px", fontSize: "12px", fontWeight: 500, color: "var(--op-text)",
-                        boxShadow: "0 4px 24px rgba(0,0,0,0.4)", maxWidth: 340,
+                        boxShadow: "0 4px 24px rgba(0,0,0,0.4)", maxWidth: "clamp(300px, 90vw, 340px)",
                         fontFamily: "inherit",
                     }}
                 >

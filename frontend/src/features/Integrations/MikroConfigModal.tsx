@@ -2,10 +2,10 @@
  * Mikro ERP SQL Server Yapılandırma Modal'ı
  * Admin panelinden Mikro SQL bağlantı ayarlarını yönetir
  */
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { X, Database, CheckCircle, AlertCircle, Loader2, ShieldCheck, Server } from "lucide-react";
 import { Button, Card } from "../../components/Shared";
-import { COLORS, RADIUS, TYPOGRAPHY } from "../../components/Shared/constants";
+import { COLORS, RADIUS, TYPOGRAPHY, Z_INDEX } from "../../components/Shared/constants";
 import { adminService, type MikroConfig } from "../../services/adminService";
 
 interface MikroConfigModalProps {
@@ -71,6 +71,7 @@ const errorTextStyle: React.CSSProperties = {
 };
 
 export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
   const [config, setConfig] = useState<MikroConfig>(defaultConfig);
   const [loading, setLoading] = useState(true);
   const [testing, setTesting] = useState(false);
@@ -106,14 +107,22 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
     return () => { cancelled = true; };
   }, [isOpen]);
 
-  // ESC ile kapat
+  // Focus trap + ESC
   useEffect(() => {
     if (!isOpen) return;
+    const prevFocus = document.activeElement as HTMLElement;
+    const focusable = modalRef.current?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    const first = focusable?.[0] as HTMLElement;
+    setTimeout(() => first?.focus(), 0);
     const handler = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") { e.preventDefault(); onClose(); return; }
+      if (e.key !== "Tab" || !focusable?.length) return;
+      const last = focusable[focusable.length - 1] as HTMLElement;
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     };
-    window.addEventListener("keydown", handler);
-    return () => window.removeEventListener("keydown", handler);
+    document.addEventListener("keydown", handler);
+    return () => { document.removeEventListener("keydown", handler); prevFocus?.focus(); };
   }, [isOpen, onClose]);
 
   const handleChange = useCallback(<K extends keyof MikroConfig>(field: K, value: MikroConfig[K]) => {
@@ -177,9 +186,9 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
 
   return (
     <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Mikro ERP Yapılandırması"
+      role="presentation"
+      aria-hidden="true"
+      
       style={{
         position: "fixed",
         top: 0,
@@ -190,7 +199,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        zIndex: 1000,
+        zIndex: Z_INDEX.modal,
         padding: 24,
       }}
       onClick={onClose}
@@ -202,7 +211,11 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
           maxHeight: "90vh",
           overflow: "auto",
         }}
-        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        onClick={(e: React.MouseEvent) => e.stopPropagation()}
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="config-modal-title"
       >
         {/* Header */}
         <div
@@ -224,7 +237,7 @@ export function MikroConfigModal({ isOpen, onClose, onSave }: MikroConfigModalPr
               <Database size={20} color={COLORS.primary} aria-hidden />
             </div>
             <div>
-              <h2 style={{ margin: 0, fontSize: 18, fontWeight: 600, color: COLORS.text }}>
+              <h2 id="config-modal-title" style={{ margin: 0, fontSize: 18, fontWeight: 600, color: COLORS.text }}>
                 Mikro ERP Yapılandırması
               </h2>
               <p style={{ margin: "4px 0 0", fontSize: 13, color: COLORS.muted }}>

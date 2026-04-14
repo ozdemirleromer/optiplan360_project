@@ -55,6 +55,11 @@ V1_ROUTER_GROUPS: GroupMap = {
         "app.features.orchestrator.transport.http.router",
         "app.features.biesse.transport.http.router",
         "app.features.optiplanning.transport.http.router",
+        "app.features.optiplan_workflow.transport.http.router",
+        "app.features.phase1.transport.http.router",
+        "app.features.phase3.transport.http.router",
+        "app.features.phase4.transport.http.router",
+        "app.routers.phase2_gate",
     ),
     "catalog_tracking": (
         "app.features.product.transport.http.router",

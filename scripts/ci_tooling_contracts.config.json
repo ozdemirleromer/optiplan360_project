@@ -1,0 +1,111 @@
+{
+  "contracts": [
+    {
+      "path": "package.json",
+      "allOf": [
+        "\"test:ci-tooling-contracts\"",
+        "\"test:ci-tooling-contracts:json\"",
+        "\"reports:cleanup\"",
+        "\"validate:fail-reasons\"",
+        "\"test:ci-workflow-contracts:suite\"",
+        "\"phase:system-backbone\"",
+        "\"phase:system-backbone:report\"",
+        "\"validate:phase-reports\"",
+        "\"validate:report:ci-workflow-contract\"",
+        "\"validate:report:workflow-contract-gates\"",
+        "\"validate:report:phase-system-backbone\"",
+        "\"test:workflow-contract-gates\""
+      ]
+    },
+    {
+      "path": "scripts/validate_json_report.mjs",
+      "allOf": [
+        "--strict-enum",
+        "--schema",
+        "--input",
+        "[validate-json-report]"
+      ]
+    },
+    {
+      "path": "scripts/contracts/fail_reasons.json",
+      "allOf": [
+        "command-exit-nonzero",
+        "timeout",
+        "spawn-error",
+        "missing-artifact"
+      ]
+    },
+    {
+      "path": "scripts/schemas/fail-reasons.schema.json",
+      "allOf": [
+        "\"additionalProperties\": false",
+        "\"required\"",
+        "\"allowed\""
+      ]
+    },
+    {
+      "path": "scripts/verify_ci_tooling_contracts.mjs",
+      "allOf": [
+        "--json",
+        "JSON.stringify({ status: \"failed\", failures }",
+        "JSON.stringify({ status: \"passed\", failures: [] }"
+      ]
+    },
+    {
+      "path": ".vscode/tasks.json",
+      "allOf": [
+        "\"label\": \"test:workflow-contract-gates\"",
+        "\"label\": \"test:ci-workflow-contracts:suite\"",
+        "\"label\": \"test:ci-workflow-contracts\"",
+        "\"group\": \"test\""
+      ]
+    },
+    {
+      "path": "scripts/run_ci_workflow_contract_suite.mjs",
+      "allOf": [
+        "name: \"tooling-contracts\"",
+        "test:ci-tooling-contracts",
+        "name: \"engine-smoke\"",
+        "name: \"strict-unknown\"",
+        "ci-workflow-contract-report.json"
+      ],
+      "ordered": [
+        [
+          "name: \"tooling-contracts\"",
+          "name: \"engine-smoke\"",
+          "name: \"config\"",
+          "name: \"selftest\"",
+          "name: \"strict-unknown\""
+        ]
+      ]
+    },
+    {
+      "path": "scripts/run_workflow_contract_gates.mjs",
+      "allOf": [
+        "test:ci-workflow-contracts:suite",
+        "test:telemetry-admin",
+        "test:orders-workspace",
+        "test:backend-mikro-sql-client"
+      ]
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "allOf": [
+        "name: Upload CI contract suite report",
+        "ci-workflow-contract-report",
+        "tmp/ci-workflow-contract-report.json",
+        "retention-days: 7",
+        "name: Upload workflow contract gates report",
+        "if: always()",
+        "workflow-contract-gates-report",
+        "tmp/workflow-contract-gates-report.json",
+        "retention-days: 7",
+        "name: Upload phase system backbone report",
+        "if: always()",
+        "phase-system-backbone-report",
+        "tmp/phase-system-backbone-report.json",
+        "retention-days: 7"
+      ]
+    }
+  ]
+}

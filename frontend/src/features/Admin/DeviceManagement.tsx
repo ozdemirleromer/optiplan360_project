@@ -16,7 +16,7 @@
 
 
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 
 import {
@@ -772,19 +772,26 @@ export function DeviceManagement() {
   /* ------- Özet kartları ------- */
 
 
-  const totalDevices = stations.filter((s) => s.deviceType).length;
+  const { totalDevices, activeDevices, unassigned } = useMemo(() => {
+    let total = 0;
+    let active = 0;
+    let empty = 0;
 
+    stations.forEach((station) => {
+      if (station.deviceType) {
+        total += 1;
+        if (station.active) active += 1;
+      } else {
+        empty += 1;
+      }
+    });
 
-  const activeDevices = stations.filter(
-
-
-    (s) => s.deviceType && s.active
-
-
-  ).length;
-
-
-  const unassigned = stations.filter((s) => !s.deviceType).length;
+    return {
+      totalDevices: total,
+      activeDevices: active,
+      unassigned: empty,
+    };
+  }, [stations]);
 
 
 

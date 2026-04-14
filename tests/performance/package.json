@@ -1,0 +1,25 @@
+{
+  "name": "@optiplan360/performance-tests",
+  "version": "1.0.0",
+  "description": "OptiPlan360 Performance and Load Testing Suite",
+  "scripts": {
+    "test:load": "k6 run tests/load-test.js",
+    "test:stress": "k6 run tests/stress-test.js",
+    "test:spike": "k6 run tests/spike-test.js",
+    "test:soak": "k6 run tests/soak-test.js",
+    "test:artillery": "artillery run tests/artillery-config.yml",
+    "test:performance": "npm run test:load && npm run test:stress && npm run test:spike",
+    "report:html": "k6 run tests/load-test.js --out html=reports/load-test.html",
+    "report:json": "k6 run tests/load-test.js --out json=reports/load-test.json"
+  },
+  "devDependencies": {
+    "k6": "^0.47.0",
+    "k6-html-reporter": "^1.0.0",
+    "k6-reporter-json": "^1.0.0",
+    "artillery": "^2.0.0",
+    "artillery-plugin-html-report": "^2.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

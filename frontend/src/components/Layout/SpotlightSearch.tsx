@@ -8,7 +8,7 @@
 
 
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, useDeferredValue } from 'react';
 
 import { Search, FileText, Package, Users, Settings, BarChart3, Bot, Briefcase, ArrowRight, TrendingUp, Cpu, Factory, Workflow, Activity, Globe, MessageCircle } from 'lucide-react';
 
@@ -27,8 +27,6 @@ interface SpotlightResult {
   description?: string;
 
   icon: React.ReactNode;
-
-  action: () => void;
 
   shortcut?: string;
 
@@ -50,47 +48,57 @@ interface SpotlightSearchProps {
 
 const PAGE_RESULTS: SpotlightResult[] = [
 
-  { id: 'p-dashboard', type: 'page', title: 'Gösterge Paneli', description: 'Ana sayfa', icon: <BarChart3 size={18} />, action: () => { }, shortcut: 'Ctrl+1' },
+  { id: 'p-siparis-fisi', type: 'page', title: 'Sipariş Fişi', description: 'Sipariş belgesi ve satırlar', icon: <FileText size={18} /> },
 
-  { id: 'p-orders', type: 'page', title: 'Siparişler', description: 'Sipariş yönetimi', icon: <Package size={18} />, action: () => { }, shortcut: 'Ctrl+2' },
+  { id: 'p-teklif-fisi', type: 'page', title: 'Teklif Fişi', description: 'Teklif yaşam döngüsü', icon: <FileText size={18} /> },
 
-  { id: 'p-kanban', type: 'page', title: 'Akış Panoları', description: 'Kanban board', icon: <Workflow size={18} />, action: () => { } },
+  { id: 'p-stok-karti', type: 'page', title: 'Stok Kartı', description: 'Stok kartları ve hareket tablosu', icon: <Package size={18} /> },
 
-  { id: 'p-card-management', type: 'page', title: 'Müşteri Yönetimi', description: 'Cari ve stok kartları yönetimi', icon: <Briefcase size={18} />, action: () => { }, shortcut: 'Ctrl+3' },
+  { id: 'p-cari-karti', type: 'page', title: 'Cari Kartı', description: 'Cari kart listesi ve detay', icon: <Users size={18} /> },
 
-  { id: 'p-reports-analytics', type: 'page', title: 'Raporlar & Analitik', description: 'Performans raporları ve metrikler', icon: <BarChart3 size={18} />, action: () => { }, shortcut: 'Ctrl+4' },
+  { id: 'p-orders', type: 'page', title: 'Siparişler', description: 'Sipariş yönetimi', icon: <Package size={18} />, shortcut: 'Ctrl+2' },
 
-  { id: 'p-price-tracking', type: 'page', title: 'Fiyat Takip', description: 'Fiyat değişim takibi', icon: <TrendingUp size={18} />, action: () => { } },
+  { id: 'p-dashboard', type: 'page', title: 'Gösterge Paneli', description: 'Ana sayfa', icon: <BarChart3 size={18} />, shortcut: 'Ctrl+1' },
 
-  { id: 'p-ai-assistant', type: 'page', title: 'AI Asistan', description: 'Yapay zeka asistanı', icon: <Bot size={18} />, action: () => { } },
+  { id: 'p-optiplan-order', type: 'page', title: 'OptiPlanning Job', description: 'Sipariş OptiPlanning iş akışı', icon: <Cpu size={18} /> },
 
-  { id: 'p-orchestrator', type: 'page', title: 'OptiPlanning Jobs', description: 'Kesim optimizasyonu iş takibi', icon: <Cpu size={18} />, action: () => { } },
+  { id: 'p-kanban', type: 'page', title: 'Akış Panoları', description: 'Kanban board', icon: <Workflow size={18} /> },
 
-  { id: 'p-product-search', type: 'page', title: 'Ürün Arama', description: 'Spec-first ürün ve malzeme arama', icon: <Search size={18} />, action: () => { } },
+  { id: 'p-card-management', type: 'page', title: 'Müşteri Yönetimi', description: 'Cari ve stok kartları yönetimi', icon: <Briefcase size={18} />, shortcut: 'Ctrl+3' },
 
-  { id: 'p-stations', type: 'page', title: 'İstasyonlar', description: 'Üretim istasyonları', icon: <Factory size={18} />, action: () => { } },
+  { id: 'p-reports-analytics', type: 'page', title: 'Raporlar & Analitik', description: 'Performans raporları ve metrikler', icon: <BarChart3 size={18} />, shortcut: 'Ctrl+4' },
 
-  { id: 'p-system-logs', type: 'page', title: 'Sistem Günlükleri', description: 'Loglar ve denetim kayıtları', icon: <FileText size={18} />, action: () => { } },
+  { id: 'p-price-tracking', type: 'page', title: 'Fiyat Takip', description: 'Fiyat değişim takibi', icon: <TrendingUp size={18} /> },
 
-  { id: 'p-integration-health', type: 'page', title: 'Entegrasyon Durumu', description: 'Sistem sağlık durumu', icon: <Activity size={18} />, action: () => { } },
+  { id: 'p-ai-assistant', type: 'page', title: 'AI Asistan', description: 'Yapay zeka asistanı', icon: <Bot size={18} /> },
 
-  { id: 'p-user-activity', type: 'page', title: 'Kullanıcı Aktivitesi', description: 'Kullanıcı hareketleri', icon: <Users size={18} />, action: () => { } },
+  { id: 'p-orchestrator', type: 'page', title: 'OptiPlanning Jobs', description: 'Kesim optimizasyonu iş takibi', icon: <Cpu size={18} /> },
 
-  { id: 'p-user-management', type: 'page', title: 'Kullanıcı Yönetimi', description: 'Kullanıcılar, roller ve yetkiler', icon: <Users size={18} />, action: () => { } },
+  { id: 'p-product-search', type: 'page', title: 'Ürün Arama', description: 'Spec-first ürün ve malzeme arama', icon: <Search size={18} /> },
 
-  { id: 'p-integrations', type: 'page', title: 'Entegrasyonlar', description: 'Sistem entegrasyonları', icon: <Settings size={18} />, action: () => { } },
+  { id: 'p-stations', type: 'page', title: 'İstasyonlar', description: 'Üretim istasyonları', icon: <Factory size={18} /> },
 
-  { id: 'p-whatsapp-business', type: 'page', title: 'WhatsApp Business', description: 'WhatsApp entegrasyonu', icon: <MessageCircle size={18} />, action: () => { } },
+  { id: 'p-system-logs', type: 'page', title: 'Sistem Günlükleri', description: 'Loglar ve denetim kayıtları', icon: <FileText size={18} /> },
 
-  { id: 'p-config', type: 'page', title: 'Sistem Ayarları', description: 'Genel ayarlar', icon: <Settings size={18} />, action: () => { } },
+  { id: 'p-integration-health', type: 'page', title: 'Entegrasyon Durumu', description: 'Sistem sağlık durumu', icon: <Activity size={18} /> },
 
-  { id: 'p-workflows', type: 'page', title: 'Otomasyonlar', description: 'İş akışı otomasyonları', icon: <Workflow size={18} />, action: () => { } },
+  { id: 'p-user-activity', type: 'page', title: 'Kullanıcı Aktivitesi', description: 'Kullanıcı hareketleri', icon: <Users size={18} /> },
 
-  { id: 'p-api-portal', type: 'page', title: 'API Portal', description: 'API yönetim portalı', icon: <Globe size={18} />, action: () => { } },
+  { id: 'p-user-management', type: 'page', title: 'Kullanıcı Yönetimi', description: 'Kullanıcılar, roller ve yetkiler', icon: <Users size={18} /> },
 
-  { id: 'p-ai-config', type: 'page', title: 'AI Konfigürasyon', description: 'AI model ayarları', icon: <Settings size={18} />, action: () => { } },
+  { id: 'p-integrations', type: 'page', title: 'Entegrasyonlar', description: 'Sistem entegrasyonları', icon: <Settings size={18} /> },
 
-  { id: 'p-organization', type: 'page', title: 'Organizasyon', description: 'Organizasyon yönetimi', icon: <Users size={18} />, action: () => { } },
+  { id: 'p-whatsapp-business', type: 'page', title: 'WhatsApp Business', description: 'WhatsApp entegrasyonu', icon: <MessageCircle size={18} /> },
+
+  { id: 'p-config', type: 'page', title: 'Sistem Ayarları', description: 'Genel ayarlar', icon: <Settings size={18} /> },
+
+  { id: 'p-workflows', type: 'page', title: 'Otomasyonlar', description: 'İş akışı otomasyonları', icon: <Workflow size={18} /> },
+
+  { id: 'p-api-portal', type: 'page', title: 'API Portal', description: 'API yönetim portalı', icon: <Globe size={18} /> },
+
+  { id: 'p-ai-config', type: 'page', title: 'AI Konfigürasyon', description: 'AI model ayarları', icon: <Settings size={18} /> },
+
+  { id: 'p-organization', type: 'page', title: 'Organizasyon', description: 'Organizasyon yönetimi', icon: <Users size={18} /> },
 
 ];
 
@@ -98,9 +106,9 @@ const PAGE_RESULTS: SpotlightResult[] = [
 
 const ACTION_RESULTS: SpotlightResult[] = [
 
-  { id: 'a-new-order', type: 'action', title: 'Yeni Sipariş Oluştur', description: 'Sipariş editörünü aç', icon: <Package size={18} />, action: () => { }, shortcut: 'Ctrl+N' },
+  { id: 'a-new-order', type: 'action', title: 'Yeni Sipariş', description: 'Sipariş editörünü aç', icon: <Package size={18} />, shortcut: 'Ctrl+N' },
 
-  { id: 'a-refresh', type: 'action', title: 'Sayfayı Yenile', description: 'Verileri tazele', icon: <ArrowRight size={18} />, action: () => { }, shortcut: 'Ctrl+R' },
+  { id: 'a-refresh', type: 'action', title: 'Sayfayı Yenile', description: 'Verileri tazele', icon: <ArrowRight size={18} />, shortcut: 'Ctrl+R' },
 
 ];
 
@@ -169,19 +177,22 @@ export const SpotlightSearch = ({ isOpen, onClose, onNavigate }: SpotlightSearch
 
 
 
+  const deferredQuery = useDeferredValue(query);
+
+  const normalizedQuery = useMemo(() => deferredQuery.toLowerCase().trim(), [deferredQuery]);
+
   // Filter results
-
-  const filteredResults = query.trim()
-
-    ? [...PAGE_RESULTS, ...ACTION_RESULTS].filter(r =>
-
-      r.title.toLowerCase().includes(query.toLowerCase()) ||
-
-      (r.description?.toLowerCase().includes(query.toLowerCase()))
-
-    )
-
-    : PAGE_RESULTS.slice(0, 5);
+  const filteredResults = useMemo(
+    () =>
+      normalizedQuery
+        ? [...PAGE_RESULTS, ...ACTION_RESULTS].filter(
+            (r) =>
+              r.title.toLowerCase().includes(normalizedQuery) ||
+              r.description?.toLowerCase().includes(normalizedQuery),
+          )
+        : PAGE_RESULTS.slice(0, 5),
+    [normalizedQuery],
+  );
 
 
 

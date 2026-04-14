@@ -20,3 +20,20 @@ def test_include_grouped_routers_registers_routes():
     include_grouped_routers(router)
     # API root haric route'lar include edildiginde route sayisi sifirdan buyuk olmalidir.
     assert len(router.routes) > 0
+
+
+def test_orchestration_group_includes_phase_routers():
+    orchestration = V1_ROUTER_GROUPS["orchestration"]
+    assert "app.features.phase1.transport.http.router" in orchestration
+    assert "app.features.phase3.transport.http.router" in orchestration
+    assert "app.features.phase4.transport.http.router" in orchestration
+
+
+def test_include_grouped_routers_exposes_phase_paths():
+    router = APIRouter()
+    include_grouped_routers(router)
+
+    paths = {route.path for route in router.routes}
+    assert "/api/phase1/queue" in paths
+    assert "/api/phase3/queue" in paths
+    assert "/api/phase4/queue" in paths

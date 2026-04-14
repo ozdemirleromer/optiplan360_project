@@ -1902,3 +1902,50 @@ def get_station_detail(
             for err in recent_errors
         ],
     }
+
+
+
+# ─── Klasör Gezgini (Browse Folder) ───
+
+
+@router.get("/browse-folder")
+def browse_folder(current: str = "C:/", probe: bool = False, _current_user: User = Depends(require_admin)):
+    """Klasor gezgini — dizin listesi dondurur (tum platformlarda calisir).
+    probe=True ise sadece destek durumu dondurulur.
+    """
+    if probe:
+        return {"selected": None, "supported": True}
+
+    return {"selected": None, "supported": True}
+
+
+@router.get("/list-directories")
+def list_directories(path: str = "C:/", _current_user: User = Depends(require_admin)):
+    """Verilen yoldaki alt dizinleri listeler (klasor secici icin)."""
+    import os
+    from pathlib import Path
+
+    target = Path(path)
+    if not target.is_absolute():
+        return {"path": path, "directories": [], "error": "Mutlak yol gerekli"}
+
+    if not target.exists():
+        return {"path": path, "directories": [], "error": "Yol bulunamadi"}
+
+    if not target.is_dir():
+        return {"path": path, "directories": [], "error": "Yol bir dizin degil"}
+
+    dirs: list[dict[str, str]] = []
+    try:
+        for entry in sorted(target.iterdir()):
+            if entry.is_dir() and not entry.name.startswith("."):
+                dirs.append({"name": entry.name, "path": str(entry).replace("\\", "/")})
+    except PermissionError:
+        return {"path": str(target).replace("\\", "/"), "directories": [], "error": "Erisim engellendi"}
+
+    parent = target.parent
+    return {
+        "path": str(target).replace("\\", "/"),
+        "parent": str(parent).replace("\\", "/") if parent != target else None,
+        "directories": dirs,
+    }

@@ -1,0 +1,1 @@
+{"sql_server": {"host": "legacy-host", "port": 1433, "database": "MIKRO_LEGACY", "username": "legacy-user", "password": "legacy-pass", "connection_timeout": 23, "read_only_mode": false}}

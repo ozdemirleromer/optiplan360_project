@@ -1,0 +1,4 @@
+name: Unit Tests
+jobs:
+  encoding-check:
+    runs-on: ubuntu-latest

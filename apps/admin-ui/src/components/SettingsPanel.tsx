@@ -1,7 +1,7 @@
 import { useEffect, useId, useState } from "react";
 import { Icon } from "./Icon";
 import { PathsEditor } from "./PathsEditor";
-import { RulesEditor } from "./RulesEditor";
+import { RulesEditor, type RulesConfig } from "./RulesEditor";
 
 interface SettingsPanelProps {
   apiBase: string;
@@ -10,11 +10,17 @@ interface SettingsPanelProps {
   onCustomerLookup: (phone: string) => Promise<void>;
 }
 
+const toRulesConfig = (rulesData: Record<string, unknown>): RulesConfig => ({
+  cmToMmMultiplier: Number(rulesData["cm_to_mm_multiplier"] ?? rulesData["cmToMmMultiplier"] ?? 10),
+  retryCountMax: Number(rulesData["retry_count_max"] ?? rulesData["retryCountMax"] ?? 3),
+  optiModeDefault: (rulesData["opti_mode_default"] ?? rulesData["optiModeDefault"] ?? "C") as RulesConfig["optiModeDefault"],
+});
+
 export function SettingsPanel({ apiBase, onApiBaseChange, onHealthCheck, onCustomerLookup }: SettingsPanelProps) {
   const [phone, setPhone] = useState("05551234567");
   const [error, setError] = useState("");
   const [paths, setPaths] = useState<Record<string, string> | null>(null);
-  const [rules, setRules] = useState<{ cmToMmMultiplier: number; retryCountMax: number; optiModeDefault: "A" | "B" | "C" } | null>(null);
+  const [rules, setRules] = useState<RulesConfig | null>(null);
   const [statusPaths, setStatusPaths] = useState("");
   const [statusRules, setStatusRules] = useState("");
 
@@ -26,26 +32,30 @@ export function SettingsPanel({ apiBase, onApiBaseChange, onHealthCheck, onCusto
     const loadConfigs = async () => {
       try {
         const pathsRes = await fetch(`${apiBase}/config/paths`);
-        if (pathsRes.ok) {
-          const pathsData = await pathsRes.json();
-          setPaths(pathsData);
+        if (!pathsRes.ok) {
+          throw new Error((await pathsRes.text()) || `HTTP ${pathsRes.status}`);
         }
+
+        const pathsData = (await pathsRes.json()) as Record<string, string>;
+        setPaths(pathsData);
+        setStatusPaths("");
       } catch (err) {
         console.error("Paths load failed:", err);
+        setStatusPaths(err instanceof Error ? err.message : "Paths yüklenemedi");
       }
 
       try {
         const rulesRes = await fetch(`${apiBase}/config/rules`);
-        if (rulesRes.ok) {
-          const rulesData = await rulesRes.json();
-          setRules({
-            cmToMmMultiplier: rulesData.cm_to_mm_multiplier,
-            retryCountMax: rulesData.retry_count_max,
-            optiModeDefault: rulesData.opti_mode_default,
-          });
+        if (!rulesRes.ok) {
+          throw new Error((await rulesRes.text()) || `HTTP ${rulesRes.status}`);
         }
+
+        const rulesData = (await rulesRes.json()) as Record<string, unknown>;
+        setRules(toRulesConfig(rulesData));
+        setStatusRules("");
       } catch (err) {
         console.error("Rules load failed:", err);
+        setStatusRules(err instanceof Error ? err.message : "Rules yüklenemedi");
       }
     };
 
@@ -57,6 +67,7 @@ export function SettingsPanel({ apiBase, onApiBaseChange, onHealthCheck, onCusto
       setError("Telefon alanı zorunludur.");
       return;
     }
+
     setError("");
     await onCustomerLookup(phone);
   };
@@ -64,26 +75,54 @@ export function SettingsPanel({ apiBase, onApiBaseChange, onHealthCheck, onCusto
   const handlePathsSave = async (newPaths: Record<string, string>) => {
     setStatusPaths("Kaydediliyor...");
     try {
-      // Note: This would require a POST /config/paths endpoint on backend
-      setStatusPaths("Paths kaydedildi (API implement gerekli)");
-      setPaths(newPaths);
+      const response = await fetch(`${apiBase}/config/paths`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newPaths),
+      });
+
+      if (!response.ok) {
+        throw new Error((await response.text()) || `HTTP ${response.status}`);
+      }
+
+      const savedPaths = (await response.json()) as Record<string, string>;
+      setPaths(savedPaths);
+      setStatusPaths("Paths kaydedildi.");
     } catch (err) {
-      setStatusPaths(err instanceof Error ? err.message : "Hata oluştu");
+      const message = err instanceof Error ? err.message : "Hata oluştu";
+      setStatusPaths(message);
+      throw err;
     }
   };
 
-  const handleRulesSave = async (newRules: Omit<RulesEditor, "onSave" | "status">) => {
+  const handleRulesSave = async (newRules: RulesConfig) => {
     setStatusRules("Kaydediliyor...");
     try {
-      // Note: This would require a POST /config/rules endpoint on backend
-      setStatusRules("Rules kaydedildi (API implement gerekli)");
-      setRules({
-        cmToMmMultiplier: newRules.cmToMmMultiplier,
-        retryCountMax: newRules.retryCountMax,
-        optiModeDefault: newRules.optiModeDefault,
+      const response = await fetch(`${apiBase}/config/rules`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cm_to_mm_multiplier: newRules.cmToMmMultiplier,
+          retry_count_max: newRules.retryCountMax,
+          opti_mode_default: newRules.optiModeDefault,
+        }),
       });
+
+      if (!response.ok) {
+        throw new Error((await response.text()) || `HTTP ${response.status}`);
+      }
+
+      const savedRules = toRulesConfig((await response.json()) as Record<string, unknown>);
+      setRules(savedRules);
+      setStatusRules("Rules kaydedildi.");
     } catch (err) {
-      setStatusRules(err instanceof Error ? err.message : "Hata oluştu");
+      const message = err instanceof Error ? err.message : "Hata oluştu";
+      setStatusRules(message);
+      throw err;
     }
   };
 
@@ -133,16 +172,10 @@ export function SettingsPanel({ apiBase, onApiBaseChange, onHealthCheck, onCusto
         </div>
       </section>
 
+      {!paths && statusPaths ? <p className="status-line">{statusPaths}</p> : null}
       {paths ? <PathsEditor paths={paths} onSave={handlePathsSave} status={statusPaths} /> : null}
+      {!rules && statusRules ? <p className="status-line">{statusRules}</p> : null}
       {rules ? <RulesEditor {...rules} onSave={handleRulesSave} status={statusRules} /> : null}
     </>
   );
-}
-
-interface RulesEditor {
-  cmToMmMultiplier: number;
-  retryCountMax: number;
-  optiModeDefault: "A" | "B" | "C";
-  onSave: (data: RulesEditor) => Promise<void>;
-  status: string;
 }

@@ -1,0 +1,16 @@
+{
+  "checkpoint_id": "20260325223731_c43c0dcb_begin",
+  "islem_id": "e2e-export-001",
+  "phase": "begin",
+  "status": "pending",
+  "temp_path": null,
+  "final_path": null,
+  "metadata": {
+    "transaction_id": "20260325223731_c43c0dcb",
+    "filename": "e2e_export.xlsx",
+    "target_dir": "C:\\optiplan360_project\\.pytest_tmp\\test_complete_export_flow0\\exports"
+  },
+  "created_at": "2026-03-25T22:37:31.396141+00:00",
+  "updated_at": "2026-03-25T22:37:31.396142+00:00",
+  "error_message": null
+}

@@ -1,0 +1,173 @@
+{
+  "workflowAllowList": [
+    ".github/workflows/tests.yml",
+    ".github/workflows/security.yml",
+    ".github/workflows/compliance.yml",
+    ".github/workflows/code-quality.yml",
+    ".github/workflows/ci-cd.yml",
+    ".github/workflows/auto-push.yml",
+    ".github/workflows/deploy.yml"
+  ],
+  "contracts": [
+    {
+      "path": ".github/workflows/tests.yml",
+      "allOf": [
+        "encoding-check:",
+        "ci-contract-checks:",
+        "backend-tests:",
+        "frontend-tests:",
+        "workflow-contract-gates:",
+        "needs: [encoding-check, ci-contract-checks]",
+        "name: Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "name: Run reusable workflow contract gates action",
+        "uses: ./.github/actions/workflow-contract-gates"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ],
+      "ordered": [
+        [
+          "encoding-check:",
+          "ci-contract-checks:",
+          "backend-tests:",
+          "frontend-tests:",
+          "workflow-contract-gates:"
+        ]
+      ]
+    },
+    {
+      "path": ".github/workflows/security.yml",
+      "allOf": [
+        "name: Security Scan",
+        "security-scan:",
+        "container-scan:",
+        "Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "Run encoding check"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ],
+      "anyOf": [
+        [
+          "branches: [ main, develop ]",
+          "branches: [main, develop]"
+        ]
+      ]
+    },
+    {
+      "path": ".github/workflows/compliance.yml",
+      "allOf": [
+        "name: Compliance Check & Auto-Fix",
+        "compliance-check:",
+        "compliance-autofix:",
+        "Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "needs: compliance-check"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ]
+    },
+    {
+      "path": ".github/workflows/code-quality.yml",
+      "allOf": [
+        "name: Code Quality & Security",
+        "quality:",
+        "Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "Check code formatting",
+        "Run pytest"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ]
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "allOf": [
+        "name: CI/CD Pipeline",
+        "test:",
+        "Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "security-scan:",
+        "deploy:",
+        "needs: [test, security-scan]"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ]
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "allOf": [
+        "name: OptiPlan 360 CI/CD",
+        "test:",
+        "security:",
+        "build:",
+        "deploy-staging:",
+        "deploy-production:",
+        "notify:"
+      ]
+    },
+    {
+      "path": ".github/workflows/auto-push.yml",
+      "allOf": [
+        "name: Auto-Push Status Check",
+        "status:",
+        "Run reusable CI workflow contract check action",
+        "uses: ./.github/actions/ci-workflow-contract-check",
+        "run-suite: 'true'",
+        "strict-unknown: 'true'",
+        "Project status"
+      ],
+      "forbiddenAllOf": [
+        "- name: Verify CI workflow contracts",
+        "run: npm run test:ci-workflow-contracts",
+        "run: npm run test:ci-workflow-contracts:strict-unknown"
+      ]
+    },
+    {
+      "path": ".github/actions/ci-workflow-contract-check/action.yml",
+      "allOf": [
+        "name: CI Workflow Contract Check",
+        "Setup Node.js",
+        "Verify CI workflow contracts",
+        "run-suite",
+        "strict-unknown"
+      ]
+    },
+    {
+      "path": ".github/actions/workflow-contract-gates/action.yml",
+      "allOf": [
+        "name: Workflow Contract Gates",
+        "Setup Node.js",
+        "Set up Python",
+        "Install frontend dependencies",
+        "Install backend dependencies",
+        "Run workflow contract gates"
+      ]
+    }
+  ]
+}
